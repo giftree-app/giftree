@@ -40,7 +40,7 @@ exports.setApp = function (app, client)
     app.post('/api/login', async (req, res, next) => 
     {
         // incoming: username, password
-        // outgoing: userId, firstName, lastName, error
+        // outgoing: userId, firstName, lastName, error, success
 
         var error = '';
 
@@ -63,13 +63,13 @@ exports.setApp = function (app, client)
                 }
                 else
                 {
-                    var ret = { userId:'', firstName:'', lastName:'', error:'User not Validated' };
+                    var ret = { error:'User not Validated', success:false };
                     res.status(400).json(ret);                    
                 }
             }
             else
             {
-                var ret = { userId:'', firstName:'', lastName:'', error:'User not found' };
+                var ret = { error:'User not found', success:false };
                 res.status(400).json(ret);
             }
         }
@@ -120,7 +120,7 @@ exports.setApp = function (app, client)
     app.post('/api/getGroups', async (req, res, next) =>
     {
         // incoming: userId
-        // outgoing: groups[groupId, groupName, groupCode], error
+        // outgoing: groups[groupId, groupName, groupCode], error, success
 
         const { userId } = req.body;
 
@@ -136,7 +136,7 @@ exports.setApp = function (app, client)
                 groups.push({ groupId:results[i]._id, groupName:results[i].groupName, groupCode:results[i].groupCode });
             }
             
-            var ret = { groups:groups, error:'' };
+            var ret = { groups:groups, error:'', success:true };
             res.status(200).json(ret);
         }
         catch(e)
@@ -149,7 +149,7 @@ exports.setApp = function (app, client)
     app.post('/api/getGroupInfo', async (req, res, next) =>
     {
         // incoming: groupId
-        // outgoing: event, eventName, eventPriceMin, eventPriceMax, eventDate, secretShopper_buyers, secretShopper_receivers, members[firstName, lastName, userId]
+        // outgoing: event, eventName, eventPriceMin, eventPriceMax, eventDate, secretShopper_buyers, secretShopper_receivers, members[firstName, lastName, userId], error, success
 
         const { groupId } = req.body;
         var gid = require('mongodb').ObjectID(groupId);
@@ -171,12 +171,13 @@ exports.setApp = function (app, client)
                 ret.secretShopper_receivers = results[0].secretShopper_receivers;
                 ret.members = results[0].members;
                 ret.error = '';
+                ret.success = true;
 
                 res.status(200).json(ret);
             }   
             else
             {
-                var ret = { event:false, eventName:null, eventPriceMin:null, eventPriceMax:null, evenDate:null, secretShopper_buyers:[null], secretShopper_receivers:[null], members:[null], error:'Group not found' };
+                var ret = { error:'Group not found', success:false };
                 res.status(400).json(ret);           
             } 
         }
@@ -289,7 +290,7 @@ exports.setApp = function (app, client)
 
         const { groupId } = req.body;
         var gid = require('mongodb').ObjectID(groupId);
-        
+
         const db = client.db();
 
         try
@@ -316,11 +317,36 @@ exports.setApp = function (app, client)
         
         const db = client.db();
 
-        // create logic for secret shoppers
+        var buyers = [];
+        var receivers = [];
 
         try
         {
-            const results = db.collection('Groups').update({ _id:gid }, { $set: { event:true, eventName:eventName, eventPriceMin:eventPriceMin, eventPriceMax:eventPriceMax, eventDate:eventDate } });
+            const groups = await db.collection('Groups').find({ _id:gid }, { members: 1 }).toArray();
+            const members = groups[0].members;
+
+            for(i=0; i< members.length; i++)
+            {
+                buyers.push(members[i]);
+                receivers.push(members[i]);
+            }
+            
+            if(members.length > 1)
+            {
+                var matched = true;
+                while(matched)
+                {
+                    receivers.sort(() => (Math.random() - 0.5));
+                    matched = false;
+                    for(j=0; j < buyers.length; j++)
+                    {
+                        if(buyers[j] == receivers[j])
+                        matched = true;
+                    }
+                }    
+            }
+
+            const results = db.collection('Groups').update({ _id:gid }, { $set: { event:true, eventName:eventName, eventPriceMin:eventPriceMin, eventPriceMax:eventPriceMax, eventDate:eventDate, secretShopper_buyers:buyers, secretShopper_receivers:receivers } });
             var ret = { error:'',success:true };
             
             res.status(200).json(ret);
@@ -332,10 +358,33 @@ exports.setApp = function (app, client)
        }
     });
 
+    app.post('/api/deleteEvent', async (req, res, next) =>
+    {
+        // incoming: groupId
+        // outgoing: error, success
+
+        const { groupId } = req.body;
+        var gid = require('mongodb').ObjectID(groupId);
+
+        const db = client.db();
+        try
+        {
+            const results = db.collection('Groups').update({ _id:gid }, {$set: { event:false, eventName:null, eventPriceMin:null, eventPriceMax:null, eventDate:null, secretShopper_buyers:[null], secretShopper_receivers:[null] } });
+            var ret = { error:'',success:true };
+ 
+            res.status(200).json(ret);
+        }
+        catch(e)
+        {
+            var error = e.toString();
+            res.status(500).json({ success:false,error:error });  
+        }
+    });
+
     app.post('/api/getWishlist', async (req, res, next) =>
     {
         // incoming: userId
-        // outgoing: gifts[giftId, giftName, giftPrice, giftGot]
+        // outgoing: gifts[giftId, giftName, giftPrice, giftGot], error, success
 
         const { userId } = req.body;
 
@@ -351,7 +400,7 @@ exports.setApp = function (app, client)
                 gifts.push({ giftId:results[i]._id, giftName:results[i].giftName, giftPrice:results[i].giftPrice, giftGot:results[i].giftGot });
             }
             
-            var ret = { gifts:gifts, error:'' };
+            var ret = { gifts:gifts, error:'', success:true };
             res.status(200).json(ret);
         }
         catch(e)
@@ -374,7 +423,7 @@ exports.setApp = function (app, client)
         
         try
         {
-            const result = await db.collection('Gifts').insertOne(newGift);
+            const result = db.collection('Gifts').insertOne(newGift);
             var ret = { error:'',success:true };
             
             res.status(200).json(ret);
@@ -389,7 +438,7 @@ exports.setApp = function (app, client)
     app.post('/api/getGift', async (req, res, next) =>
     {
         // incoming: giftId
-        // outgoing: giftName, giftPrice, giftLocation, giftComment, giftGot
+        // outgoing: giftName, giftPrice, giftLocation, giftComment, giftGot, error, success
 
         const { giftId } = req.body;
         var gid = require('mongodb').ObjectID(giftId);
@@ -408,12 +457,13 @@ exports.setApp = function (app, client)
                 ret.giftComment = results[0].giftComment;
                 ret.giftGot = results[0].giftGot;
                 ret.error = '';
+                ret.success = true;
 
                 res.status(200).json(ret);
             }   
             else
             {
-                var ret = { giftName:null, giftPrice:null, giftLocation:null, giftComment:null, giftGot:null, error:'No Gifts found' };
+                var ret = { error:'No Gifts found', success:false };
                 res.status(400).json(ret);               
             }            
         }
@@ -435,7 +485,7 @@ exports.setApp = function (app, client)
         const db = client.db();
         try
         {
-            const results = await db.collection('Gifts').update({ _id:gid }, { $set: { giftName:giftName, giftPrice:giftPrice, giftLocation:giftLocation, giftComment:giftComment } });
+            const results = db.collection('Gifts').update({ _id:gid }, { $set: { giftName:giftName, giftPrice:giftPrice, giftLocation:giftLocation, giftComment:giftComment } });
             var ret = { error:'',success:true };
  
             res.status(200).json(ret);
@@ -458,7 +508,7 @@ exports.setApp = function (app, client)
         const db = client.db();
         try
         {
-            const results = await db.collection('Gifts').deleteOne({ _id:gid });
+            const results = db.collection('Gifts').deleteOne({ _id:gid });
             var ret = { error:'',success:true };
  
             res.status(200).json(ret);
@@ -481,7 +531,10 @@ exports.setApp = function (app, client)
         const db = client.db();
         try
         {
-            const results = await db.collection('Gifts').update({ _id:gid }, { $set: { giftGot: true }});
+            const gotStatus = await db.collection('Gifts').find({ _id:gid }, { giftGot: 1 }).toArray();
+            var gotUpdate = !gotStatus[0].giftGot;
+            
+            const results = db.collection('Gifts').update({ _id:gid }, { $set: { giftGot: gotUpdate }});
             var ret = { error:'',success:true };
  
             res.status(200).json(ret);
