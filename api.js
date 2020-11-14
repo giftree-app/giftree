@@ -18,12 +18,29 @@ exports.setApp = function (app, client)
         else
         {
             var error = '';
-
+            var validateCode = Math.random().toString(36).substring(2, 12).toUpperCase();
             const { firstName, lastName, login, password, email, address1, address2 } = req.body;
-            const newUser = { firstName:firstName, lastName:lastName, login:login, password:password, email:email, address1:address1, address2:address2, validated:false };
+
+            const newUser = { firstName:firstName, lastName:lastName, login:login, password:password, email:email, 
+                              address1:address1, address2:address2, validated:false, validateCode:validateCode };
             
             try
-            {
+            {               
+                const sgMail = require('@sendgrid/mail');
+                sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+                
+                var emailMsg = 'To start using your giftree wishlist account, please verify your email address by clicking the link below ';
+                emailMsg += 'or enter the code below into the validation page in the app: </br></br> Validation code: ' + validateCode;
+                emailMsg += '</br></br> <a href = "https://website.com/validate?v=' + validateCode + '"> https://website.com/validate?v=' + validateCode + '</a>';
+                
+                const msg = {
+                to: email, // Recipient
+                from: 'giftreewishlist@gmail.com', // Sender
+                subject: 'Please verify your Giftree wishlist account',
+                html: emailMsg,
+                };
+                sgMail.send(msg);             
+             
                 const result = db.collection('Users').insertOne(newUser); 
                 var ret = { error:'',success:true };
                 
@@ -34,6 +51,43 @@ exports.setApp = function (app, client)
                 var error = e.toString();
                 res.status(500).json({ success:false,error:error });  
             }
+        }
+    });
+
+    app.post('/api/validate', async (req, res, next) => 
+    {
+        // incoming: username, password, validateCode
+        // outgoing: userId, firstName, lastName, error, success
+
+        var error = '';
+
+        const { login, password, validateCode } = req.body;
+
+        const db = client.db();
+        try
+        {
+            const results = await db.collection('Users').find({ login:login, password:password, validateCode:validateCode }).toArray();
+
+            if(results.length > 0)
+            {
+                const valid = db.collection('Users').update({ login:login, password:password, validateCode:validateCode }, { $set: { validated: true } });
+                
+                var ret = {};
+                ret.userId = results[0]._id;
+                ret.firstName = results[0].firstName;
+                ret.lastName = results[0].lastName;
+                res.status(200).json(ret);
+            }
+            else
+            {
+                var ret = { error:'User not found', success:false };
+                res.status(400).json(ret);
+            }
+        }
+        catch(e)
+        {
+            var error = e.toString();
+            res.status(500).json({ success:false,error:error });  
         }
     });
 
