@@ -79,7 +79,7 @@ const Login: React.FC<LoginProps> = ({
         .then(async function () {
           await setIsLoggedIn(true);
           await setUsernameAction(username);
-          history.push("/tabs/Account", { direction: "none" });
+          history.push("/tabs/Home", { direction: "none" });
         })
         .catch(function () {
           alert("Could not login. Please try again");
