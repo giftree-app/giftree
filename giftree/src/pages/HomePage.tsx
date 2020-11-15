@@ -1,9 +1,8 @@
 import React from 'react';
 import { IonContent, IonHeader, IonButtons, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-//import { IonHeader, IonToolbar, IonContent, IonPage, IonButtons, IonMenuButton, IonButton, IonIcon, IonDatetime, IonSelectOption, IonList, IonItem, IonLabel, IonSelect, IonPopover } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
 
-const Tab1: React.FC = () => {
+const HomePage: React.FC = () => {
   return (
     <IonPage id="homepage">
       <IonHeader translucent={true}>
@@ -26,4 +25,4 @@ const Tab1: React.FC = () => {
   );
 };
 
-export default Tab1;
+export default HomePage;

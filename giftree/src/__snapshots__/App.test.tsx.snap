@@ -113,17 +113,6 @@ exports[`renders without crashing 1`] = `
               </ion-item>
             </ion-menu-toggle>
           </ion-list>
-          <ion-list>
-            <ion-list-header>
-              Tutorial
-            </ion-list-header>
-            <ion-item>
-              <ion-icon
-                slot="start"
-              />
-              Show Tutorial
-            </ion-item>
-          </ion-list>
         </ion-content>
       </ion-menu>
       <ion-router-outlet

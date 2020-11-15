@@ -2,7 +2,7 @@ import React from 'react';
 import { RouteComponentProps, withRouter, useLocation } from 'react-router';
 
 import { IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonToggle } from '@ionic/react';
-import { calendarOutline, hammer, moonOutline, help, informationCircleOutline, logIn, logOut, mapOutline, peopleOutline, person, personAdd } from 'ionicons/icons';
+import { calendarOutline, hammer, moonOutline, help, informationCircleOutline, logIn, logOut, listOutline, peopleOutline, person, personAdd } from 'ionicons/icons';
 
 import { connect } from '../data/connect';
 import { setDarkMode } from '../data/user/user.actions';
@@ -13,7 +13,7 @@ const routes = {
   appPages: [
     { title: 'Home', path: '/tabs/home', icon: calendarOutline },
     { title: 'Groups', path: '/tabs/speakers', icon: peopleOutline },
-    { title: 'Wishlist', path: '/tabs/wishlist', icon: mapOutline },
+    { title: 'Wishlist', path: '/tabs/wishlist', icon: listOutline },
     { title: 'About', path: '/tabs/about', icon: informationCircleOutline }
   ],
   loggedInPages: [
@@ -76,15 +76,6 @@ const Menu: React.FC<MenuProps> = ({ darkMode, history, isAuthenticated, setDark
             <IonIcon slot="start" icon={moonOutline}></IonIcon>
             <IonLabel>Dark Mode</IonLabel>
             <IonToggle checked={darkMode} onClick={() => setDarkMode(!darkMode)} />
-          </IonItem>
-        </IonList>
-        <IonList lines="none">
-          <IonListHeader>Tutorial</IonListHeader>
-          <IonItem button onClick={() => {
-            history.push('/tutorial');
-          }}>
-            <IonIcon slot="start" icon={hammer} />
-            Show Tutorial
           </IonItem>
         </IonList>
       </IonContent>
