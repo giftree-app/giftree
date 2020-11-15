@@ -89,7 +89,7 @@ const IonicApp: React.FC<IonicAppProps> = ({
                 */}
             <Route path="/tabs" render={() => <MainTabs />} />
             <Route path="/account" component={Account} />
-            <Route path="/login" component={Login} />
+            <Route path="/" component={Login} exact />
             <Route path="/signup" component={Signup} />
             <Route path="/support" component={Support} />
             <Route
@@ -103,6 +103,7 @@ const IonicApp: React.FC<IonicAppProps> = ({
                 );
               }}
             />
+            <Route path="/login" component={Login} />
           </IonRouterOutlet>
         </IonSplitPane>
       </IonReactRouter>

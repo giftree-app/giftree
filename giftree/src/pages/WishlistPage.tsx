@@ -1,36 +1,6 @@
 import React from 'react';
 import { IonButtons, IonMenuButton, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonInput, IonToggle, IonRadio, IonCheckbox, IonItemSliding, IonItemOption, IonItemOptions, IonContent } from '@ionic/react';
 
-import ExploreContainer from '../components/ExploreContainer';
-
-
-/*
-const Tab1: React.FC = () => {
-  return (
-    <IonPage id="wishlist">
-      <IonHeader translucent={true}>
-        <IonToolbar>
-          <IonButtons slot="start">
-            <IonMenuButton />
-          </IonButtons>
-          <IonTitle>Wishlist</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Placeholder wishlist page</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <ExploreContainer name="Wishlist page" />
-      </IonContent>
-    </IonPage>
-  );
-};
-
-export default WishlistPage;
-*/
-
 export const WishlistPage: React.FC = () => (
   <IonPage id="wishlist">
       <IonHeader translucent={true}>
