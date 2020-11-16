@@ -5,6 +5,10 @@ import { IonReactRouter } from '@ionic/react-router';
 
 import Menu from './components/Menu';
 
+// Fonts
+// import 'src/fonts';
+
+
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
