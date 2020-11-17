@@ -2,6 +2,7 @@
   .speaker-card {
     display: flex;
     flex-direction: column;
+    border-radius: 100px;
   }
 
   /* Due to the fact the cards are inside of columns the margins don't overlap
@@ -19,11 +20,13 @@
     font-size: 18px;
     font-weight: 500;
     letter-spacing: 0.02em;
+    text-align: center;
   }
 
   .speaker-card .speaker-item p {
     font-size: 13px;
     letter-spacing: 0.02em;
+    text-align: center;
   }
 
   .speaker-card ion-card-header {
