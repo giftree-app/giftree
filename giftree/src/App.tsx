@@ -40,8 +40,6 @@ import Account from "./pages/Account";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Support from "./pages/Support";
-import Tutorial from "./pages/Tutorial";
-import HomeOrTutorial from "./components/HomeOrTutorial";
 import { Schedule } from "./models/Schedule";
 import RedirectToLogin from "./components/RedirectToLogin";
 
@@ -95,10 +93,9 @@ const IonicApp: React.FC<IonicAppProps> = ({
                 */}
             <Route path="/tabs" render={() => <MainTabs />} />
             <Route path="/account" component={Account} />
-            <Route path="/login" component={Login} />
+            <Route path="/" component={Login} exact />
             <Route path="/signup" component={Signup} />
             <Route path="/support" component={Support} />
-            <Route path="/tutorial" component={Tutorial} />
             <Route
               path="/logout"
               render={() => {
@@ -110,7 +107,7 @@ const IonicApp: React.FC<IonicAppProps> = ({
                 );
               }}
             />
-            <Route path="/" component={HomeOrTutorial} exact />
+            <Route path="/login" component={Login} />
           </IonRouterOutlet>
         </IonSplitPane>
       </IonReactRouter>

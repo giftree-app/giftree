@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from 'axios';
 import {
   IonHeader,
   IonToolbar,
@@ -35,12 +36,28 @@ const Login: React.FC<LoginProps> = ({
   history,
   setUsername: setUsernameAction,
 }) => {
+  const BASE_URL = 'https://COP4331-1.herokuapp.com/';
+  const app_name = 'cop4331-1';
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
 
+  function buildPath(route: any)
+  {
+    // look at using process.env.NODE_ENV
+    if (true)//process.env.NODE_ENV === 'production')
+    {
+      return 'https://' + app_name + '.herokuapp.com/' + route;
+    }
+    else
+    {
+      return 'http://localhost:8100/' + route;
+    }
+  }
+  
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormSubmitted(true);
@@ -54,7 +71,20 @@ const Login: React.FC<LoginProps> = ({
     if (username && password) {
       await setIsLoggedIn(true);
       await setUsernameAction(username);
-      history.push("/tabs/schedule", { direction: "none" });
+      axios
+        .post(buildPath('api/login'), {
+          login: username,
+          password: password,
+        })
+        .then(async function () {
+          await setIsLoggedIn(true);
+          await setUsernameAction(username);
+          history.push("/tabs/Home", { direction: "none" });
+        })
+        .catch(function () {
+          alert("Could not login. Please try again");
+        });
+      //history.push("/tabs/schedule", { direction: "none" });
     }
   };
 
