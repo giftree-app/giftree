@@ -10,13 +10,27 @@ exports.setApp = function (app, client)
         const db = client.db();
         const results = await db.collection('Users').find({ login:login }).toArray();
         
-        if(results.length > 0)
+        if(results.length > 0 && results[0].validated)
         {
             var ret = { error:'Error: Login is already in use', success:false };
             res.status(400).json(ret);
         }
         else
         {
+            if(results.length > 0 && !(results[0].validated))
+            {
+                try
+                {
+                    var uid = require('mongodb').ObjectID(results[0]._id);
+                    db.collection('Users').deleteOne({ _id:uid });
+                }
+                catch(e)
+                {
+                    var error = e.toString();
+                    res.status(500).json({ success:false,error:error });  
+                }
+            }
+            
             var error = '';
             var validateCode = Math.random().toString(36).substring(2, 12).toUpperCase();
             const { firstName, lastName, login, password, email, address1, address2 } = req.body;
@@ -181,7 +195,7 @@ exports.setApp = function (app, client)
         const db = client.db();
         try
         {
-            const results = await db.collection('Groups').find({ members:userId }, { groupName: 1, groupCode: 1 }).toArray();
+            const results = await db.collection('Groups').find({ members:userId }).project({ groupName: 1, groupCode: 1 }).toArray();
 
             var groups = [];
 
@@ -202,16 +216,41 @@ exports.setApp = function (app, client)
 
     app.post('/api/getGroupInfo', async (req, res, next) =>
     {
-        // incoming: groupId
-        // outgoing: event, eventName, eventPriceMin, eventPriceMax, eventDate, secretShopper_buyers, secretShopper_receivers, members[firstName, lastName, userId], error, success
+        // incoming: groupId, userId
+        // outgoing: event, eventName, eventPriceMin, eventPriceMax, eventDate, secretShopper_receiver, members[firstName, lastName, userId], error, success
 
-        const { groupId } = req.body;
+        const { groupId, userId } = req.body;
         var gid = require('mongodb').ObjectID(groupId);
 
         const db = client.db();
         try
         {
             const results = await db.collection('Groups').find({ _id:gid}).toArray();
+
+            var index = -1;
+            for(i=0; i <results[0].members.length; i++)
+            {
+                if (results[0].members[i] == userId)
+                    index = i;
+            }
+
+            if (index == -1)
+            {
+                var ret = { error:'User not in group', success:false };
+                res.status(400).json(ret);                 
+            }
+
+            var uid = require('mongodb').ObjectID(results[0].secretShopper_receivers[index]);
+            const receiver = await db.collection('Users').find({ _id:uid }).project({ firstName: 1, lastName: 1 }).toArray();
+
+            var memberList = [];
+
+            for (j=0; j < results[0].members.length; j++)
+            {
+                var uid = require('mongodb').ObjectID(results[0].members[j]);
+                var member = await db.collection('Users').find({ _id:uid }).project({ firstName: 1, lastName: 1 }).toArray();
+                memberList.push({ userId:member[0]._id, firstName:member[0].firstName, lastName:member[0].lastName });
+            } 
 
             if (results.length > 0)
             {
@@ -221,9 +260,8 @@ exports.setApp = function (app, client)
                 ret.eventPriceMin = results[0].eventPriceMin;
                 ret.eventPriceMax = results[0].eventPriceMax;
                 ret.eventDate = results[0].eventDate;
-                ret.secretShopper_buyers = results[0].secretShopper_buyers;
-                ret.secretShopper_receivers = results[0].secretShopper_receivers;
-                ret.members = results[0].members;
+                ret.secretShopper_receiver = { userId:receiver[0]._id, firstName:receiver[0].firstName, lastName:receiver[0].lastName };
+                ret.members = memberList;
                 ret.error = '';
                 ret.success = true;
 
@@ -400,7 +438,8 @@ exports.setApp = function (app, client)
                 }    
             }
 
-            const results = db.collection('Groups').update({ _id:gid }, { $set: { event:true, eventName:eventName, eventPriceMin:eventPriceMin, eventPriceMax:eventPriceMax, eventDate:eventDate, secretShopper_buyers:buyers, secretShopper_receivers:receivers } });
+            const results = db.collection('Groups').update({ _id:gid }, { $set: { event:true, eventName:eventName, eventPriceMin:eventPriceMin, 
+                                                                                  eventPriceMax:eventPriceMax, eventDate:eventDate, secretShopper_receivers:receivers } });
             var ret = { error:'',success:true };
             
             res.status(200).json(ret);
