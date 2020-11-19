@@ -28,10 +28,10 @@ We are a small team of 7 who are doing this small project for our Software Devel
 
 ## Github Links
 
-https://github.com/cdiazucf
-https://github.com/gdijkhoffz
-https://github.com/Naderx77
-https://github.com/aileenpongnon
-https://github.com/DominiekMeers
-https://github.com/Dolamide
-https://github.com/ChristyWCpE
+- https://github.com/cdiazucf
+- https://github.com/gdijkhoffz
+- https://github.com/Naderx77
+- https://github.com/aileenpongnon
+- https://github.com/DominiekMeers
+- https://github.com/Dolamide
+- https://github.com/ChristyWCpE
