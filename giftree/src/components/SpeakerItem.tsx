@@ -36,7 +36,7 @@ const SpeakerItem: React.FC<SpeakerItemProps> = ({ speaker, sessions }) => {
             ))}
             <IonItem detail={false} routerLink={`/tabs/speakers/${speaker.id}`}>
               <IonLabel>
-                <h3>About {speaker.name}</h3>
+                <h3>{speaker.name}</h3>
               </IonLabel>
             </IonItem>
           </IonList>

@@ -71,17 +71,20 @@ const Login: React.FC<LoginProps> = ({
     if (username && password) {
       await setIsLoggedIn(true);
       await setUsernameAction(username);
-      axios
-        .post(buildPath('api/login'), {
+
+      axios.post(buildPath('api/login'),
+        {
           login: username,
           password: password,
         })
-        .then(async function () {
+        .then(async function ()
+        {
           await setIsLoggedIn(true);
           await setUsernameAction(username);
           history.push("/tabs/Home", { direction: "none" });
         })
-        .catch(function () {
+        .catch(function ()
+        {
           alert("Could not login. Please try again");
         });
       //history.push("/tabs/schedule", { direction: "none" });

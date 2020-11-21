@@ -1,77 +1,129 @@
 import React from 'react';
-import { IonButtons, IonMenuButton, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonInput, IonToggle, IonRadio, IonCheckbox, IonItemSliding, IonItemOption, IonItemOptions, IonContent } from '@ionic/react';
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
-export const WishlistPage: React.FC = () => (
-  <IonPage id="wishlist">
-      <IonHeader translucent={true}>
-        <IonToolbar>
-          <IonButtons slot="start">
-            <IonMenuButton />
-          </IonButtons>
-          <IonTitle>Wishlist</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-    <IonContent fullscreen>
-      {/*-- List of Text Items --*/}
-      <IonList>
-        <IonItem>
-          <IonLabel>Pokémon Yellow</IonLabel>
-        </IonItem>
-        <IonItem>
-          <IonLabel>Mega Man X</IonLabel>
-        </IonItem>
-        <IonItem>
-          <IonLabel>The Legend of Zelda</IonLabel>
-        </IonItem>
-        <IonItem>
-          <IonLabel>Pac-Man</IonLabel>
-        </IonItem>
-        <IonItem>
-          <IonLabel>Super Mario World</IonLabel>
-        </IonItem>
-      </IonList>
+import AddGift from "../components/addgift.component";
+import UpdateGift from "../components/updategift.component";
+import Gifts from "../components/gifts.component";
 
-      {/*-- List of Input Items --*/}
-      <IonList>
-        <IonItem>
-          <IonLabel>Input</IonLabel>
-          <IonInput></IonInput>
-        </IonItem>
-        <IonItem>
-          <IonLabel>Toggle</IonLabel>
-          <IonToggle slot="end"></IonToggle>
-        </IonItem>
-        <IonItem>
-          <IonLabel>Radio</IonLabel>
-          <IonRadio slot="end"></IonRadio>
-        </IonItem>
-        <IonItem>
-          <IonLabel>Checkbox</IonLabel>
-          <IonCheckbox slot="start" />
-        </IonItem>
-      </IonList>
 
-      {/*-- List of Sliding Items --*/}
-      <IonList>
-        <IonItemSliding>
-          <IonItem>
-            <IonLabel>Item</IonLabel>
-          </IonItem>
-          <IonItemOptions side="end">
-            <IonItemOption onClick={() => {}}>Unread</IonItemOption>
-          </IonItemOptions>
-        </IonItemSliding>
+function WishlistPage() {
+  return (<Router>
+    <div className="Wishlist">
+      <header>
+        <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
+          <a className="navbar-brand">Wishlist</a>
 
-        <IonItemSliding>
-          <IonItem>
-            <IonLabel>Item</IonLabel>
-          </IonItem>
-          <IonItemOptions side="end">
-            <IonItemOption onClick={() => {}}>Unread</IonItemOption>
-          </IonItemOptions>
-        </IonItemSliding>
-      </IonList>
-    </IonContent>
-  </IonPage>
-);
+          <div className="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul className="navbar-nav ml-auto">
+              <li className="nav-item active">
+                <Link className="nav-link" to={"/addgift"}>Add Gift</Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to={"/updategift"}>Update Gift</Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to={"/gifts"}>Gifts</Link>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </header>
+
+      <div className="container">
+        <div className="row">
+          <div className="col-md-12">
+            <Switch>
+              <Route exact path='/' component={AddGift} />
+              <Route path="/addgift" component={AddGift} />
+              <Route path="/gifts" component={Gifts} />
+              <Route path="/updategift" component={UpdateGift} />
+            </Switch>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Router>
+  );
+}
+
 export default WishlistPage;
+//*/
+//////////////////////////////////////////////////////////////////////////////////////////
+  /*
+  gift = {
+    "giftGot": "",
+    "giftName": "",
+    "giftPrice": ""
+  };
+*/
+/*
+const sendGetRequest = () => {
+  return axios({
+    url: ENDPOINT_URL,
+    method: 'get'
+  }).then(response => {
+    console.log(response);
+    return response.data;
+  })
+};
+
+const sendPostRequest = async () => {
+  try {
+      const resp = await axios.post(ENDPOINT_URL, { userId: UserId }).then((response) => 
+      {
+        console.log(response);
+        //gift = response.data;
+      }, (error) => 
+      {
+        console.log(error);
+      });        
+  } catch (err) {
+      // Handle Error Here
+      console.error(err);
+  }
+};
+
+  export default class WishlistPage extends React.Component {
+    state = { gifts: [] as string[]
+    }
+
+    componentDidMount()
+    {
+      axios.post(ENDPOINT_URL).then(res => {
+        const gifts = res.data;
+        this.setState({gifts});
+      })
+    }
+    render() {
+      return (
+        <ul>
+          {this.state.gifts.map(gift => <li> {gift}</li>)}
+        </ul>
+      )
+    }
+  }
+  */
+/*
+const WishlistPage: React.FunctionComponent = () => {
+
+  const [items, setItems] = React.useState([]);
+
+  React.useEffect(() => {
+    sendPostRequest();
+  }, []);
+  
+  return (
+    <IonHeader>
+      <IonToolbar color="primary">
+        <IonButtons slot="start">
+          <IonMenuButton />
+        </IonButtons>
+        <IonTitle>Wishlist</IonTitle>
+      </IonToolbar>
+    </IonHeader>
+
+  );
+};
+
+export default WishlistPage;
+*/
