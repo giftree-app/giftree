@@ -13,11 +13,12 @@
   }
 
   .speaker-card .speaker-item {
-    --min-height: 85px;
+    --min-height: 10rem;
+    // --min-weight: 30rem;
   }
 
   .speaker-card .speaker-item h2 {
-    font-size: 18px;
+    font-size: 25px;
     font-weight: 500;
     letter-spacing: 0.02em;
     text-align: center;

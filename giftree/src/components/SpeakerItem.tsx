@@ -18,7 +18,7 @@ const SpeakerItem: React.FC<SpeakerItemProps> = ({ speaker, sessions }) => {
 
             <IonLabel>
               <h2>{speaker.name}</h2>
-              <p>{speaker.title}</p>
+              {/* <p>{speaker.title}</p> */}
             </IonLabel>
           </IonItem>
         </IonCardHeader>

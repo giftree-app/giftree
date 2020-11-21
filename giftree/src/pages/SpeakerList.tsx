@@ -27,7 +27,7 @@ const SpeakerList: React.FC<SpeakerListProps> = ({ speakers, speakerSessions }) 
           <IonButtons slot="start">
             <IonMenuButton />
           </IonButtons>
-          <IonTitle>Groups</IonTitle>
+          <IonTitle>Your <strong>Groups</strong></IonTitle>
         </IonToolbar>
       </IonHeader>
 
