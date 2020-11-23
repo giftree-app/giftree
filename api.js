@@ -2,56 +2,48 @@ exports.setApp = function (app, client)
 {
     app.post('/api/register', async (req, res, next) => 
     {
-        // incoming: firstName, lastName, username, password, email, address1, address2
+        // incoming: firstName, lastName, login, password, email, address1, address2
         // outgoing: error, success
 
         const { login } = req.body;
 
         const db = client.db();
-        const results = await db.collection('Users').find({ login:login }).toArray();
-        
-        if(results.length > 0 && results[0].validated)
+
+        try
         {
-            var ret = { error:'Error: Login is already in use', success:false };
-            res.status(400).json(ret);
-        }
-        else
-        {
-            if(results.length > 0 && !(results[0].validated))
+            const results = await db.collection('Users').find({ login:login }).toArray();
+            
+            if(results.length > 0 && results[0].validated)
             {
-                try
+                var ret = { error:'Error: Login is already in use', success:false };
+                res.status(400).json(ret);
+            }
+            else
+            {
+                if(results.length > 0 && !(results[0].validated))
                 {
                     var uid = require('mongodb').ObjectID(results[0]._id);
                     db.collection('Users').deleteOne({ _id:uid });
                 }
-                catch(e)
-                {
-                    var error = e.toString();
-                    res.status(500).json({ success:false,error:error });  
-                }
-            }
+                
+                var error = '';
+                var validateCode = Math.random().toString(36).substring(2, 12).toUpperCase();
+                const { firstName, lastName, login, password, email, address1, address2 } = req.body;
+                const newUser = { firstName:firstName, lastName:lastName, login:login, password:password, email:email, 
+                                address1:address1, address2:address2, validated:false, validExpire:null, validateCode:validateCode };
             
-            var error = '';
-            var validateCode = Math.random().toString(36).substring(2, 12).toUpperCase();
-            const { firstName, lastName, login, password, email, address1, address2 } = req.body;
-
-            const newUser = { firstName:firstName, lastName:lastName, login:login, password:password, email:email, 
-                              address1:address1, address2:address2, validated:false, validateCode:validateCode };
-            
-            try
-            {               
                 const sgMail = require('@sendgrid/mail');
                 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
                 
                 var emailMsg = 'To start using your giftree wishlist account, please verify your email address by clicking the link below ';
-                emailMsg += 'or enter the code below into the validation page in the app: </br></br> Validation code: ' + validateCode;
-                emailMsg += '</br></br> <a href = "https://website.com/validate?v=' + validateCode + '"> https://website.com/validate?v=' + validateCode + '</a>';
+                emailMsg += 'or enter the code below into the validation page in the app: <br/><br/> Validation code: ' + validateCode;
+                emailMsg += '<br/><br/> <a href = "https://website.com/validate?v=' + validateCode + '"> https://website.com/validate?v=' + validateCode + '</a>';
                 
                 const msg = {
                 to: email, // Recipient
                 from: 'giftreewishlist@gmail.com', // Sender
                 subject: 'Please verify your Giftree wishlist account',
-                html: emailMsg,
+                html: emailMsg
                 };
                 sgMail.send(msg);             
              
@@ -60,17 +52,128 @@ exports.setApp = function (app, client)
                 
                 res.status(200).json(ret);		
             }
-            catch(e)
+        }
+        catch(e)
+        {
+            var error = e.toString();
+            res.status(500).json({ success:false,error:error });  
+        }
+    });
+
+    app.post('/api/getUser', async (req, res, next) =>
+    {
+        // incoming: userId
+        // outgoing: firstName, lastName, login, email, address1 , address2, error, success
+
+        var error = '';
+        const { userId } = req.body;
+        const db = client.db();
+
+        try
+        {
+            var uid = require('mongodb').ObjectID(userId);
+            const results = await db.collection('Users').find({ _id:uid }).toArray();
+
+            if (results.length < 1)
             {
-                var error = e.toString();
-                res.status(500).json({ success:false,error:error });  
+                var ret = { error:'User not found', success:false };
+                res.status(400).json(ret);                 
             }
+            else
+            {
+                var user = results[0];
+                var ret = {};
+
+                ret.firstName = user.firstName;
+                ret.lastName = user.lastName;
+                ret.login = user.login;
+                ret.email = user.email;
+                ret.address1 = user.address1;
+                ret.address2 = user.address2;
+                ret.error = '';
+                ret.success = true;
+                res.status(200).json(ret);
+            }
+        }
+        catch(e)
+        {
+            var error = e.toString();
+            res.status(500).json({ success:false,error:error });  
+        }
+    });
+
+    app.post('/api/updateUser', async (req, res, next) =>
+    {
+        // incoming: userId, firstName, lastName, login, password, email, address1 , address2
+        // outgoing: error, success
+        
+        var error = '';
+        const { userId, firstName, lastName, login, password, email, address1, address2 } = req.body;
+        const db = client.db();
+
+        try
+        {
+            var uid = require('mongodb').ObjectID(userId);
+            if(password == undefined || password == '')
+            {
+                db.collection('Users').update({ _id:uid }, { $set: { firstName:firstName, lastName:lastName, login:login, email:email, 
+                    address1:address1, address2:address2 } });
+            }
+            else
+            {
+                db.collection('Users').update({ _id:uid }, { $set: { firstName:firstName, lastName:lastName, login:login, password:password, email:email, 
+                                                                address1:address1, address2:address2 } });
+            }
+            var ret = { error:'',success:true };
+ 
+            res.status(200).json(ret);
+        }
+        catch(e)
+        {
+            var error = e.toString();
+            res.status(500).json({ success:false,error:error });  
+        }
+    });
+
+    app.post('/api/deleteUser', async (req, res, next) =>
+    {
+        // incoming: userId
+        // outoing: error, success
+
+        var error = '';
+        const { userId } = req.body;
+        const db = client.db();
+        try
+        {
+            var uid = require('mongodb').ObjectID(userId);
+
+            const results = await db.collection('Groups').find({ members:userId }).toArray();
+
+            if(results.length > 0)
+            {
+                var ret = { error:'User is in an active group', success:false };
+                res.status(400).json(ret);
+            }
+            else
+            {
+                const deleteGifts = db.collection('Gifts').deleteMany({ userId:userId });
+                const deleteUser = db.collection('Users').deleteOne({ _id:uid });
+        
+                var ret = { error:'',success:true };
+                    
+                res.status(200).json(ret);		
+            }
+        }
+        catch
+        {
+            var error = e.toString();
+            res.status(500).json({ success:false,error:error });  
         }
     });
 
     app.post('/api/validate', async (req, res, next) => 
     {
-        // incoming: username, password, validateCode
+        // incoming: login, password, validateCode
         // outgoing: userId, firstName, lastName, error, success
 
         var error = '';
@@ -80,16 +183,19 @@ exports.setApp = function (app, client)
         const db = client.db();
         try
         {
-            const results = await db.collection('Users').find({ login:login, password:password, validateCode:validateCode }).toArray();
+            const results = await db.collection('Users').find({ login:login, password:password, validated:false, validateCode:validateCode }).toArray();
 
             if(results.length > 0)
             {
                 const valid = db.collection('Users').update({ login:login, password:password, validateCode:validateCode }, { $set: { validated: true } });
-                
+                var user = results[0];     
                 var ret = {};
-                ret.userId = results[0]._id;
-                ret.firstName = results[0].firstName;
-                ret.lastName = results[0].lastName;
+
+                ret.userId = user._id;
+                ret.firstName = user.firstName;
+                ret.lastName = user.lastName;
+                ret.error = '';
+                ret.success = true;
                 res.status(200).json(ret);
             }
             else
@@ -107,7 +213,7 @@ exports.setApp = function (app, client)
 
     app.post('/api/login', async (req, res, next) => 
     {
-        // incoming: username, password
+        // incoming: login, password
         // outgoing: userId, firstName, lastName, error, success
 
         var error = '';
@@ -121,12 +227,15 @@ exports.setApp = function (app, client)
 
             if(results.length > 0)
             {
-                if(results[0].validated)
+                var user = results[0];
+                if(user.validated)
                 {
                     var ret = {};
-                    ret.userId = results[0]._id;
-                    ret.firstName = results[0].firstName;
-                    ret.lastName = results[0].lastName;
+                    ret.userId = user._id;
+                    ret.firstName = user.firstName;
+                    ret.lastName = user.lastName;
+                    ret.error = '';
+                    ret.success = true;
                     res.status(200).json(ret);
                 }
                 else
@@ -139,6 +248,104 @@ exports.setApp = function (app, client)
             {
                 var ret = { error:'User not found', success:false };
                 res.status(400).json(ret);
+            }
+        }
+        catch(e)
+        {
+            var error = e.toString();
+            res.status(500).json({ success:false,error:error });  
+        }
+    });
+
+    app.post('/api/forgotPasswordRequest', async (req, res, next) =>
+    {
+        // incoming: login
+        // outgoing: error, success
+
+        var error = '';
+        const { login } = req.body;
+        const db = client.db();        
+        
+        try
+        {
+            const results = await db.collection('Users').find({ login:login }).toArray();
+            
+            if(results.length > 0)
+            {
+                var email = results[0].email;
+
+                var uid = require('mongodb').ObjectID(results[0]._id);
+                var validateCode = Math.random().toString(36).substring(2, 12).toUpperCase();
+                var expire = new Date();
+                expire.setHours(expire.getHours()+1);
+
+                const sgMail = require('@sendgrid/mail');
+                sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+                
+                var emailMsg = '<strong>You are receiving this email because you requested a password reset. </strong> ';
+                emailMsg += 'If you did not request this, please disregard this email. <br/><br/>';
+                emailMsg += 'You can reset your password by entering the validation code in the app, or by clicking the link below<br/><br/>';
+                emailMsg =+ 'Validation code: ' + validateCode + '<br/><br/>';
+                emailMsg += '<a href = "https://website.com/validate?v=' + validateCode + '"> https://website.com/validate?v=' + validateCode + '</a>';
+                
+                const msg = {
+                to: email, // Recipient
+                from: 'giftreewishlist@gmail.com', // Sender
+                subject: 'Giftree wishlist Password Reset',
+                html: emailMsg
+                };
+                sgMail.send(msg);             
+            
+                const result = db.collection('Users').update({ _id:uid }, { $set: { validExpire:expire, validateCode:validateCode } }); 
+            }
+                        
+            var ret = { error:'',success:true };            
+            res.status(200).json(ret);
+        }
+        catch(e)
+        {
+            var error = e.toString();
+            res.status(500).json({ success:false,error:error });  
+        }
+    });
+
+    app.post('/api/forgotPasswordReset', async (req, res, next) =>
+    {
+        // incoming: login, password, validateCode
+        // outgoing: error, success
+
+        var error = '';
+        const { login, password, validateCode } = req.body;
+        const db = client.db();
+
+        try
+        {
+            const results = await db.collection('Users').find({ login:login, validateCode:validateCode }).toArray();
+            
+            if(results.length < 1)
+            {
+                var ret = { error:'User not found', success:false };
+                res.status(400).json(ret);
+            }
+            else
+            {
+                var user = results[0];
+                var today = new Date();
+                var expire = new Date(user.validExpire);
+
+                if(today > expire)
+                {
+                    var ret = { error:'Password reset validation code expired', success:false };
+                    res.status(400).json(ret);
+                }
+                else
+                {
+                    var uid = require('mongodb').ObjectID(user._id);
+                    const update = db.collection("Users").update({ _id:uid }, { $set: { password:password } });
+
+                    var ret = { error:'',success:true };            
+                    res.status(200).json(ret);
+                }
             }
         }
         catch(e)
@@ -227,51 +434,57 @@ exports.setApp = function (app, client)
         {
             const results = await db.collection('Groups').find({ _id:gid}).toArray();
 
-            var index = -1;
-            for(i=0; i <results[0].members.length; i++)
-            {
-                if (results[0].members[i] == userId)
-                    index = i;
-            }
-
-            if (index == -1)
-            {
-                var ret = { error:'User not in group', success:false };
-                res.status(400).json(ret);                 
-            }
-
-            var uid = require('mongodb').ObjectID(results[0].secretShopper_receivers[index]);
-            const receiver = await db.collection('Users').find({ _id:uid }).project({ firstName: 1, lastName: 1 }).toArray();
-
-            var memberList = [];
-
-            for (j=0; j < results[0].members.length; j++)
-            {
-                var uid = require('mongodb').ObjectID(results[0].members[j]);
-                var member = await db.collection('Users').find({ _id:uid }).project({ firstName: 1, lastName: 1 }).toArray();
-                memberList.push({ userId:member[0]._id, firstName:member[0].firstName, lastName:member[0].lastName });
-            } 
-
-            if (results.length > 0)
-            {
-                var ret = {};
-                ret.event = results[0].event;
-                ret.eventName = results[0].eventName;
-                ret.eventPriceMin = results[0].eventPriceMin;
-                ret.eventPriceMax = results[0].eventPriceMax;
-                ret.eventDate = results[0].eventDate;
-                ret.secretShopper_receiver = { userId:receiver[0]._id, firstName:receiver[0].firstName, lastName:receiver[0].lastName };
-                ret.members = memberList;
-                ret.error = '';
-                ret.success = true;
-
-                res.status(200).json(ret);
-            }   
-            else
+            if (results.length < 1)
             {
                 var ret = { error:'Group not found', success:false };
-                res.status(400).json(ret);           
-            } 
+                res.status(400).json(ret);                 
+            }
+            else
+            {
+                var group = results[0];
+                var members = results[0].members;
+                var len = members.length;
+
+                var index = -1;
+                for(i=0; i < len; i++)
+                {
+                    if (members[i] == userId)
+                        index = i;
+                }
+
+                if (index == -1)
+                {
+                    var ret = { error:'User not in group', success:false };
+                    res.status(400).json(ret);                 
+                }
+                else
+                {
+                    var uid = require('mongodb').ObjectID(results[0].secretShopper_receivers[index]);
+                    const receiver = await db.collection('Users').find({ _id:uid }).project({ firstName: 1, lastName: 1 }).toArray();
+
+                    var memberList = [];
+
+                    for (j=0; j < len; j++)
+                    {
+                        var uid = require('mongodb').ObjectID(members[j]);
+                        var member = await db.collection('Users').find({ _id:uid }).project({ firstName: 1, lastName: 1 }).toArray();
+                        memberList.push({ userId:member[0]._id, firstName:member[0].firstName, lastName:member[0].lastName });
+                    } 
+
+                    var ret = {};
+                    ret.event = group.event;
+                    ret.eventName = group.eventName;
+                    ret.eventPriceMin = group.eventPriceMin;
+                    ret.eventPriceMax = group.eventPriceMax;
+                    ret.eventDate = group.eventDate;
+                    ret.secretShopper_receiver = { userId:receiver[0]._id, firstName:receiver[0].firstName, lastName:receiver[0].lastName };
+                    ret.members = memberList;
+                    ret.error = '';
+                    ret.success = true;
+
+                    res.status(200).json(ret);
+                }
+            }
         }
         catch(e)
         {
@@ -279,21 +492,6 @@ exports.setApp = function (app, client)
             res.status(500).json({ success:false,error:error });  
         }        
     });
-
- /*   app.post('/api/addGroupMember', async (req, res, next) =>
-    {
-        // incoming: groupId, userId
-        // outgoing: error, success
-
-        const { groupId, userId} = req.body;
-        var gid = require('mongodb').ObjectID(groupId);
-
-        const db = client.db();
-        const results = await db.collection('Groups').update({ _id:gid }, { $addToSet: { members:userId } });
-
-
-    });
-    */
 
     app.post('/api/userAddGroup', async (req, res, next) =>
     {
@@ -414,35 +612,44 @@ exports.setApp = function (app, client)
 
         try
         {
-            const groups = await db.collection('Groups').find({ _id:gid }, { members: 1 }).toArray();
-            const members = groups[0].members;
-
-            for(i=0; i< members.length; i++)
+            const groups = await db.collection('Groups').find({ _id:gid }).project({ members: 1 }).toArray();
+       
+            if(groups.length < 1)
             {
-                buyers.push(members[i]);
-                receivers.push(members[i]);
+                var ret = { error:'Group not found', success:false };
+                res.status(400).json(ret);
             }
-            
-            if(members.length > 1)
+            else
             {
-                var matched = true;
-                while(matched)
+                const members = groups[0].members;
+
+                for(i=0; i< members.length; i++)
                 {
-                    receivers.sort(() => (Math.random() - 0.5));
-                    matched = false;
-                    for(j=0; j < buyers.length; j++)
+                    buyers.push(members[i]);
+                    receivers.push(members[i]);
+                }
+                
+                if(members.length > 1)
+                {
+                    var matched = true;
+                    while(matched)
                     {
-                        if(buyers[j] == receivers[j])
-                        matched = true;
-                    }
-                }    
-            }
+                        receivers.sort(() => (Math.random() - 0.5));
+                        matched = false;
+                        for(j=0; j < buyers.length; j++)
+                        {
+                            if(buyers[j] == receivers[j])
+                            matched = true;
+                        }
+                    }    
+                }
 
-            const results = db.collection('Groups').update({ _id:gid }, { $set: { event:true, eventName:eventName, eventPriceMin:eventPriceMin, 
-                                                                                  eventPriceMax:eventPriceMax, eventDate:eventDate, secretShopper_receivers:receivers } });
-            var ret = { error:'',success:true };
-            
-            res.status(200).json(ret);
+                const results = db.collection('Groups').update({ _id:gid }, { $set: { event:true, eventName:eventName, eventPriceMin:eventPriceMin, 
+                                                                                    eventPriceMax:eventPriceMax, eventDate:eventDate, secretShopper_receivers:receivers } });
+                var ret = { error:'',success:true };
+                
+                res.status(200).json(ret);
+            }
         }
         catch(e)
         {
@@ -509,9 +716,7 @@ exports.setApp = function (app, client)
         // outgoing: error, success
 
         const { userId, giftName, giftPrice, giftLocation, giftComment } = req.body;
-        
         const db = client.db();
-        
         const newGift = { userId:userId, giftName:giftName, giftPrice:giftPrice, giftLocation:giftLocation, giftComment:giftComment, giftGot:false };
         
         try
@@ -543,12 +748,13 @@ exports.setApp = function (app, client)
 
             if (results.length > 0)
             {
+                var gift = results[0];
                 var ret = {};
-                ret.giftName = results[0].giftName;
-                ret.giftPrice = results[0].giftPrice;
-                ret.giftLocation = results[0].giftLocation;
-                ret.giftComment = results[0].giftComment;
-                ret.giftGot = results[0].giftGot;
+                ret.giftName = gift.giftName;
+                ret.giftPrice = gift.giftPrice;
+                ret.giftLocation = gift.giftLocation;
+                ret.giftComment = gift.giftComment;
+                ret.giftGot = gift.giftGot;
                 ret.error = '';
                 ret.success = true;
 
@@ -625,11 +831,14 @@ exports.setApp = function (app, client)
         try
         {
             const gotStatus = await db.collection('Gifts').find({ _id:gid }, { giftGot: 1 }).toArray();
-            var gotUpdate = !gotStatus[0].giftGot;
-            
-            const results = db.collection('Gifts').update({ _id:gid }, { $set: { giftGot: gotUpdate }});
+            if(gotStatus.length > 0)
+            {
+                var gotUpdate = !gotStatus[0].giftGot;
+                
+                const results = db.collection('Gifts').update({ _id:gid }, { $set: { giftGot: gotUpdate }});
+            }
+
             var ret = { error:'',success:true };
- 
             res.status(200).json(ret);
         }
         catch(e)
