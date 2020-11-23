@@ -18,7 +18,7 @@ import {
   IonText,
 } from "@ionic/react";
 import "./Login.scss";
-import { setIsLoggedIn, setUsername } from "../data/user/user.actions";
+import { setIsLoggedIn, setUsername, setUserId } from "../data/user/user.actions";
 import { connect } from "../data/connect";
 import { RouteComponentProps } from "react-router";
 
@@ -27,6 +27,7 @@ interface OwnProps extends RouteComponentProps {}
 interface DispatchProps {
   setIsLoggedIn: typeof setIsLoggedIn;
   setUsername: typeof setUsername;
+  setUserId: typeof setUserId;
 }
 
 interface LoginProps extends OwnProps, DispatchProps {}
@@ -35,12 +36,14 @@ const Login: React.FC<LoginProps> = ({
   setIsLoggedIn,
   history,
   setUsername: setUsernameAction,
+  setUserId: setUserIdAction
 }) => {
-  const BASE_URL = 'https://COP4331-1.herokuapp.com/';
+  //const BASE_URL = 'https://COP4331-1.herokuapp.com/';
   const app_name = 'cop4331-1';
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  //const [userId, setUserId] = useState("");
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
@@ -77,15 +80,18 @@ const Login: React.FC<LoginProps> = ({
           login: username,
           password: password,
         })
-        .then(async function ()
+        .then(async res =>
         {
+          console.log(res);
           await setIsLoggedIn(true);
           await setUsernameAction(username);
+          await setUserIdAction(res.data.userId);
           history.push("/tabs/Home", { direction: "none" });
         })
-        .catch(function ()
+        .catch(function (error)
         {
           alert("Could not login. Please try again");
+          console.log(error);
         });
       //history.push("/tabs/schedule", { direction: "none" });
     }
@@ -170,6 +176,7 @@ export default connect<OwnProps, {}, DispatchProps>({
   mapDispatchToProps: {
     setIsLoggedIn,
     setUsername,
+    setUserId
   },
   component: Login,
 });

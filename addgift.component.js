@@ -79,7 +79,7 @@ export default class AddGift extends Component {
             }).catch((error) => {
                 console.log(error)
             });
-        this.setState({ userId: '', giftName: '', giftPrice: '', giftLocation: '', giftComment: '' })
+        //this.setState({ userId: '', giftName: '', giftPrice: '', giftLocation: '', giftComment: '' })
     }
 
     render() {

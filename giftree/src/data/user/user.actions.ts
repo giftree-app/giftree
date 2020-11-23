@@ -1,4 +1,4 @@
-import { getUserData, setIsLoggedInData, setUsernameData } from '../dataApi';
+import { getUserData, setIsLoggedInData, setUsernameData, setUserIdData } from '../dataApi';
 import { ActionType } from '../../util/types';
 import { UserState } from './user.state';
 
@@ -41,6 +41,14 @@ export const setUsername = (username?: string) => async (dispatch: React.Dispatc
   } as const);
 };
 
+export const setUserId = (userId?: string) => async (dispatch: React.Dispatch<any>) => {
+  await setUserIdData(userId);
+  return ({
+    type: 'set-userid',
+    userId
+  } as const);
+};
+
 export const setDarkMode = (darkMode: boolean) => ({
   type: 'set-dark-mode',
   darkMode
@@ -51,4 +59,5 @@ export type UserActions =
   | ActionType<typeof setData>
   | ActionType<typeof setIsLoggedIn>
   | ActionType<typeof setUsername>
+  | ActionType<typeof setUserId>
   | ActionType<typeof setDarkMode>

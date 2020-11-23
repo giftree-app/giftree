@@ -9,6 +9,8 @@ export function userReducer(state: UserState, action: UserActions): UserState {
       return { ...state, ...action.data };
     case 'set-username':
       return { ...state, username: action.username };
+    case 'set-userid':
+      return { ...state, userId: action.userId };
     case 'set-dark-mode':
       return { ...state, darkMode: action.darkMode };
     case 'set-is-loggedin':

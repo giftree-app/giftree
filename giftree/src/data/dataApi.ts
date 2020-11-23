@@ -10,6 +10,7 @@ const locationsUrl = '/assets/data/locations.json';
 
 const HAS_LOGGED_IN = 'hasLoggedIn';
 const USERNAME = 'username';
+const USERID = 'userId';
 
 export const getConfData = async () => {
   const response = await Promise.all([
@@ -39,12 +40,15 @@ export const getConfData = async () => {
 export const getUserData = async () => {
   const response = await Promise.all([
     Storage.get({ key: HAS_LOGGED_IN }),
-    Storage.get({ key: USERNAME })]);
+    Storage.get({ key: USERNAME }),
+    Storage.get({ key: USERID })]);
   const isLoggedin = await response[0].value === 'true';
   const username = await response[1].value || undefined;
+  const userId = await response[2].value || undefined;
   const data = {
     isLoggedin,
-    username
+    username,
+    userId
   }
   return data;
 }
@@ -58,6 +62,14 @@ export const setUsernameData = async (username?: string) => {
     await Storage.remove({ key: USERNAME });
   } else {
     await Storage.set({ key: USERNAME, value: username });
+  }
+}
+
+export const setUserIdData = async (userId?: string) => {
+  if (!userId) {
+    await Storage.remove({ key: USERID });
+  } else {
+    await Storage.set({ key: USERID, value: userId });
   }
 }
 

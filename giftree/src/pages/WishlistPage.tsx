@@ -1,129 +1,118 @@
-import React from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
-import AddGift from "../components/addgift.component";
-import UpdateGift from "../components/updategift.component";
-import Gifts from "../components/gifts.component";
+import React, { Component, useState, useEffect } from 'react';
+import { IonContent, IonHeader, IonButtons, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import axios from 'axios';
+import { IonItem, IonLabel, IonList } from '@ionic/react';
+import {Gifts} from '../models/Gift';
+//import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+
+import AddGift from '../components/addgift.component';
+import UpdateGift from '../components/updategift.component';
+//import { gift } from 'ionicons/icons';
+import { setUsername } from '../data/user/user.actions';
+import { connect } from '../data/connect';
+import { RouteComponentProps } from 'react-router';
 
 
-function WishlistPage() {
-  return (<Router>
-    <div className="Wishlist">
-      <header>
-        <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-          <a className="navbar-brand">Wishlist</a>
 
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav ml-auto">
-              <li className="nav-item active">
-                <Link className="nav-link" to={"/addgift"}>Add Gift</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to={"/updategift"}>Update Gift</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to={"/gifts"}>Gifts</Link>
-              </li>
-            </ul>
-          </div>
-        </nav>
-      </header>
 
-      <div className="container">
-        <div className="row">
-          <div className="col-md-12">
-            <Switch>
-              <Route exact path='/' component={AddGift} />
-              <Route path="/addgift" component={AddGift} />
-              <Route path="/gifts" component={Gifts} />
-              <Route path="/updategift" component={UpdateGift} />
-            </Switch>
-          </div>
-        </div>
-      </div>
-    </div>
-  </Router>
-  );
+const BASE_URL = 'https://COP4331-1.herokuapp.com/';
+const ENDPOINT_URL = BASE_URL + 'api/getWishlist';
+const USERID = '5faf3e7fbed65600178391bc';
+
+
+interface GiftProps{
+    gifts: Gifts[];
 }
 
-export default WishlistPage;
-//*/
-//////////////////////////////////////////////////////////////////////////////////////////
-  /*
-  gift = {
-    "giftGot": "",
-    "giftName": "",
-    "giftPrice": ""
-  };
-*/
-/*
-const sendGetRequest = () => {
-  return axios({
-    url: ENDPOINT_URL,
-    method: 'get'
-  }).then(response => {
-    console.log(response);
-    return response.data;
-  })
-};
+interface OwnProps extends RouteComponentProps { }
 
-const sendPostRequest = async () => {
-  try {
-      const resp = await axios.post(ENDPOINT_URL, { userId: UserId }).then((response) => 
-      {
-        console.log(response);
-        //gift = response.data;
-      }, (error) => 
-      {
-        console.log(error);
-      });        
-  } catch (err) {
-      // Handle Error Here
-      console.error(err);
-  }
-};
+interface StateProps {
+  username?: string;
+  userId?: string;
+}
 
-  export default class WishlistPage extends React.Component {
-    state = { gifts: [] as string[]
-    }
+interface DispatchProps {
+  setUsername: typeof setUsername;
+}
 
-    componentDidMount()
+interface WishlistProps extends StateProps, DispatchProps { }
+
+class Wishlist extends React.Component<WishlistProps>{
+    username?: string;
+    userId?: string;
+    setUsername: (username?: string) => (dispatch: React.Dispatch<any>) => Promise<{ readonly type: 'set-username'; readonly username: string; }>;
+    setUserId: (userId?: string) => (dispatch: React.Dispatch<any>) => Promise<{ readonly type: 'set-userid'; readonly userid: string; }>;
+
+    state = {isLoading: true };
+
+    gifts: Gifts[];
+
+    constructor(props: WishlistProps)
     {
-      axios.post(ENDPOINT_URL).then(res => {
-        const gifts = res.data;
-        this.setState({gifts});
-      })
+      super(props);
+      this.username = props.username;
+      this.userId = props.userId;
     }
-    render() {
-      return (
-        <ul>
-          {this.state.gifts.map(gift => <li> {gift}</li>)}
-        </ul>
-      )
+    
+    getList = () => {
+        axios.post(ENDPOINT_URL, {userId: this.userId})
+            .then(res => {
+                console.log(res);
+                this.gifts = res.data.gifts;
+                this.setState({isLoading: false});
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+    };
+
+    componentDidMount() {
+        this.getList();
     }
-  }
-  */
-/*
-const WishlistPage: React.FunctionComponent = () => {
 
-  const [items, setItems] = React.useState([]);
+    render()
+    {
+        const {isLoading} = this.state;
+        
+        if (isLoading)
+        {
+            return null;
+        }
 
-  React.useEffect(() => {
-    sendPostRequest();
-  }, []);
-  
-  return (
-    <IonHeader>
-      <IonToolbar color="primary">
-        <IonButtons slot="start">
-          <IonMenuButton />
-        </IonButtons>
-        <IonTitle>Wishlist</IonTitle>
-      </IonToolbar>
-    </IonHeader>
+        return (
+            <div className="wishlist">
+              <IonPage id="wishlist">
+                <IonHeader translucent={true}>
+                  <IonToolbar>
+                    <IonButtons slot="start">
+                      <IonMenuButton />
+                    </IonButtons>
+                    <IonTitle>Wishlist</IonTitle>
+                  </IonToolbar>
+                </IonHeader>
+                <IonContent fullscreen>
+                  <IonList lines="none">
+                    {this.gifts && this.gifts.map(gift => (
+                    <IonItem detail={false} routerLink={`/components/updategift/${gift.giftId}`} key={gift.giftId}>
+                        <IonLabel>
+                        <h3>{gift.giftName}</h3>
+                        </IonLabel>
+                    </IonItem>
+                    ))}
+                  </IonList>
+                </IonContent>
+              </IonPage>
+            </div>
+        )
+    }
+}
 
-  );
-};
+export default connect<StateProps>({
+  mapStateToProps: (state) => ({
+    username: state.user.username,
+    userId: state.user.userId
+  }),
+  component: Wishlist
+})
 
-export default WishlistPage;
-*/

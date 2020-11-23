@@ -30,7 +30,8 @@ export default class UpdateGift extends Component {
         }
     }
     
-    componentDidMount() {
+    componentDidMount()
+     {
         console.log('in componentDidMount');
 
         let giftObject = {
@@ -58,6 +59,11 @@ export default class UpdateGift extends Component {
             .catch(function (error) {
                 console.log(error);
         })
+    }
+
+    componentWillUnmount()
+    {
+
     }
 
     onChangeUserId(e) {
