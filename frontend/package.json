@@ -22,6 +22,8 @@
     "reselect": "^4.0.0"
   },
   "scripts": {
+    "build-ts": "tsc",
+    "postinstall": "npm run build-ts",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
