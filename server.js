@@ -22,3 +22,15 @@ client.connect();
 
 var api = require("./api.js");
 api.setApp(app, client);
+
+app
+  .get("/", function (request, response) {
+    var result = "App is running";
+    response.send(result);
+  })
+  .listen(process.env.PORT || 5000, function () {
+    console.log(
+      "App is running, server is listening on port ",
+      app.get("port")
+    );
+  });
