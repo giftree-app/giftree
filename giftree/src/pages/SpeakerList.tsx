@@ -27,14 +27,14 @@ const SpeakerList: React.FC<SpeakerListProps> = ({ speakers, speakerSessions }) 
           <IonButtons slot="start">
             <IonMenuButton />
           </IonButtons>
-          <IonTitle>Groups</IonTitle>
+          <IonTitle>Groups Title</IonTitle>
         </IonToolbar>
       </IonHeader>
 
       <IonContent fullscreen={true}>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">Groups Hi</IonTitle>
+            <IonTitle size="large">Groups IonToolbad</IonTitle>
           </IonToolbar>
         </IonHeader>
 

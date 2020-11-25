@@ -1,32 +1,4 @@
 {
-  "Selections": [
-    {
-      "selection": "Groups"
-    },
-    {
-      "selection": "Wishlist"
-    }
-  ],
-  "Wishlist": [
-    {
-      "gift": "Gift1"
-    },
-    {
-      "gift": "Gift2"
-    },
-    {
-      "gift": "Gift3"
-    },
-    {
-      "gift": "Gift4"
-    },
-    {
-      "gift": "Gift5"
-    },
-    {
-      "gift": "Gift6"
-    }
-  ],
   "schedule": [
     {
       "date": "2047-05-17",

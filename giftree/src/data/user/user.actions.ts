@@ -1,4 +1,4 @@
-import { getUserData, setIsLoggedInData, setUsernameData, setUserIdData } from '../dataApi';
+import { getUserData, setIsLoggedInData, setUsernameData, setUserIdData, setGiftIdData } from '../dataApi';
 import { ActionType } from '../../util/types';
 import { UserState } from './user.state';
 
@@ -49,6 +49,14 @@ export const setUserId = (userId?: string) => async (dispatch: React.Dispatch<an
   } as const);
 };
 
+export const setGiftId = (giftId?: string) => async (dispatch: React.Dispatch<any>) => {
+  await setGiftIdData(giftId);
+  return ({
+    type: 'set-giftid',
+    giftId
+  } as const);
+};
+
 export const setDarkMode = (darkMode: boolean) => ({
   type: 'set-dark-mode',
   darkMode
@@ -60,4 +68,5 @@ export type UserActions =
   | ActionType<typeof setIsLoggedIn>
   | ActionType<typeof setUsername>
   | ActionType<typeof setUserId>
+  | ActionType<typeof setGiftId>
   | ActionType<typeof setDarkMode>

@@ -7,8 +7,9 @@ import SpeakerList from './SpeakerList';
 import SpeakerDetail from './SpeakerDetail';
 import SessionDetail from './SessionDetail';
 import Wishlist from './WishlistPage';
-//import Wishlist from '../components/gifts.component';
 import About from './About';
+import AddGiftPage from './AddGift';
+import EditGift from './EditGift';
 
 interface MainTabsProps { }
 
@@ -29,6 +30,8 @@ const MainTabs: React.FC<MainTabsProps> = () => {
         <Route path="/tabs/speakers/sessions/:id" component={SessionDetail} />
         <Route path="/tabs/wishlist" render={() => <Wishlist />} exact={true} />
         <Route path="/tabs/about" render={() => <About />} exact={true} />
+        <Route path="/tabs/addgift" render={() => <AddGiftPage />} exact={true} />
+        <Route path="/tabs/editgift" render={() => <EditGift />} exact={true} />
       </IonRouterOutlet>
       <IonTabBar slot="bottom">
         <IonTabButton tab="home" href="/tabs/home">
@@ -47,6 +50,7 @@ const MainTabs: React.FC<MainTabsProps> = () => {
           <IonIcon icon={informationCircle} />
           <IonLabel>About</IonLabel>
         </IonTabButton>
+        
       </IonTabBar>
     </IonTabs>
   );

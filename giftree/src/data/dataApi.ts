@@ -11,6 +11,7 @@ const locationsUrl = '/assets/data/locations.json';
 const HAS_LOGGED_IN = 'hasLoggedIn';
 const USERNAME = 'username';
 const USERID = 'userId';
+const GIFTID = 'giftId';
 
 export const getConfData = async () => {
   const response = await Promise.all([
@@ -41,14 +42,17 @@ export const getUserData = async () => {
   const response = await Promise.all([
     Storage.get({ key: HAS_LOGGED_IN }),
     Storage.get({ key: USERNAME }),
-    Storage.get({ key: USERID })]);
+    Storage.get({ key: USERID }),
+    Storage.get({ key: GIFTID })]);
   const isLoggedin = await response[0].value === 'true';
   const username = await response[1].value || undefined;
   const userId = await response[2].value || undefined;
+  const giftId = await response[3].value || undefined;
   const data = {
     isLoggedin,
     username,
-    userId
+    userId,
+    giftId
   }
   return data;
 }
@@ -70,6 +74,14 @@ export const setUserIdData = async (userId?: string) => {
     await Storage.remove({ key: USERID });
   } else {
     await Storage.set({ key: USERID, value: userId });
+  }
+}
+
+export const setGiftIdData = async (giftId?: string) => {
+  if (!giftId) {
+    await Storage.remove({ key: GIFTID });
+  } else {
+    await Storage.set({ key: GIFTID, value: giftId });
   }
 }
 

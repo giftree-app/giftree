@@ -38,7 +38,7 @@ const Login: React.FC<LoginProps> = ({
   setUsername: setUsernameAction,
   setUserId: setUserIdAction
 }) => {
-  //const BASE_URL = 'https://COP4331-1.herokuapp.com/';
+  
   const app_name = 'cop4331-1';
 
   const [username, setUsername] = useState("");
@@ -178,5 +178,5 @@ export default connect<OwnProps, {}, DispatchProps>({
     setUsername,
     setUserId
   },
-  component: Login,
+  component: Login
 });

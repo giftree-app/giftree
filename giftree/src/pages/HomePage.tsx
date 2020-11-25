@@ -39,7 +39,6 @@ const HomePage: React.FC<HomePageProps> = ({ username, userId }) => {
             <h2>{ username }</h2>
           </div>)
         }
-        <br/>
         userId:
         {userId &&
           (<div className="ion-padding-top ion-text-center">
