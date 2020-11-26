@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static("frontend/build", { etag: false }));
+app.use(express.static(__dirname + "frontend/build", { etag: false }));
 app.set("port", PORT);
 
 // // Server static assets if in production
