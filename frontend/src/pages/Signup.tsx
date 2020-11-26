@@ -50,13 +50,19 @@ const Login: React.FC<LoginProps> = ({
   const [lastNameError, setLastNameError] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [address1Error, setAddress1Error] = useState(false);
-  const [address2Error, setAddress2Error] = useState(false);
 
-  const login = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const app_name = "giftree";
 
-    setFormSubmitted(true);
+  // function buildPath(route: any) {
+  //   // look at using process.env.NODE_ENV
+  //   if (process.env.NODE_ENV === "production") {
+  //     return "https://" + app_name + ".herokuapp.com/" + route;
+  //   } else {
+  //     return "http://localhost:5000/" + route;
+  //   }
+  // }
 
+  function checkValues() {
     if (!username) {
       setUsernameError(true);
     }
@@ -75,13 +81,16 @@ const Login: React.FC<LoginProps> = ({
     if (!address1) {
       setAddress1Error(true);
     }
-    if (!address2) {
-      setAddress2Error(true);
-    }
+  }
+
+  const login = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setFormSubmitted(true);
+
+    checkValues();
 
     if (username && password && firstName && lastName && email && address1) {
-      let url = "https://cop4331-1.herokuapp.com/api/register";
-
       const req = {
         firstName: firstName,
         lastName: lastName,
@@ -93,11 +102,11 @@ const Login: React.FC<LoginProps> = ({
       };
 
       axios
-        .post(url, req)
+        .post("/api/register", req)
         .then(async function () {
           await setIsLoggedIn(true);
           await setUsernameAction(username);
-          history.push("/tabs/login", { direction: "none" });
+          history.push("/login", { direction: "none" });
         })
         .catch(function () {
           alert("Could not create account. Please try again");
@@ -230,7 +239,6 @@ const Login: React.FC<LoginProps> = ({
                 autocapitalize="off"
                 onIonChange={(e) => {
                   setAddress2(e.detail.value!);
-                  setAddress2Error(false);
                 }}
               ></IonInput>
             </IonItem>
