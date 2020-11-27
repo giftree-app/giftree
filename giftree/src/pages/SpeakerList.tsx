@@ -1,5 +1,5 @@
 import React from 'react';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonButtons, IonMenuButton, IonGrid, IonRow, IonCol } from '@ionic/react';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonButtons, IonButton, IonMenuButton, IonGrid, IonRow, IonCol } from '@ionic/react';
 import SpeakerItem from '../components/SpeakerItem';
 import { Speaker } from '../models/Speaker';
 import { Session } from '../models/Schedule';
@@ -51,6 +51,9 @@ const SpeakerList: React.FC<SpeakerListProps> = ({ speakers, speakerSessions }) 
               ))}
             </IonRow>
           </IonGrid>
+          <IonContent className = "add-group-button">
+            <IonButton id="add-group" expand="block" shape="round" fill="solid" size="large">Add Group</IonButton>
+          </IonContent>
       </IonContent>
     </IonPage>
   );

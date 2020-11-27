@@ -46,7 +46,14 @@
 
   .md ion-list {
     border-top: 1px solid var(--ion-color-step-150, #d7d8da);
-
     padding: 0;
   }
 }
+
+#add-group {
+  margin-left: 25%;
+  margin-right: 25%;
+  margin-top: 55px;
+  text-transform: capitalize;
+}
+

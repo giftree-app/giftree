@@ -84,7 +84,7 @@ const SpeakerDetail: React.FC<SpeakerDetailProps> = ({ speaker }) => {
   return (
     <IonPage id="speaker-detail">
       <IonContent>
-        <IonHeader className="ion-no-border">
+        {/* <IonHeader className="ion-no-border">
           <IonToolbar>
             <IonButtons slot="start">
               <IonBackButton defaultHref="/tabs/speakers" />
@@ -98,19 +98,19 @@ const SpeakerDetail: React.FC<SpeakerDetailProps> = ({ speaker }) => {
               </IonButton>
             </IonButtons>
           </IonToolbar>
-        </IonHeader>
+        </IonHeader> */}
 
-        <div className="speaker-background">
+        {/* <div className="speaker-background">
           <img src={speaker.profilePic} alt={speaker.name}/>
           <h2>{speaker.name}</h2>
-        </div>
+        </div> */}
 
         <div className="ion-padding speaker-detail">
-          <p>{speaker.about} Say hello on social media!</p>
-
+          {/* <p>{speaker.about} Say hello on social media!</p> */}
+          <p> Here's where the group members' names would go, CSS styling later tho</p>
           <hr/>
 
-          <IonChip color="twitter" onClick={() => openExternalUrl(`https://twitter.com/${speaker.twitter}`)}>
+          {/* <IonChip color="twitter" onClick={() => openExternalUrl(`https://twitter.com/${speaker.twitter}`)}>
             <IonIcon icon={logoTwitter}></IonIcon>
             <IonLabel>Twitter</IonLabel>
           </IonChip>
@@ -123,8 +123,10 @@ const SpeakerDetail: React.FC<SpeakerDetailProps> = ({ speaker }) => {
           <IonChip color="instagram" onClick={() => openExternalUrl('https://instagram.com/ionicframework')}>
             <IonIcon icon={logoInstagram}></IonIcon>
             <IonLabel>Instagram</IonLabel>
-          </IonChip>
+          </IonChip> */}
         </div>
+        
+      
       </IonContent>
       <IonActionSheet
         isOpen={showActionSheet}
