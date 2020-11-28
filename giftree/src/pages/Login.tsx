@@ -57,7 +57,7 @@ const Login: React.FC<LoginProps> = ({
       return 'http://localhost:8100/' + route;
     }
   }
-  
+
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormSubmitted(true);
@@ -102,21 +102,24 @@ const Login: React.FC<LoginProps> = ({
         <div className="login-logo">
           <img src="assets/img/appicon.svg" alt="Ionic logo" />
         </div>
+        <IonLabel>
+          <h1 className= "header">LOG IN</h1>
+
+        </IonLabel>
 
         <form noValidate onSubmit={login}>
           <IonList>
             <IonItem>
-              <IonLabel position="stacked" color="primary">
-                Username
-              </IonLabel>
               <IonInput
                 name="username"
                 type="text"
+                placeholder= "USERNAME"
                 value={username}
                 spellCheck={false}
                 autocapitalize="off"
                 onIonChange={(e) => setUsername(e.detail.value!)}
                 required
+
               ></IonInput>
             </IonItem>
 
@@ -126,15 +129,14 @@ const Login: React.FC<LoginProps> = ({
               </IonText>
             )}
 
-            <IonItem>
-              <IonLabel position="stacked" color="primary">
-                Password
-              </IonLabel>
+            <IonItem className= "passfield">
               <IonInput
                 name="password"
                 type="password"
+                placeholder= "PASSWORD"
                 value={password}
                 onIonChange={(e) => setPassword(e.detail.value!)}
+
               ></IonInput>
             </IonItem>
 
@@ -144,19 +146,23 @@ const Login: React.FC<LoginProps> = ({
               </IonText>
             )}
           </IonList>
+          <div className= "reset">
+          <a href="" className= "resetText">Forgot email? <b>Click here to reset.</b> </a>
+          </div>
+          <div className= "reset">
+          <a href="" className= "resetText">Forgot password? <b>Click here to reset.</b> </a>
+          </div>
 
-          <IonRow>
-            <IonCol>
-              <IonButton type="submit" expand="block">
-                Login
+              <IonButton type="submit" expand="block" className="loginbtn" >
+                Go!
               </IonButton>
-            </IonCol>
-            <IonCol>
+
+            {/* <IonCol>
               <IonButton routerLink="/signup" color="light" expand="block">
                 Signup
               </IonButton>
-            </IonCol>
-          </IonRow>
+            </IonCol> */}
+
         </form>
       </IonContent>
     </IonPage>

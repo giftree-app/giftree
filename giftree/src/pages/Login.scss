@@ -4,13 +4,87 @@
     min-height: 200px;
     text-align: center;
   }
-  
+
   .login-logo img {
-    max-width: 150px;
+    max-width: 350px;
+    -webkit-filter: drop-shadow(2px 2px 2px rgb(197, 197, 197));
+    filter: drop-shadow(3px 3px 3px rgb(157, 157, 157));
   }
-  
+
   .list {
     margin-bottom: 0;
+    border-bottom: 1px solid #f4f5f8;
   }
-  
+
+  .header {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    padding-bottom: 30px;
+
+  }
+
+  .loginText {
+    margin-left: auto;
+    margin-right: auto;
+
+  }
+
+
+
+  .passfield {
+    --color: rgb(0, 0, 0);
+    padding-top: 80px;
+    padding-bottom: 50px;
+  }
+
+  .loginbtn{
+    margin-left: auto ;
+    margin-right: auto;
+    width: 20%;
+    color: black;
+
+  }
+
+  .reset {
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 30px;
+    text-align: center;
+
+
+  }
+
+  .resetText {
+    color: black;
+    text-decoration: none;
+  }
+
+
 }
+ion-item {
+
+
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+button-native{
+    border-radius: 40px !important;
+}
+
+
+ion-button {
+
+  margin-top: 30px;
+
+
+}
+item-highlight {
+  --color: rgb(255, 255, 255);
+}
+ion-item.selected {
+  --color: var(--ion-color-primary);
+}
+
+
