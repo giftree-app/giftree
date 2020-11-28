@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { IonContent, IonHeader, IonButtons, IonMenuButton, IonPage, IonTitle, IonToolbar, IonButton } from '@ionic/react';
+import { IonContent, IonHeader, IonButtons, IonMenuButton, IonPage, IonTitle, IonToolbar, IonButton} from '@ionic/react';
 import axios from 'axios';
 import { IonItem, IonLabel, IonList } from '@ionic/react';
 import {Gifts} from '../models/Gift';
@@ -112,8 +112,7 @@ const onClick = (e: any) => {
               }
             </IonList>
             <br/>
-            
-            <IonButton href='/tabs/addgift' routerDirection="none" >
+            <IonButton routerLink='/tabs/addgift' routerDirection="none">
               <IonLabel>Add Gift</IonLabel>
             </IonButton>
           </IonContent>

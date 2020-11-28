@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { IonContent, IonHeader, IonButtons, IonMenuButton, IonPage, IonTitle, IonToolbar, IonButton, IonLabel, IonList, IonItem, IonInput, IonRow, IonCol } from '@ionic/react';
+import { IonContent, IonHeader, IonButtons, IonMenuButton, IonPage, IonTitle, IonToolbar, IonButton, IonLabel, IonList, IonItem, IonInput, IonRow, IonCol, IonAlert, IonText } from '@ionic/react';
 import { setGiftId } from '../data/user/user.actions';
 import { connect } from '../data/connect';
 
@@ -33,6 +33,7 @@ const EditGift: React.FC<UpdateGiftProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
   
   const deleteGift = () => {
     //console.log('EditGift: in deleteGift');
@@ -67,6 +68,12 @@ const EditGift: React.FC<UpdateGiftProps> = ({
       }); 
   };
 
+  
+  const backToWishlist = () => {
+
+  }
+
+
   useEffect(() => {
     //console.log('EditGift: in useEffect');
     if(isLoading === false)
@@ -94,6 +101,7 @@ const EditGift: React.FC<UpdateGiftProps> = ({
     
   }, [giftId, isLoading]);
 
+
   if (isLoaded === false)
   {
       return <div> loading ...</div>;
@@ -102,9 +110,28 @@ const EditGift: React.FC<UpdateGiftProps> = ({
   {
     return (
       <IonPage id="editgift-page">
-        <IonButton routerLink="/tabs/Wishlist" color="light" expand="block">
-          Wishlist
-        </IonButton>
+        <IonHeader>
+          <IonToolbar>
+            <IonButtons slot="start">
+              <IonMenuButton></IonMenuButton>
+            </IonButtons>
+            <IonTitle>Edit Gift</IonTitle>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent>
+          <br/>
+          <br/>
+          <br/>
+          <IonRow>
+              <IonText>{'[' + giftName + '] deleted!'}</IonText>
+          </IonRow>
+          <br/>
+          <br/>
+          <br/>
+          <IonButton routerLink="/tabs/Wishlist" >
+            Wishlist
+          </IonButton>
+        </IonContent>
       </IonPage>
     )
   }
@@ -186,23 +213,39 @@ const EditGift: React.FC<UpdateGiftProps> = ({
 
             <IonRow>
               <IonCol>
-                <IonButton type="submit" expand="block">
+                <IonButton type="submit" >
                   Update Gift
                 </IonButton>
               </IonCol>
               <IonCol>
-                <IonButton type="button" onClick={deleteGift} expand="block">
+                <IonButton onClick={() => setShowAlert(true)}>
                   delete Gift
                 </IonButton>
               </IonCol>
               <IonCol>
-                <IonButton routerLink="/tabs/Wishlist" expand="block">
+                <IonButton routerLink="/tabs/Wishlist" >
                   Wishlist
                 </IonButton>
               </IonCol>
             </IonRow>
           </form>
         </IonContent>
+        <IonAlert
+          isOpen={showAlert}
+          header="Delete Gift?"
+          buttons={[
+            'No',
+            {
+              text: 'Yes',
+              handler: (data:any) => {
+                //setUsername(data.username);
+                deleteGift();
+                backToWishlist();
+              }
+            }
+          ]}
+          onDidDismiss={() => setShowAlert(false)}
+        />
       </IonPage>
     );
   }
