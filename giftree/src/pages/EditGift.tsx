@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { IonContent, IonHeader, IonButtons, IonMenuButton, IonPage, IonTitle, IonToolbar, IonButton, IonLabel, IonList, IonItem, IonInput, IonRow, IonCol, IonAlert, IonText } from '@ionic/react';
-import { setGiftId } from '../data/user/user.actions';
+import { IonContent, IonHeader, IonButtons, IonMenuButton, IonPage, IonTitle, IonToolbar, IonButton, IonLabel, IonList, IonItem, IonInput, IonRow, IonCol, IonAlert } from '@ionic/react';
+import { setGiftId, setReload } from '../data/user/user.actions';
 import { connect } from '../data/connect';
+import { RouteComponentProps, withRouter } from 'react-router';
 
 
 const BASE_URL = 'https://COP4331-1.herokuapp.com/';
@@ -10,20 +11,25 @@ const ENDPOINT_GET = BASE_URL + 'api/getGift';
 const ENDPOINT_UPDATE = BASE_URL + 'api/updateGift';
 const ENDPOINT_DELETE = BASE_URL + 'api/deleteGift';
 
+interface OwnProps extends RouteComponentProps {}
+
 interface StateProps {
   giftId?: string;
+  reload: boolean;
 }
 
 interface DispatchProps {
   setGiftId: typeof setGiftId;
+  setReload: typeof setReload;
 }
 
-interface UpdateGiftProps extends StateProps, DispatchProps {}
+interface UpdateGiftProps extends OwnProps, StateProps, DispatchProps {}
 
 
 const EditGift: React.FC<UpdateGiftProps> = ({
+    history,
     giftId,
-    setGiftId
+    setReload: setReloadAction,
   }) => {
   
   const [giftName, setGiftName] = useState("");
@@ -32,7 +38,6 @@ const EditGift: React.FC<UpdateGiftProps> = ({
   const [giftComment, setGiftComment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isDeleted, setIsDeleted] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   
   const deleteGift = () => {
@@ -40,7 +45,6 @@ const EditGift: React.FC<UpdateGiftProps> = ({
     axios.post(ENDPOINT_DELETE, {giftId: giftId} )
         .then(res => {
             console.log(res);
-            setIsDeleted(true);
         })
         .catch(function (error) {
             console.log(error);
@@ -69,10 +73,10 @@ const EditGift: React.FC<UpdateGiftProps> = ({
   };
 
   
-  const backToWishlist = () => {
-
+  const redirectToWishList = async (e: React.FormEvent) => {
+    setReloadAction(true);
+    history.push('/tabs/wishlist', { direction: "none" });
   }
-
 
   useEffect(() => {
     //console.log('EditGift: in useEffect');
@@ -105,35 +109,6 @@ const EditGift: React.FC<UpdateGiftProps> = ({
   if (isLoaded === false)
   {
       return <div> loading ...</div>;
-  }
-  else if (isDeleted === true)
-  {
-    return (
-      <IonPage id="editgift-page">
-        <IonHeader>
-          <IonToolbar>
-            <IonButtons slot="start">
-              <IonMenuButton></IonMenuButton>
-            </IonButtons>
-            <IonTitle>Edit Gift</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <IonContent>
-          <br/>
-          <br/>
-          <br/>
-          <IonRow>
-              <IonText>{'[' + giftName + '] deleted!'}</IonText>
-          </IonRow>
-          <br/>
-          <br/>
-          <br/>
-          <IonButton routerLink="/tabs/Wishlist" >
-            Wishlist
-          </IonButton>
-        </IonContent>
-      </IonPage>
-    )
   }
   else
   {
@@ -240,7 +215,7 @@ const EditGift: React.FC<UpdateGiftProps> = ({
               handler: (data:any) => {
                 //setUsername(data.username);
                 deleteGift();
-                backToWishlist();
+                redirectToWishList(data);
               }
             }
           ]}
@@ -251,12 +226,14 @@ const EditGift: React.FC<UpdateGiftProps> = ({
   }
 };
 
-export default connect<StateProps, {}, DispatchProps>({
+export default connect<{}, StateProps, DispatchProps>({
   mapStateToProps: (state) => ({
-    giftId: state.user.giftId
+    giftId: state.user.giftId,
+    reload: state.user.reload
   }),
   mapDispatchToProps: {
-    setGiftId
+    setGiftId,
+    setReload
   },
-  component: EditGift
+  component: withRouter(EditGift)
 });

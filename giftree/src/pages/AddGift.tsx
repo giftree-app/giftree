@@ -79,12 +79,12 @@ const AddGift: React.FC<AddGiftProps> = ({
       setGiftPrice('');
       setGiftLocation('');
       setGiftComment('');
-      
+      ShowResult(e);
     }
   };
   
   const ShowResult = async (e: React.FormEvent) => {
-    //history.push('Wishlist', { direction: "none" });
+    history.push('Wishlist', { direction: "none" });
   }
 
   return (
@@ -199,7 +199,7 @@ const AddGift: React.FC<AddGiftProps> = ({
   );
 };
 
-export default connect<StateProps, {}, OwnProps>({
+export default connect<{}, StateProps, {}>({
   mapStateToProps: (state) => ({
     username: state.user.username,
     userId: state.user.userId,

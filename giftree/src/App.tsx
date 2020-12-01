@@ -26,7 +26,6 @@ import "./theme/variables.css";
 import MainTabs from "./pages/MainTabs";
 import { connect } from "./data/connect";
 import { AppContextProvider } from "./data/AppContext";
-import { loadConfData } from "./data/sessions/sessions.actions";
 import {
   setIsLoggedIn,
   setUsername,
@@ -36,7 +35,6 @@ import Account from "./pages/Account";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Support from "./pages/Support";
-import { Schedule } from "./models/Schedule";
 import RedirectToLogin from "./components/RedirectToLogin";
 
 const App: React.FC = () => {
@@ -49,11 +47,9 @@ const App: React.FC = () => {
 
 interface StateProps {
   darkMode: boolean;
-  schedule: Schedule;
 }
 
 interface DispatchProps {
-  loadConfData: typeof loadConfData;
   loadUserData: typeof loadUserData;
   setIsLoggedIn: typeof setIsLoggedIn;
   setUsername: typeof setUsername;
@@ -63,19 +59,16 @@ interface IonicAppProps extends StateProps, DispatchProps {}
 
 const IonicApp: React.FC<IonicAppProps> = ({
   darkMode,
-  schedule,
   setIsLoggedIn,
   setUsername,
-  loadConfData,
   loadUserData,
 }) => {
   useEffect(() => {
     loadUserData();
-    loadConfData();
     // eslint-disable-next-line
   }, []);
 
-  return schedule.groups.length === 0 ? (
+  return 0 ? (
     <div></div>
   ) : (
     <IonApp className={`${darkMode ? "dark-theme" : ""}`}>
@@ -115,11 +108,9 @@ export default App;
 
 const IonicAppConnected = connect<{}, StateProps, DispatchProps>({
   mapStateToProps: (state) => ({
-    darkMode: state.user.darkMode,
-    schedule: state.data.schedule,
+    darkMode: state.user.darkMode
   }),
   mapDispatchToProps: {
-    loadConfData,
     loadUserData,
     setIsLoggedIn,
     setUsername,

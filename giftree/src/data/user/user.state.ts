@@ -4,6 +4,7 @@ export interface UserState {
   userId?: string;
   giftId?: string;
   groupId?: string;
+  reload: boolean;
   darkMode: boolean;
   loading: boolean;
 };

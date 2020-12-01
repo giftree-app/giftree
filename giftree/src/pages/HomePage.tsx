@@ -1,25 +1,16 @@
 import React from 'react';
 import { IonContent, IonHeader, IonButtons, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import { setUserId, setUsername } from '../data/user/user.actions';
 import { connect } from '../data/connect';
-import { RouteComponentProps } from 'react-router';
 
-
-interface OwnProps extends RouteComponentProps { }
 
 interface StateProps {
   username?: string;
   userId?: string;
 }
 
-interface DispatchProps {
-  setUsername: typeof setUsername;
-  setUserId: typeof setUserId;
-}
-
-interface HomePageProps extends StateProps { }
-
-const HomePage: React.FC<HomePageProps> = ({ username, userId }) => {
+const HomePage: React.FC<StateProps> = ({ username, userId }) =>
+{
+  //console.log('homepage entry: reload = ' + reload);
 
   return (
     <IonPage id="homepage">
@@ -54,7 +45,8 @@ const HomePage: React.FC<HomePageProps> = ({ username, userId }) => {
 export default connect<StateProps>({
   mapStateToProps: (state) => ({
     username: state.user.username,
-    userId: state.user.userId
+    userId: state.user.userId,
+    reload: state.user.reload
   }),
   component: HomePage
 })

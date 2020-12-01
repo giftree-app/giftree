@@ -18,7 +18,7 @@ import {
   IonText,
 } from "@ionic/react";
 import "./Login.scss";
-import { setIsLoggedIn, setUsername, setUserId } from "../data/user/user.actions";
+import { setIsLoggedIn, setUsername, setUserId, setReload } from "../data/user/user.actions";
 import { connect } from "../data/connect";
 import { RouteComponentProps } from "react-router";
 
@@ -28,6 +28,7 @@ interface DispatchProps {
   setIsLoggedIn: typeof setIsLoggedIn;
   setUsername: typeof setUsername;
   setUserId: typeof setUserId;
+  setReload: typeof setReload;
 }
 
 interface LoginProps extends OwnProps, DispatchProps {}
@@ -36,7 +37,8 @@ const Login: React.FC<LoginProps> = ({
   setIsLoggedIn,
   history,
   setUsername: setUsernameAction,
-  setUserId: setUserIdAction
+  setUserId: setUserIdAction,
+  setReload: setReloadAction
 }) => {
   
   const app_name = 'cop4331-1';
@@ -86,6 +88,7 @@ const Login: React.FC<LoginProps> = ({
           await setIsLoggedIn(true);
           await setUsernameAction(username);
           await setUserIdAction(res.data.userId);
+          await setReloadAction(true);
           history.push("/tabs/Home", { direction: "none" });
         })
         .catch(function (error)
@@ -93,7 +96,6 @@ const Login: React.FC<LoginProps> = ({
           alert("Could not login. Please try again");
           console.log(error);
         });
-      //history.push("/tabs/schedule", { direction: "none" });
     }
   };
 
@@ -176,7 +178,8 @@ export default connect<OwnProps, {}, DispatchProps>({
   mapDispatchToProps: {
     setIsLoggedIn,
     setUsername,
-    setUserId
+    setUserId,
+    setReload
   },
   component: Login
 });
