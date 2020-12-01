@@ -42,7 +42,7 @@ Giftree is the perfect holiday app for family, friends, and coworkers to share w
 
 - re-run the commands above inside each folder
 
-4.  Make sure you have a `.env` file with the required creds that looks like this:
+3.  Make sure you have a `.env` file with the required creds that looks like this:
 
         MONGODB_URI=mongodb+srv://username:password@cluster0.mdaeo.azure.mongodb.net/Giftree?retryWrites=true&w=majority
 
@@ -52,7 +52,7 @@ Giftree is the perfect holiday app for family, friends, and coworkers to share w
 
         NODE_ENV=development
 
-5.  After you're done making changes and want to see what they look like on the brower, do the following:
+4.  After you're done making changes and want to see what they look like on the brower, do the following:
 
 - Go into `gitfree/frontend` and run `ionic build`. You have to do this every time you want to see the changes you made.
 
@@ -60,7 +60,7 @@ Giftree is the perfect holiday app for family, friends, and coworkers to share w
 
 - Go to http://localhost:5000/ to see the changes
 
-4. If you're making changes and it seems like the changes aren't reflected on localhost try the following:
+5. If you're making changes and it seems like the changes aren't reflected on localhost try the following:
 
 - Right click in your browser and select "inspect" to access dev tools and the console
 - On the tabs select Application (you might have to press the arrow to expand), then under Cache/Cache Storage on the left sidebar, right click whatever is in there and delete it.
