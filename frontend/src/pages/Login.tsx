@@ -44,18 +44,6 @@ const Login: React.FC<LoginProps> = ({
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
 
-  // function buildPath(route: any) {
-  // //   // look at using process.env.NODE_ENV
-  // //   if (process.env.NODE_ENV === "production") {
-  // //     console.log(process.env.NODE_ENV);
-  // //     debugger;
-  // //     return "https://" + app_name + ".herokuapp.com/" + route;
-  // //   } else {
-  // //     console.log("here");
-  //     return "http://localhost:5000/" + route;
-  //   // }
-  // }
-
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormSubmitted(true);

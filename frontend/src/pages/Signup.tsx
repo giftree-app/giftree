@@ -29,9 +29,9 @@ interface DispatchProps {
   setUsername: typeof setUsername;
 }
 
-interface LoginProps extends OwnProps, DispatchProps {}
+interface SignupProps extends OwnProps, DispatchProps {}
 
-const Login: React.FC<LoginProps> = ({
+const Signup: React.FC<SignupProps> = ({
   setIsLoggedIn,
   history,
   setUsername: setUsernameAction,
@@ -49,18 +49,10 @@ const Login: React.FC<LoginProps> = ({
   const [firstNameError, setFirstNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
   const [emailError, setEmailError] = useState(false);
+  const [emailInvalid, setEmailInvalid] = useState(false);
   const [address1Error, setAddress1Error] = useState(false);
 
   const app_name = "giftree";
-
-  // function buildPath(route: any) {
-  //   // look at using process.env.NODE_ENV
-  //   if (process.env.NODE_ENV === "production") {
-  //     return "https://" + app_name + ".herokuapp.com/" + route;
-  //   } else {
-  //     return "http://localhost:5000/" + route;
-  //   }
-  // }
 
   function checkValues() {
     if (!username) {
@@ -83,14 +75,30 @@ const Login: React.FC<LoginProps> = ({
     }
   }
 
-  const login = async (e: React.FormEvent) => {
+  function emailIsValid(email: string) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailInvalid(true);
+    } else {
+      setEmailInvalid(false);
+    }
+  }
+
+  const signup = async (e: React.FormEvent) => {
     e.preventDefault();
 
     setFormSubmitted(true);
 
     checkValues();
 
-    if (username && password && firstName && lastName && email && address1) {
+    if (
+      username &&
+      password &&
+      firstName &&
+      lastName &&
+      email &&
+      !emailInvalid &&
+      address1
+    ) {
       const req = {
         firstName: firstName,
         lastName: lastName,
@@ -129,7 +137,7 @@ const Login: React.FC<LoginProps> = ({
           <img src="assets/img/appicon.svg" alt="Ionic logo" />
         </div>
 
-        <form noValidate onSubmit={login}>
+        <form noValidate onSubmit={signup}>
           <IonList>
             <IonItem>
               <IonLabel position="stacked" color="primary">
@@ -191,6 +199,7 @@ const Login: React.FC<LoginProps> = ({
                 autocapitalize="off"
                 onIonChange={(e) => {
                   setEmail(e.detail.value!);
+                  emailIsValid(email);
                   setEmailError(false);
                 }}
                 required
@@ -200,6 +209,12 @@ const Login: React.FC<LoginProps> = ({
             {formSubmitted && emailError && (
               <IonText color="danger">
                 <p className="ion-padding-start">Email is required</p>
+              </IonText>
+            )}
+
+            {formSubmitted && emailInvalid && (
+              <IonText color="danger">
+                <p className="ion-padding-start">Please enter a valid email</p>
               </IonText>
             )}
 
@@ -307,5 +322,5 @@ export default connect<OwnProps, {}, DispatchProps>({
     setIsLoggedIn,
     setUsername,
   },
-  component: Login,
+  component: Signup,
 });
