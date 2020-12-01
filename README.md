@@ -42,7 +42,17 @@ Giftree is the perfect holiday app for family, friends, and coworkers to share w
 
 - re-run the commands above inside each folder
 
-3. After you're done making changes and want to see what they look like on the brower, do the following:
+4.  Make sure you have a `.env` file with the required creds that looks like this:
+
+        MONGODB_URI=mongodb+srv://username:password@cluster0.mdaeo.azure.mongodb.net/Giftree?retryWrites=true&w=majority
+
+        SENDGRID_API_KEY=sendgrid_api_key
+
+        DEBUG=express:\*
+
+        NODE_ENV=development
+
+5.  After you're done making changes and want to see what they look like on the brower, do the following:
 
 - Go into `gitfree/frontend` and run `ionic build`. You have to do this every time you want to see the changes you made.
 
