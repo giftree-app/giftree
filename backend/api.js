@@ -418,22 +418,20 @@ exports.setApp = function (app, client) {
         }
       }
 
-      const results = db
-        .collection("Groups")
-        .update(
-          { _id: gid },
-          {
-            $set: {
-              event: true,
-              eventName: eventName,
-              eventPriceMin: eventPriceMin,
-              eventPriceMax: eventPriceMax,
-              eventDate: eventDate,
-              secretShopper_buyers: buyers,
-              secretShopper_receivers: receivers,
-            },
-          }
-        );
+      const results = db.collection("Groups").update(
+        { _id: gid },
+        {
+          $set: {
+            event: true,
+            eventName: eventName,
+            eventPriceMin: eventPriceMin,
+            eventPriceMax: eventPriceMax,
+            eventDate: eventDate,
+            secretShopper_buyers: buyers,
+            secretShopper_receivers: receivers,
+          },
+        }
+      );
       var ret = { error: "", success: true };
 
       res.status(200).json(ret);
@@ -452,22 +450,20 @@ exports.setApp = function (app, client) {
 
     const db = client.db();
     try {
-      const results = db
-        .collection("Groups")
-        .update(
-          { _id: gid },
-          {
-            $set: {
-              event: false,
-              eventName: null,
-              eventPriceMin: null,
-              eventPriceMax: null,
-              eventDate: null,
-              secretShopper_buyers: [null],
-              secretShopper_receivers: [null],
-            },
-          }
-        );
+      const results = db.collection("Groups").update(
+        { _id: gid },
+        {
+          $set: {
+            event: false,
+            eventName: null,
+            eventPriceMin: null,
+            eventPriceMax: null,
+            eventDate: null,
+            secretShopper_buyers: [null],
+            secretShopper_receivers: [null],
+          },
+        }
+      );
       var ret = { error: "", success: true };
 
       res.status(200).json(ret);
@@ -578,19 +574,17 @@ exports.setApp = function (app, client) {
 
     const db = client.db();
     try {
-      const results = db
-        .collection("Gifts")
-        .update(
-          { _id: gid },
-          {
-            $set: {
-              giftName: giftName,
-              giftPrice: giftPrice,
-              giftLocation: giftLocation,
-              giftComment: giftComment,
-            },
-          }
-        );
+      const results = db.collection("Gifts").update(
+        { _id: gid },
+        {
+          $set: {
+            giftName: giftName,
+            giftPrice: giftPrice,
+            giftLocation: giftLocation,
+            giftComment: giftComment,
+          },
+        }
+      );
       var ret = { error: "", success: true };
 
       res.status(200).json(ret);
