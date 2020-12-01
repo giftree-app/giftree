@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static("frontend/build"));
+app.use(express.static("frontend/build", { etag: false }));
 app.set("port", PORT);
 
 const client = new MongoClient(process.env.MONGODB_URI, {
