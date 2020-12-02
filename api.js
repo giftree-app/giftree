@@ -15,7 +15,7 @@ exports.setApp = function (app, client)
             
             if(results.length > 0 && results[0].validated)
             {
-                var ret = { error:'Error: Login is already in use', success:false };
+                var ret = { error:'Login is already in use', success:false };
                 res.status(400).json(ret);
             }
             else
@@ -35,9 +35,10 @@ exports.setApp = function (app, client)
                 const sgMail = require('@sendgrid/mail');
                 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
                 
-                var emailMsg = 'To start using your giftree wishlist account, please verify your email address by clicking the link below ';
+                var emailMsg = 'To start using your Giftree wishlist account, please verify your email address by clicking the link below ';
                 emailMsg += 'or enter the code below into the validation page in the app: <br/><br/> Validation code: ' + validateCode;
-                emailMsg += '<br/><br/> <a href = "https://website.com/validate?v=' + validateCode + '"> https://website.com/validate?v=' + validateCode + '</a>';
+                emailMsg += '<br/><br/> <a href = "https://https://giftree.herokuapp.com/token?v=' + validateCode + '"> https://https://giftree.herokuapp.com/token?v=' + validateCode + '</a>';
+                emailMsg += '<br/><br/>Thank you,<br/>Giftree App Team';
                 
                 const msg = {
                 to: email, // Recipient
@@ -282,11 +283,13 @@ exports.setApp = function (app, client)
                 const sgMail = require('@sendgrid/mail');
                 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
                 
-                var emailMsg = '<strong>You are receiving this email because you requested a password reset. </strong> ';
+                var emailMsg = '<h1>Here\'s your Giftree Password Reset!</h1><br/><br/>'
+                emailMsg += '<strong>You are receiving this email because you requested a password reset. </strong> ';
                 emailMsg += 'If you did not request this, please disregard this email. <br/><br/>';
                 emailMsg += 'You can reset your password by entering the validation code in the app, or by clicking the link below<br/><br/>';
                 emailMsg =+ 'Validation code: ' + validateCode + '<br/><br/>';
-                emailMsg += '<a href = "https://website.com/validate?v=' + validateCode + '"> https://website.com/validate?v=' + validateCode + '</a>';
+                emailMsg += '<a href = "https://giftree.herokuapp.com/validate?v=' + validateCode + '"> https://giftree.herokuapp.com/validate?v=' + validateCode + '</a>';
+                emailMsg += '<br/><br/>Thank you,<br/>Giftree App Team'
                 
                 const msg = {
                 to: email, // Recipient
@@ -358,7 +361,7 @@ exports.setApp = function (app, client)
     app.post('/api/addGroup', async (req,res,next) =>
     {
         // incoming: userId, groupName
-        // outgoing: error, success
+        // outgoing: error, success, groupCode
 
         const { userId, groupName } = req.body;
 
@@ -381,7 +384,7 @@ exports.setApp = function (app, client)
             newGroup.groupCode = groupCode;
     
             const result = db.collection('Groups').insertOne(newGroup); 
-            var ret = { error:'',success:true };
+            var ret = { error:'',success:true, groupCode:groupCode };
             
             res.status(200).json(ret);
         }
@@ -395,7 +398,7 @@ exports.setApp = function (app, client)
     app.post('/api/getGroups', async (req, res, next) =>
     {
         // incoming: userId
-        // outgoing: groups[groupId, groupName, groupCode], error, success
+        // outgoing: groups[groupId, groupName], error, success
 
         const { userId } = req.body;
 
@@ -408,7 +411,7 @@ exports.setApp = function (app, client)
 
             for(i=0; i < results.length; i++ )
             {
-                groups.push({ groupId:results[i]._id, groupName:results[i].groupName, groupCode:results[i].groupCode });
+                groups.push({ groupId:results[i]._id, groupName:results[i].groupName });
             }
             
             var ret = { groups:groups, error:'', success:true };
@@ -424,7 +427,8 @@ exports.setApp = function (app, client)
     app.post('/api/getGroupInfo', async (req, res, next) =>
     {
         // incoming: groupId, userId
-        // outgoing: event, eventName, eventPriceMin, eventPriceMax, eventDate, secretShopper_receiver, members[firstName, lastName, userId], error, success
+        // outgoing: groupName, groupCode, event, eventName, eventPriceMin, eventPriceMax, eventDate, secretShopper_receiver{userId, firstName, lastName}, 
+        // members[firstName, lastName, userId], error, success
 
         const { groupId, userId } = req.body;
         var gid = require('mongodb').ObjectID(groupId);
@@ -459,8 +463,14 @@ exports.setApp = function (app, client)
                 }
                 else
                 {
-                    var uid = require('mongodb').ObjectID(results[0].secretShopper_receivers[index]);
-                    const receiver = await db.collection('Users').find({ _id:uid }).project({ firstName: 1, lastName: 1 }).toArray();
+                    var receiverInfo = {};
+                    if(group.event)
+                    {
+                        id = group.secretShopper_receivers[index];
+                        var uid = require('mongodb').ObjectID(id);
+                        const receiver = await db.collection('Users').find({ _id:uid }).project({ firstName: 1, lastName: 1 }).toArray();
+                        receiverInfo = { userId:receiver[0]._id, firstName:receiver[0].firstName, lastName:receiver[0].lastName };
+                    }
 
                     var memberList = [];
 
@@ -472,12 +482,14 @@ exports.setApp = function (app, client)
                     } 
 
                     var ret = {};
+                    ret.groupName = group.groupName;
+                    ret.groupCode = group.groupCode;
                     ret.event = group.event;
                     ret.eventName = group.eventName;
                     ret.eventPriceMin = group.eventPriceMin;
                     ret.eventPriceMax = group.eventPriceMax;
                     ret.eventDate = group.eventDate;
-                    ret.secretShopper_receiver = { userId:receiver[0]._id, firstName:receiver[0].firstName, lastName:receiver[0].lastName };
+                    ret.secretShopper_receiver = receiverInfo;
                     ret.members = memberList;
                     ret.error = '';
                     ret.success = true;
@@ -645,7 +657,7 @@ exports.setApp = function (app, client)
                 }
 
                 const results = db.collection('Groups').update({ _id:gid }, { $set: { event:true, eventName:eventName, eventPriceMin:eventPriceMin, 
-                                                                                    eventPriceMax:eventPriceMax, eventDate:eventDate, secretShopper_receivers:receivers } });
+                                                                eventPriceMax:eventPriceMax, eventDate:eventDate, secretShopper_receivers:receivers } });
                 var ret = { error:'',success:true };
                 
                 res.status(200).json(ret);
@@ -691,7 +703,7 @@ exports.setApp = function (app, client)
         const db = client.db();
         try
         {
-            const results = await db.collection('Gifts').find({ userId:userId }, { giftName: 1, giftPrice: 1, giftGot: 1 }).toArray();
+            const results = await db.collection('Gifts').find({ userId:userId }).project({ giftName: 1, giftPrice: 1, giftGot: 1 }).toArray();
 
             var gifts = [];
 
@@ -830,7 +842,7 @@ exports.setApp = function (app, client)
         const db = client.db();
         try
         {
-            const gotStatus = await db.collection('Gifts').find({ _id:gid }, { giftGot: 1 }).toArray();
+            const gotStatus = await db.collection('Gifts').find({ _id:gid }).project({ giftGot: 1 }).toArray();
             if(gotStatus.length > 0)
             {
                 var gotUpdate = !gotStatus[0].giftGot;
