@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from 'axios';
+import axios from "axios";
 import {
   IonHeader,
   IonToolbar,
@@ -18,7 +18,12 @@ import {
   IonText,
 } from "@ionic/react";
 import "./Login.scss";
-import { setIsLoggedIn, setUsername, setUserId, setReload } from "../data/user/user.actions";
+import {
+  setIsLoggedIn,
+  setUsername,
+  setUserId,
+  setReload,
+} from "../data/user/user.actions";
 import { connect } from "../data/connect";
 import { RouteComponentProps } from "react-router";
 
@@ -38,10 +43,9 @@ const Login: React.FC<LoginProps> = ({
   history,
   setUsername: setUsernameAction,
   setUserId: setUserIdAction,
-  setReload: setReloadAction
+  setReload: setReloadAction,
 }) => {
-  
-  const app_name = 'cop4331-1';
+  const app_name = "giftree";
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -50,22 +54,10 @@ const Login: React.FC<LoginProps> = ({
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
 
-  function buildPath(route: any)
-  {
-    // look at using process.env.NODE_ENV
-    if (true)//process.env.NODE_ENV === 'production')
-    {
-      return 'https://' + app_name + '.herokuapp.com/' + route;
-    }
-    else
-    {
-      return 'http://localhost:8100/' + route;
-    }
-  }
-  
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormSubmitted(true);
+
     if (!username) {
       setUsernameError(true);
     }
@@ -77,13 +69,12 @@ const Login: React.FC<LoginProps> = ({
       await setIsLoggedIn(true);
       await setUsernameAction(username);
 
-      axios.post(buildPath('api/login'),
-        {
+      axios
+        .post("/api/login", {
           login: username,
           password: password,
         })
-        .then(async res =>
-        {
+        .then(async (res) => {
           console.log(res);
           await setIsLoggedIn(true);
           await setUsernameAction(username);
@@ -91,8 +82,7 @@ const Login: React.FC<LoginProps> = ({
           await setReloadAction(true);
           history.push("/tabs/Home", { direction: "none" });
         })
-        .catch(function (error)
-        {
+        .catch(function (error) {
           alert("Could not login. Please try again");
           console.log(error);
         });
@@ -179,7 +169,7 @@ export default connect<OwnProps, {}, DispatchProps>({
     setIsLoggedIn,
     setUsername,
     setUserId,
-    setReload
+    setReload,
   },
-  component: Login
+  component: Login,
 });
