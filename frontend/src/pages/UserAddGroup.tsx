@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { IonContent, IonHeader, IonButtons, IonMenuButton, IonPage, IonTitle, IonToolbar, IonButton, IonLabel, IonList, IonItem, IonInput, IonRow, IonCol, IonText} from '@ionic/react';
-import { connect } from '../data/connect';
-import { RouteComponentProps, withRouter } from 'react-router';
+import React, { useState } from "react";
+import axios from "axios";
+import {
+  IonContent,
+  IonHeader,
+  IonButtons,
+  IonMenuButton,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonButton,
+  IonLabel,
+  IonList,
+  IonItem,
+  IonInput,
+  IonRow,
+  IonCol,
+  IonText,
+} from "@ionic/react";
+import { connect } from "../data/connect";
+import { RouteComponentProps, withRouter } from "react-router";
 
-
-const BASE_URL = 'https://COP4331-1.herokuapp.com/';
-const ENDPOINT_URL = BASE_URL + 'api/addGroup';
-
+// const BASE_URL = 'https://COP4331-1.herokuapp.com/';
+// const ENDPOINT_URL = BASE_URL + 'api/addGroup';
 
 interface OwnProps extends RouteComponentProps {}
 
@@ -21,8 +35,8 @@ interface UserAddGroupProps extends OwnProps, StateProps {}
 const UserAddGroup: React.FC<UserAddGroupProps> = ({
   history,
   username,
-  userId
- }) => {
+  userId,
+}) => {
   const [groupName, setGroupName] = useState("");
   const [addedGroupName, setAddedGroupName] = useState("");
   const [groupCode, setGroupCode] = useState("");
@@ -32,13 +46,12 @@ const UserAddGroup: React.FC<UserAddGroupProps> = ({
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [groupNameError, setGroupNameError] = useState(false);
   const [groupCodeError, setGroupCodeError] = useState(false);
-  
 
   const addGroup = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     setFormSubmitted(true);
-    
+
     //console.log('in addgift now');
 
     if (!groupName) {
@@ -48,32 +61,34 @@ const UserAddGroup: React.FC<UserAddGroupProps> = ({
     if (!groupCode) {
       setGroupCodeError(true);
     }
-    
+
     if (groupName && groupCode) {
       const giftObject = {
-          userId: userId,
-          groupName: groupName,
-          groupCode: groupCode
+        userId: userId,
+        groupName: groupName,
+        groupCode: groupCode,
       };
 
       //console.log(giftObject);
       //console.log(history);
-      axios.post(ENDPOINT_URL, giftObject)
-        .then(res => {
-            console.log(res.data);
-        }).catch((error) => {
-            console.log(error)
-      });
+      axios
+        .post("/api/addGroup", giftObject)
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
       setAddedGroupName(groupName);
       setGroupAdded(true);
-      setGroupName('');
-      setGroupCode('');
+      setGroupName("");
+      setGroupCode("");
     }
   };
-  
+
   const ShowResult = async (e: React.FormEvent) => {
     //history.push('Wishlist', { direction: "none" });
-  }
+  };
 
   return (
     <IonPage id="addgroup-page">
@@ -129,10 +144,11 @@ const UserAddGroup: React.FC<UserAddGroupProps> = ({
                 <p className="ion-padding-start">Gift price is required</p>
               </IonText>
             )}
-
           </IonList>
           <IonRow>
-            <IonText>{groupAdded ? 'Added [' + addedGroupName + '] to wishlist!' : ''}</IonText>
+            <IonText>
+              {groupAdded ? "Added [" + addedGroupName + "] to wishlist!" : ""}
+            </IonText>
           </IonRow>
           <IonRow>
             <IonCol>
@@ -141,7 +157,7 @@ const UserAddGroup: React.FC<UserAddGroupProps> = ({
               </IonButton>
             </IonCol>
             <IonCol>
-              <IonButton href='/tabs/grouplist' expand="block">
+              <IonButton href="/tabs/grouplist" expand="block">
                 Groups
               </IonButton>
             </IonCol>
@@ -156,8 +172,7 @@ export default connect<StateProps, {}, OwnProps>({
   mapStateToProps: (state) => ({
     username: state.user.username,
     userId: state.user.userId,
-    groupId: state.user.groupId
+    groupId: state.user.groupId,
   }),
   component: withRouter(UserAddGroup),
 });
-

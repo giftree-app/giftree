@@ -1,15 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { IonContent, IonHeader, IonButtons, IonMenuButton, IonPage, IonTitle, IonToolbar, IonButton, IonLabel, IonList, IonItem, IonInput, IonRow, IonCol, IonAlert } from '@ionic/react';
-import { setGiftId, setReload } from '../data/user/user.actions';
-import { connect } from '../data/connect';
-import { RouteComponentProps, withRouter } from 'react-router';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import {
+  IonContent,
+  IonHeader,
+  IonButtons,
+  IonMenuButton,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonButton,
+  IonLabel,
+  IonList,
+  IonItem,
+  IonInput,
+  IonRow,
+  IonCol,
+  IonAlert,
+} from "@ionic/react";
+import { setGiftId, setReload } from "../data/user/user.actions";
+import { connect } from "../data/connect";
+import { RouteComponentProps, withRouter } from "react-router";
 
-
-const BASE_URL = 'https://COP4331-1.herokuapp.com/';
-const ENDPOINT_GET = BASE_URL + 'api/getGift';
-const ENDPOINT_UPDATE = BASE_URL + 'api/updateGift';
-const ENDPOINT_DELETE = BASE_URL + 'api/deleteGift';
+// const BASE_URL = 'https://COP4331-1.herokuapp.com/';
+// const ENDPOINT_GET = BASE_URL + 'api/getGift';
+// const ENDPOINT_UPDATE = BASE_URL + 'api/updateGift';
+// const ENDPOINT_DELETE = BASE_URL + 'api/deleteGift';
 
 interface OwnProps extends RouteComponentProps {}
 
@@ -25,13 +40,11 @@ interface DispatchProps {
 
 interface UpdateGiftProps extends OwnProps, StateProps, DispatchProps {}
 
-
 const EditGift: React.FC<UpdateGiftProps> = ({
-    history,
-    giftId,
-    setReload: setReloadAction,
-  }) => {
-  
+  history,
+  giftId,
+  setReload: setReloadAction,
+}) => {
   const [giftName, setGiftName] = useState("");
   const [giftPrice, setGiftPrice] = useState("");
   const [giftLocation, setGiftLocation] = useState("");
@@ -39,79 +52,77 @@ const EditGift: React.FC<UpdateGiftProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
-  
+
   const deleteGift = () => {
     //console.log('EditGift: in deleteGift');
-    axios.post(ENDPOINT_DELETE, {giftId: giftId} )
-        .then(res => {
-            console.log(res);
-        })
-        .catch(function (error) {
-            console.log(error);
-    })
+    axios
+      .post("/api/deleteGift", { giftId: giftId })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
 
   const updateGift = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const giftObject = {
-        giftId: giftId,
-        giftName: giftName,
-        giftPrice: giftPrice,
-        giftLocation: giftLocation,
-        giftComment: giftComment
+      giftId: giftId,
+      giftName: giftName,
+      giftPrice: giftPrice,
+      giftLocation: giftLocation,
+      giftComment: giftComment,
     };
 
     //console.log(giftObject);
-  
-    axios.post(ENDPOINT_UPDATE, giftObject)
+
+    axios
+      .post("/api/updateGift", giftObject)
       .then((res) => {
-          console.log(res.data)
-      }).catch((error) => {
-          console.log(error)
-      }); 
+        console.log(res.data);
+        redirectToWishList(e);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
-  
   const redirectToWishList = async (e: React.FormEvent) => {
     setReloadAction(true);
-    history.push('/tabs/wishlist', { direction: "none" });
-  }
+    history.push("/tabs/wishlist", { direction: "none" });
+  };
 
   useEffect(() => {
     //console.log('EditGift: in useEffect');
-    if(isLoading === false)
-    {
+    if (isLoading === false) {
       //console.log('EditGift: in useEffect: setting isListLoading to true');
       const getGift = () => {
         //console.log('EditGift: in getGift');
-        axios.post(ENDPOINT_GET, {giftId: giftId} )
-            .then(res => {
-                //console.log(res);
-                setGiftName(res.data.giftName);
-                setGiftPrice(res.data.giftPrice);
-                setGiftLocation(res.data.giftLocation);
-                setGiftComment(res.data.giftComment);
-                setIsLoaded(true);
-            })
-            .catch(function (error) {
-                console.log(error);
-        })
+        axios
+          .post("/api/getGift", { giftId: giftId })
+          .then((res) => {
+            //console.log(res);
+            setGiftName(res.data.giftName);
+            setGiftPrice(res.data.giftPrice);
+            setGiftLocation(res.data.giftLocation);
+            setGiftComment(res.data.giftComment);
+            setIsLoaded(true);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
       };
-    
+
       getGift();
       setIsLoading(true);
     }
-    
   }, [giftId, isLoading]);
 
-
-  if (isLoaded === false)
-  {
-      return <div> loading ...</div>;
-  }
-  else
-  {
+  if (isLoaded === false) {
+    return <div> loading ...</div>;
+  } else {
     return (
       <IonPage id="editgift-page">
         <IonHeader>
@@ -125,7 +136,7 @@ const EditGift: React.FC<UpdateGiftProps> = ({
         <IonContent>
           <form noValidate onSubmit={updateGift}>
             <IonList>
-            <IonItem>
+              <IonItem>
                 <IonLabel position="stacked" color="primary">
                   Gift:
                 </IonLabel>
@@ -188,9 +199,7 @@ const EditGift: React.FC<UpdateGiftProps> = ({
 
             <IonRow>
               <IonCol>
-                <IonButton type="submit" >
-                  Update Gift
-                </IonButton>
+                <IonButton type="submit">Update Gift</IonButton>
               </IonCol>
               <IonCol>
                 <IonButton onClick={() => setShowAlert(true)}>
@@ -198,9 +207,7 @@ const EditGift: React.FC<UpdateGiftProps> = ({
                 </IonButton>
               </IonCol>
               <IonCol>
-                <IonButton routerLink="/tabs/Wishlist" >
-                  Wishlist
-                </IonButton>
+                <IonButton routerLink="/tabs/Wishlist">Wishlist</IonButton>
               </IonCol>
             </IonRow>
           </form>
@@ -209,15 +216,15 @@ const EditGift: React.FC<UpdateGiftProps> = ({
           isOpen={showAlert}
           header="Delete Gift?"
           buttons={[
-            'No',
+            "No",
             {
-              text: 'Yes',
-              handler: (data:any) => {
+              text: "Yes",
+              handler: (data: any) => {
                 //setUsername(data.username);
                 deleteGift();
                 redirectToWishList(data);
-              }
-            }
+              },
+            },
           ]}
           onDidDismiss={() => setShowAlert(false)}
         />
@@ -229,11 +236,11 @@ const EditGift: React.FC<UpdateGiftProps> = ({
 export default connect<{}, StateProps, DispatchProps>({
   mapStateToProps: (state) => ({
     giftId: state.user.giftId,
-    reload: state.user.reload
+    reload: state.user.reload,
   }),
   mapDispatchToProps: {
     setGiftId,
-    setReload
+    setReload,
   },
-  component: withRouter(EditGift)
+  component: withRouter(EditGift),
 });

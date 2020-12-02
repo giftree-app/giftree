@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { IonContent, IonHeader, IonButtons, IonMenuButton, IonPage, IonTitle, IonToolbar, IonButton, IonLabel, IonList, IonItem, IonInput, IonRow, IonCol, IonText} from '@ionic/react';
-import { connect } from '../data/connect';
-import { RouteComponentProps, withRouter } from 'react-router';
+import React, { useState } from "react";
+import axios from "axios";
+import {
+  IonContent,
+  IonHeader,
+  IonButtons,
+  IonMenuButton,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonButton,
+  IonLabel,
+  IonList,
+  IonItem,
+  IonInput,
+  IonRow,
+  IonCol,
+  IonText,
+} from "@ionic/react";
+import { connect } from "../data/connect";
+import { RouteComponentProps, withRouter } from "react-router";
 
-
-const BASE_URL = 'https://COP4331-1.herokuapp.com/';
-const ENDPOINT_URL = BASE_URL + 'api/addGift';
-
+// const BASE_URL = 'https://COP4331-1.herokuapp.com/';
+// const ENDPOINT_URL = BASE_URL + 'api/addGift';
 
 interface OwnProps extends RouteComponentProps {}
 
@@ -18,11 +32,7 @@ interface StateProps {
 
 interface AddGiftProps extends OwnProps, StateProps {}
 
-const AddGift: React.FC<AddGiftProps> = ({
-  history,
-  username,
-  userId
- }) => {
+const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
   const [giftName, setGiftName] = useState("");
   const [addedGiftName, setAddedGiftName] = useState("");
   const [giftPrice, setGiftPrice] = useState("");
@@ -36,12 +46,11 @@ const AddGift: React.FC<AddGiftProps> = ({
   const [giftPriceError, setGiftPriceError] = useState(false);
   const [giftLocationError, setGiftLocationError] = useState(false);
 
-
   const addGift = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     setFormSubmitted(true);
-    
+
     //console.log('in addgift now');
 
     if (!giftName) {
@@ -58,34 +67,36 @@ const AddGift: React.FC<AddGiftProps> = ({
 
     if (giftName && giftPrice && giftLocation) {
       const giftObject = {
-          userId: userId,
-          giftName: giftName,
-          giftPrice: giftPrice,
-          giftLocation: giftLocation,
-          giftComment: giftComment
+        userId: userId,
+        giftName: giftName,
+        giftPrice: giftPrice,
+        giftLocation: giftLocation,
+        giftComment: giftComment,
       };
 
       //console.log(giftObject);
       //console.log(history);
-      axios.post(ENDPOINT_URL, giftObject)
-        .then(res => {
-            console.log(res.data);
-        }).catch((error) => {
-            console.log(error)
-      });
+      axios
+        .post("/api/addGift", giftObject)
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
       setAddedGiftName(giftName);
       setGiftAdded(true);
-      setGiftName('');
-      setGiftPrice('');
-      setGiftLocation('');
-      setGiftComment('');
+      setGiftName("");
+      setGiftPrice("");
+      setGiftLocation("");
+      setGiftComment("");
       ShowResult(e);
     }
   };
-  
+
   const ShowResult = async (e: React.FormEvent) => {
-    history.push('Wishlist', { direction: "none" });
-  }
+    history.push("Wishlist", { direction: "none" });
+  };
 
   return (
     <IonPage id="addgift-page">
@@ -176,10 +187,11 @@ const AddGift: React.FC<AddGiftProps> = ({
                 onIonChange={(e) => setGiftComment(e.detail.value!)}
               ></IonInput>
             </IonItem>
-
           </IonList>
           <IonRow>
-            <IonText>{giftAdded ? 'Added [' + addedGiftName + '] to wishlist!' : ''}</IonText>
+            <IonText>
+              {giftAdded ? "Added [" + addedGiftName + "] to wishlist!" : ""}
+            </IonText>
           </IonRow>
           <IonRow>
             <IonCol>
@@ -188,7 +200,7 @@ const AddGift: React.FC<AddGiftProps> = ({
               </IonButton>
             </IonCol>
             <IonCol>
-              <IonButton href='/tabs/wishlist' expand="block">
+              <IonButton href="/tabs/wishlist" expand="block">
                 Wishlist
               </IonButton>
             </IonCol>
@@ -203,8 +215,7 @@ export default connect<{}, StateProps, {}>({
   mapStateToProps: (state) => ({
     username: state.user.username,
     userId: state.user.userId,
-    giftId: state.user.giftId
+    giftId: state.user.giftId,
   }),
   component: withRouter(AddGift),
 });
-

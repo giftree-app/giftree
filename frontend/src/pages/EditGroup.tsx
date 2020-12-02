@@ -1,16 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { IonContent, IonHeader, IonButtons, IonMenuButton, IonPage, IonTitle, IonToolbar, IonButton, IonLabel, IonList, IonItem, IonInput, IonRow, IonCol, IonAlert } from '@ionic/react';
-import { setGroupId, setReload } from '../data/user/user.actions';
-import { connect } from '../data/connect';
-import { RouteComponentProps, withRouter } from 'react-router';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import {
+  IonContent,
+  IonHeader,
+  IonButtons,
+  IonMenuButton,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonButton,
+  IonLabel,
+  IonList,
+  IonItem,
+  IonInput,
+  IonRow,
+  IonCol,
+  IonAlert,
+} from "@ionic/react";
+import { setGroupId, setReload } from "../data/user/user.actions";
+import { connect } from "../data/connect";
+import { RouteComponentProps, withRouter } from "react-router";
 
-
-const BASE_URL = 'https://COP4331-1.herokuapp.com/';
-const ENDPOINT_GET = BASE_URL + 'api/getGroupInfo';
-const ENDPOINT_UPDATE = BASE_URL + 'api/updateGroupName';
-const ENDPOINT_DELETE = BASE_URL + 'api/deleteGroup';
-
+// const BASE_URL = 'https://COP4331-1.herokuapp.com/';
+// const ENDPOINT_GET = BASE_URL + 'api/getGroupInfo';
+// const ENDPOINT_UPDATE = BASE_URL + 'api/updateGroupName';
+// const ENDPOINT_DELETE = BASE_URL + 'api/deleteGroup';
 
 interface OwnProps extends RouteComponentProps {}
 
@@ -27,85 +41,81 @@ interface DispatchProps {
 
 interface UpdateGroupProps extends OwnProps, StateProps, DispatchProps {}
 
-
 const EditGroup: React.FC<UpdateGroupProps> = ({
-    history,
-    groupId,
-    userId,
-    setReload: setReloadAction,
-  }) => {
-  
+  history,
+  groupId,
+  userId,
+  setReload: setReloadAction,
+}) => {
   const [groupName, setGroupName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
-  
-  console.log('EditGroup entry');
+
+  console.log("EditGroup entry");
 
   const deleteGroup = () => {
     //console.log('EditGroup: in deleteGroup');
-    axios.post(ENDPOINT_DELETE, {groupId: groupId} )
-        .then(res => {
-            console.log(res);
-        })
-        .catch(function (error) {
-            console.log(error);
-    })
+    axios
+      .post("/api/deleteGroup", { groupId: groupId })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
 
   const updateGroup = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const groupObject = {
-        groupId: groupId,
-        groupName: groupName
+      groupId: groupId,
+      groupName: groupName,
     };
 
     //console.log(giftObject);
-  
-    axios.post(ENDPOINT_UPDATE, groupObject)
+
+    axios
+      .post("/api/updateGroupName", groupObject)
       .then((res) => {
-          console.log(res.data)
-      }).catch((error) => {
-          console.log(error)
-      }); 
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
-  
+
   useEffect(() => {
-    if(isLoading === false)
-    {
+    if (isLoading === false) {
       const getGroup = () => {
-        console.log('EditGroup: in getGroup: groupId: ' + groupId);
-        console.log('EditGroup: in getGroup: userId: ' + userId);
-        axios.post(ENDPOINT_GET, {groupId: groupId, userId: userId} )
-            .then(res => {
-                console.log(res);
-                setGroupName(res.data.groupName);
-                setIsLoaded(true);
-            })
-            .catch(function (error) {
-                console.log(error);
-        })
+        console.log("EditGroup: in getGroup: groupId: " + groupId);
+        console.log("EditGroup: in getGroup: userId: " + userId);
+        axios
+          .post("/api/getGroupInfo", { groupId: groupId, userId: userId })
+          .then((res) => {
+            console.log(res);
+            setGroupName(res.data.groupName);
+            setIsLoaded(true);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
       };
-    
+
       getGroup();
       setIsLoading(true);
     }
-    
   }, [groupId, userId, isLoading]);
-
 
   const redirectToGroupList = async (e: React.FormEvent) => {
     setReloadAction(true);
-    history.push('/tabs/GroupList', { direction: "none" });
-  }
+    history.push("/tabs/GroupList", { direction: "none" });
+  };
 
-  if (isLoaded === false)
-  {
-      return <div> loading ...</div>;
-  }
-  else
-  {
+  if (isLoaded === false) {
+    return <div> loading ...</div>;
+  } else {
     return (
       <IonPage id="editgroup-page">
         <IonHeader>
@@ -119,7 +129,7 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
         <IonContent>
           <form noValidate onSubmit={updateGroup}>
             <IonList>
-            <IonItem>
+              <IonItem>
                 <IonLabel position="stacked" color="primary">
                   Group name:
                 </IonLabel>
@@ -137,9 +147,7 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
 
             <IonRow>
               <IonCol>
-                <IonButton type="submit" >
-                  Update Group
-                </IonButton>
+                <IonButton type="submit">Update Group</IonButton>
               </IonCol>
               <IonCol>
                 <IonButton onClick={() => setShowAlert(true)}>
@@ -147,9 +155,7 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
                 </IonButton>
               </IonCol>
               <IonCol>
-                <IonButton routerLink="/tabs/Grouplist" >
-                  Groups
-                </IonButton>
+                <IonButton routerLink="/tabs/Grouplist">Groups</IonButton>
               </IonCol>
             </IonRow>
           </form>
@@ -158,15 +164,15 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
           isOpen={showAlert}
           header="Delete Group?"
           buttons={[
-            'No',
+            "No",
             {
-              text: 'Yes',
-              handler: (data:any) => {
+              text: "Yes",
+              handler: (data: any) => {
                 //setUsername(data.username);
                 deleteGroup();
                 redirectToGroupList(data);
-              }
-            }
+              },
+            },
           ]}
           onDidDismiss={() => setShowAlert(false)}
         />
@@ -179,11 +185,11 @@ export default connect<{}, StateProps, DispatchProps>({
   mapStateToProps: (state) => ({
     groupId: state.user.groupId,
     userId: state.user.userId,
-    reload: state.user.reload
+    reload: state.user.reload,
   }),
   mapDispatchToProps: {
     setGroupId,
-    setReload
+    setReload,
   },
-  component: withRouter(EditGroup)
+  component: withRouter(EditGroup),
 });
