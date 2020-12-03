@@ -51,9 +51,7 @@ interface ListLoadingState {
 
 interface WishlistProps
   extends StateProps,
-    DispatchProps,
-    GiftProps,
-    ListLoadingState {}
+    DispatchProps {}
 /////////////////////////////////////
 
 const Wishlist: React.FC<WishlistProps> = ({
@@ -96,6 +94,7 @@ const Wishlist: React.FC<WishlistProps> = ({
   ////////////////////////////////
 
   const goToAddGift = (e: any) => {
+    setIsListLoaded(false);
     setReloadAction(false);
   };
   ////////////////////////////////
@@ -104,8 +103,6 @@ const Wishlist: React.FC<WishlistProps> = ({
     return <div> loading ...</div>;
   } else {
     let temp = gifts;
-    //console.log(temp);
-
     return (
       <div className="wishlist">
         <IonPage id="wishlist">
