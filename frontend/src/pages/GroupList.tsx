@@ -1,45 +1,46 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import {
-  IonContent,
   IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonPage,
   IonButtons,
   IonMenuButton,
-  IonPage,
-  IonTitle,
-  IonToolbar,
-  IonCard,
-  IonCardHeader,
   IonCol,
+  IonCardHeader,
+  IonCard,
 } from "@ionic/react";
-import axios from "axios";
+import { connect } from "../data/connect";
+import "./GroupList.scss";
 import { IonItem, IonLabel, IonList } from "@ionic/react";
-import { Gifts } from "../models/Gift";
+import { Group } from "../models/Group";
 import {
   setUserId,
   setUsername,
-  setGiftId,
+  setGroupId,
   setReload,
 } from "../data/user/user.actions";
-import { connect } from "../data/connect";
 
-// const BASE_URL = "https://COP4331-1.herokuapp.com/";
-// const ENDPOINT_URL = BASE_URL + "api/getWishlist";
+// const BASE_URL = 'https://COP4331-1.herokuapp.com/';
+// const ENDPOINT_URL = BASE_URL + 'api/getGroups';
 
-interface GiftProps {
-  gifts: Gifts[];
+interface GroupProps {
+  groups: Group[];
 }
 
 interface StateProps {
   username?: string;
   userId?: string;
-  giftId?: string;
+  groupId?: string;
   reload: boolean;
 }
 
 interface DispatchProps {
   setUsername: typeof setUsername;
   setUserId: typeof setUserId;
-  setGiftId: typeof setGiftId;
+  setGroupId: typeof setGroupId;
   setReload: typeof setReload;
 }
 
@@ -49,35 +50,34 @@ interface ListLoadingState {
 }
 /////////////////////////////////////
 
-interface WishlistProps
+interface GroupListProps
   extends StateProps,
     DispatchProps,
-    GiftProps,
+    GroupProps,
     ListLoadingState {}
 /////////////////////////////////////
 
-const Wishlist: React.FC<WishlistProps> = ({
+const GroupList: React.FC<GroupListProps> = ({
   userId,
   reload,
-  setGiftId: setGiftIdAction,
+  setGroupId: setGroupIdAction,
   setReload: setReloadAction,
 }) => {
   const [isListLoading, setIsListLoading] = useState(false);
   const [isListLoaded, setIsListLoaded] = useState(false);
-  const [gifts, setGifts] = useState([]);
+  const [groups, setGroups] = useState([]);
 
   useEffect(() => {
-    //console.log('in useEffect');
     if (isListLoading === false) {
-      //console.log('in useEffect: setting isListLoading to true');
+      //console.log('GroupList->useEffect: reload = ' + {setReload});
       const getList = () => {
         //console.log('in getList()');
         axios
-          .post("/api/getWishlist", { userId: userId })
+          .post("/api/getGroups", { userId: userId })
           .then(async (res) => {
-            await console.log(res);
-            await setGifts(res.data.gifts);
-            setIsListLoaded(true);
+            console.log(res);
+            await setGroups(res.data.groups);
+            await setIsListLoaded(true);
           })
           .catch(function (error) {
             console.log(error);
@@ -85,17 +85,17 @@ const Wishlist: React.FC<WishlistProps> = ({
       };
       getList();
       setIsListLoading(true);
+      setGroupId("");
       setReloadAction(false);
     }
   }, [userId, isListLoading, setReloadAction, reload]);
 
   const onClick = (e: any) => {
-    //console.log('clicked on: ' + e.giftId);
-    setGiftIdAction(e.giftId);
+    setGroupIdAction(e.groupId);
   };
   ////////////////////////////////
 
-  const goToAddGift = (e: any) => {
+  const goToAddGroup = (e: any) => {
     setReloadAction(false);
   };
   ////////////////////////////////
@@ -103,54 +103,61 @@ const Wishlist: React.FC<WishlistProps> = ({
   if (isListLoaded === false) {
     return <div> loading ...</div>;
   } else {
-    let temp = gifts;
-    //console.log(temp);
-
+    // assigning groups to a local temp variable in order to prevent a warning... weird react behavior?
+    let temp = groups;
     return (
-      <div className="wishlist">
-        <IonPage id="wishlist">
+      <div className="grouplist">
+        <IonPage id="grouplist">
           <IonHeader translucent={true}>
             <IonToolbar>
               <IonButtons slot="start">
                 <IonMenuButton />
               </IonButtons>
-              <IonTitle>Wishlist</IonTitle>
+              <IonTitle>Groups</IonTitle>
             </IonToolbar>
           </IonHeader>
           <IonContent fullscreen>
             <IonList lines="none">
               {temp &&
-                temp.map((gift) => (
-                  <IonItem
-                    detail={false}
-                    href="/tabs/editgift"
-                    routerDirection="none"
-                    key={gift.giftId}
-                    onClick={() => onClick({ giftId: gift.giftId })}
-                  >
-                    <IonLabel>
-                      <h3>{gift.giftName}</h3>
-                    </IonLabel>
-                  </IonItem>
+                temp.map((group) => (
+                  <IonCard className="group-card" key={group.groupId}>
+                    <IonCardHeader key={group.groupId}>
+                      <IonCol size="12" size-md="6" key={group.groupId}>
+                        <IonItem
+                          button
+                          lines="none"
+                          className="group-item"
+                          detail={false}
+                          href="/tabs/editgroup"
+                          routerDirection="none"
+                          key={group.groupId}
+                          onClick={() => onClick({ groupId: group.groupId })}
+                        >
+                          <IonLabel>
+                            <h1>{group.groupName}</h1>
+                          </IonLabel>
+                        </IonItem>
+                      </IonCol>
+                    </IonCardHeader>
+                  </IonCard>
                 ))}
             </IonList>
             <br />
-            <IonCard className="wishlist-button-card">
+            <IonCard className="group-button-card">
               <IonCardHeader>
                 <IonCol size="12" size-md="6">
                   <IonItem
                     button
                     color="medium"
-                    href="/tabs/addgift"
+                    href="/tabs/addgroup"
                     routerDirection="none"
-                    onClick={() => goToAddGift(true)}
+                    onClick={() => goToAddGroup(true)}
                   >
-                    Add Gift!
+                    Add Group!
                   </IonItem>
                 </IonCol>
               </IonCardHeader>
             </IonCard>
-            <br />
           </IonContent>
         </IonPage>
       </div>
@@ -162,14 +169,14 @@ export default connect<{}, StateProps, DispatchProps>({
   mapStateToProps: (state) => ({
     username: state.user.username,
     userId: state.user.userId,
-    giftId: state.user.giftId,
+    groupId: state.user.groupId,
     reload: state.user.reload,
   }),
   mapDispatchToProps: {
     setUsername,
     setUserId,
-    setGiftId,
+    setGroupId,
     setReload,
   },
-  component: Wishlist,
+  component: GroupList,
 });

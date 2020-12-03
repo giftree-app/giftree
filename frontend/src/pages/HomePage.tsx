@@ -1,8 +1,17 @@
 import React from 'react';
 import { IonContent, IonHeader, IonButtons, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
+import { connect } from '../data/connect';
 
-const HomePage: React.FC = () => {
+
+interface StateProps {
+  username?: string;
+  userId?: string;
+}
+
+const HomePage: React.FC<StateProps> = ({ username, userId }) =>
+{
+  //console.log('homepage entry: reload = ' + reload);
+
   return (
     <IonPage id="homepage">
       <IonHeader translucent={true}>
@@ -13,16 +22,31 @@ const HomePage: React.FC = () => {
           <IonTitle>Home</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Temp HomePage</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <ExploreContainer name="Home page" />
+      <IonContent>
+        username:
+        {username &&
+          (<div className="ion-padding-top ion-text-center">
+            <img src="https://www.gravatar.com/avatar?d=mm&s=140" alt="avatar" />
+            <h2>{ username }</h2>
+          </div>)
+        }
+        userId:
+        {userId &&
+          (<div className="ion-padding-top ion-text-center">
+            <img src="https://www.gravatar.com/avatar?d=mm&s=140" alt="avatar" />
+            <h2>{ userId }</h2>
+          </div>)
+        }
       </IonContent>
     </IonPage>
   );
 };
 
-export default HomePage;
+export default connect<StateProps>({
+  mapStateToProps: (state) => ({
+    username: state.user.username,
+    userId: state.user.userId,
+    reload: state.user.reload
+  }),
+  component: HomePage
+})

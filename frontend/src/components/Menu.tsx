@@ -12,7 +12,7 @@ import './Menu.css'
 const routes = {
   appPages: [
     { title: 'Home', path: '/tabs/home', icon: calendarOutline },
-    { title: 'Groups', path: '/tabs/speakers', icon: peopleOutline },
+    { title: 'Groups', path: '/tabs/grouplist', icon: peopleOutline },
     { title: 'Wishlist', path: '/tabs/wishlist', icon: listOutline },
     { title: 'About', path: '/tabs/about', icon: informationCircleOutline }
   ],
@@ -37,7 +37,6 @@ interface Pages {
 interface StateProps {
   darkMode: boolean;
   isAuthenticated: boolean;
-  menuEnabled: boolean;
 }
 
 interface DispatchProps {
@@ -46,7 +45,7 @@ interface DispatchProps {
 
 interface MenuProps extends RouteComponentProps, StateProps, DispatchProps { }
 
-const Menu: React.FC<MenuProps> = ({ darkMode, history, isAuthenticated, setDarkMode, menuEnabled }) => {
+const Menu: React.FC<MenuProps> = ({ darkMode, history, isAuthenticated, setDarkMode}) => {
   const location = useLocation();
 
   function renderlistItems(list: Pages[]) {
@@ -63,10 +62,10 @@ const Menu: React.FC<MenuProps> = ({ darkMode, history, isAuthenticated, setDark
   }
 
   return (
-    <IonMenu  type="overlay" disabled={!menuEnabled} contentId="main">
+    <IonMenu  type="overlay" contentId="main">
       <IonContent forceOverscroll={false}>
         <IonList lines="none">
-          <IonListHeader>Conference</IonListHeader>
+          <IonListHeader>Giftree</IonListHeader>
           {renderlistItems(routes.appPages)}
         </IonList>
         <IonList lines="none">
@@ -86,8 +85,7 @@ const Menu: React.FC<MenuProps> = ({ darkMode, history, isAuthenticated, setDark
 export default connect<{}, StateProps, {}>({
   mapStateToProps: (state) => ({
     darkMode: state.user.darkMode,
-    isAuthenticated: state.user.isLoggedin,
-    menuEnabled: state.data.menuEnabled
+    isAuthenticated: state.user.isLoggedin
   }),
   mapDispatchToProps: ({
     setDarkMode

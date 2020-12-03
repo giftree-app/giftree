@@ -1,7 +1,5 @@
 import { Plugins } from '@capacitor/core';
-import { Schedule, Session } from '../models/Schedule';
-import { Speaker } from '../models/Speaker';
-import { Location } from '../models/Location';
+import { Group } from '../models/Group';
 
 const { Storage } = Plugins;
 
@@ -10,28 +8,22 @@ const locationsUrl = '/assets/data/locations.json';
 
 const HAS_LOGGED_IN = 'hasLoggedIn';
 const USERNAME = 'username';
+const USERID = 'userId';
+const GIFTID = 'giftId';
+const GROUPID = 'groupId';
+const NEED_TO_RELOAD = 'reload';
 
 export const getConfData = async () => {
   const response = await Promise.all([
     fetch(dataUrl),
     fetch(locationsUrl)]);
   const responseData = await response[0].json();
-  const schedule = responseData.schedule[0] as Schedule;
-  const sessions = parseSessions(schedule);
-  const speakers = responseData.speakers as Speaker[];
+  const groups = responseData.groups as Group[];
   const locations = await response[1].json() as Location[];
-  const allTracks = sessions
-    .reduce((all, session) => all.concat(session.tracks), [] as string[])
-    .filter((trackName, index, array) => array.indexOf(trackName) === index)
-    .sort();
-
+  
   const data = {
-    schedule,
-    sessions,
     locations,
-    speakers,
-    allTracks,
-    filteredTracks: [...allTracks]
+    groups
   }
   return data;
 }
@@ -39,12 +31,24 @@ export const getConfData = async () => {
 export const getUserData = async () => {
   const response = await Promise.all([
     Storage.get({ key: HAS_LOGGED_IN }),
-    Storage.get({ key: USERNAME })]);
+    Storage.get({ key: USERNAME }),
+    Storage.get({ key: USERID }),
+    Storage.get({ key: GIFTID }),
+    Storage.get({ key: GROUPID }),
+    Storage.get({ key: NEED_TO_RELOAD })]);
   const isLoggedin = await response[0].value === 'true';
   const username = await response[1].value || undefined;
+  const userId = await response[2].value || undefined;
+  const giftId = await response[3].value || undefined;
+  const groupId = await response[4].value || undefined;
+  const reload = response[5].value === 'false';
   const data = {
     isLoggedin,
-    username
+    username,
+    userId,
+    giftId,
+    groupId,
+    reload
   }
   return data;
 }
@@ -61,10 +65,33 @@ export const setUsernameData = async (username?: string) => {
   }
 }
 
-function parseSessions(schedule: Schedule) {
-  const sessions: Session[] = [];
-  schedule.groups.forEach(g => {
-    g.sessions.forEach(s => sessions.push(s))
-  });
-  return sessions;
+export const setUserIdData = async (userId?: string) => {
+  if (!userId) {
+    await Storage.remove({ key: USERID });
+  } else {
+    await Storage.set({ key: USERID, value: userId });
+  }
 }
+
+export const setGiftIdData = async (giftId?: string) => {
+  if (!giftId) {
+    await Storage.remove({ key: GIFTID });
+  } else {
+    await Storage.set({ key: GIFTID, value: giftId });
+  }
+}
+
+export const setGroupIdData = async (groupId?: string) => {
+  if (!groupId) {
+    await Storage.remove({ key: GROUPID });
+  } else {
+    await Storage.set({ key: GROUPID, value: groupId });
+  }
+}
+
+export const setReloadData = async (reload: boolean) => {
+  await Storage.set({ key: NEED_TO_RELOAD, value: JSON.stringify(reload) });
+}
+
+
+
