@@ -89,12 +89,14 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
   useEffect(() => {
     if (isLoading === false) {
       const getGroup = () => {
-        console.log("EditGroup: in getGroup: groupId: " + groupId);
-        console.log("EditGroup: in getGroup: userId: " + userId);
+        //console.log("EditGroup: in getGroup: groupId: " + groupId);
+        //console.log("EditGroup: in getGroup: userId: " + userId);
         axios
           .post("/api/getGroupInfo", { groupId: groupId, userId: userId })
           .then((res) => {
-            console.log(res);
+            //console.log(res);
+            //console.log("EditGroup: in getGroup: groupName: " + groupName);
+            //console.log("EditGroup: in getGroup: data: " + res.data);
             setGroupName(res.data.groupName);
             setIsLoaded(true);
           })

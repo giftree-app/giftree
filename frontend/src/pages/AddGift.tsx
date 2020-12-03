@@ -214,8 +214,7 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
 export default connect<{}, StateProps, {}>({
   mapStateToProps: (state) => ({
     username: state.user.username,
-    userId: state.user.userId,
-    giftId: state.user.giftId,
+    userId: state.user.userId
   }),
   component: withRouter(AddGift),
 });
