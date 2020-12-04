@@ -1,5 +1,22 @@
 exports.setApp = function (app, client) {
-  app.post("/api/register", async (req, res, next) => {
+  const jwt = require("jsonwebtoken");
+  const accessTokenSecret = process.env.SECRET_KEY;
+
+  function authenticateToken(req, res, next) {
+    // Gather the jwt access token from the request header
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+    if (token == null) return res.sendStatus(401); // if there isn't any token
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      console.log(err);
+      if (err) return res.sendStatus(403);
+      req.user = user;
+      next(); // pass the execution off to whatever request the client intended
+    });
+  }
+
+  app.post("/api/register", async (req, res) => {
     // incoming: firstName, lastName, username, password, email, address1, address2
     // outgoing: error, success
 
@@ -77,7 +94,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/validate", async (req, res, next) => {
+  app.post("/api/validate", async (req, res) => {
     // incoming: username, password, validateCode
     // outgoing: userId, firstName, lastName, error, success
 
@@ -115,7 +132,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/login", async (req, res, next) => {
+  app.post("/api/login", async (req, res) => {
     // incoming: username, password
     // outgoing: userId, firstName, lastName, error, success
 
@@ -132,10 +149,19 @@ exports.setApp = function (app, client) {
 
       if (results.length > 0) {
         if (results[0].validated) {
+          const expiresIn = 24 * 60 * 60;
+          const accessToken = jwt.sign(
+            { username: results[0].username },
+            accessTokenSecret,
+            { expiresIn: expiresIn }
+          );
+
           var ret = {};
           ret.userId = results[0]._id;
           ret.firstName = results[0].firstName;
           ret.lastName = results[0].lastName;
+          ret.accessToken = accessToken;
+          ret.expiresIn = expiresIn;
           res.status(200).json(ret);
         } else {
           var ret = { error: "User not Validated", success: false };
@@ -151,7 +177,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/addGroup", async (req, res, next) => {
+  app.post("/api/addGroup", authenticateToken, async (req, res) => {
     // incoming: userId, groupName
     // outgoing: error, success
 
@@ -196,7 +222,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/getGroups", async (req, res, next) => {
+  app.post("/api/getGroups", authenticateToken, async (req, res) => {
     // incoming: userId
     // outgoing: groups[groupId, groupName, groupCode], error, success
 
@@ -227,7 +253,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/getGroupInfo", async (req, res, next) => {
+  app.post("/api/getGroupInfo", authenticateToken, async (req, res) => {
     // incoming: groupId
     // outgoing: event, eventName, eventPriceMin, eventPriceMax, eventDate, secretShopper_buyers, secretShopper_receivers, members[firstName, lastName, userId], error, success
 
@@ -280,7 +306,7 @@ exports.setApp = function (app, client) {
     });
     */
 
-  app.post("/api/userAddGroup", async (req, res, next) => {
+  app.post("/api/userAddGroup", authenticateToken, async (req, res) => {
     // incoming: groupCode, userId
     // outgoing: error, success
 
@@ -313,7 +339,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/deleteGroupMember", async (req, res, next) => {
+  app.post("/api/deleteGroupMember", authenticateToken, async (req, res) => {
     // incoming: groupId, userId
     // outgoing: error, success
 
@@ -335,7 +361,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/updateGroupName", async (req, res, next) => {
+  app.post("/api/updateGroupName", authenticateToken, async (req, res) => {
     // incoming: groupId, groupName
     // outgoing: error, success
 
@@ -357,7 +383,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/deleteGroup", async (req, res, next) => {
+  app.post("/api/deleteGroup", authenticateToken, async (req, res) => {
     // incoming: groupId
     // outgoing: error, success
 
@@ -377,7 +403,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/addEvent", async (req, res, next) => {
+  app.post("/api/addEvent", authenticateToken, async (req, res) => {
     // incoming: groupId, eventName, eventPriceMin, eventPriceMax, eventDate
     // outgoing: error, success
 
@@ -441,7 +467,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/deleteEvent", async (req, res, next) => {
+  app.post("/api/deleteEvent", authenticateToken, async (req, res) => {
     // incoming: groupId
     // outgoing: error, success
 
@@ -473,7 +499,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/getWishlist", async (req, res, next) => {
+  app.post("/api/getWishlist", authenticateToken, async (req, res) => {
     // incoming: userId
     // outgoing: gifts[giftId, giftName, giftPrice, giftGot], error, success
 
@@ -505,7 +531,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/addGift", async (req, res, next) => {
+  app.post("/api/addGift", authenticateToken, async (req, res) => {
     // incoming: userId, giftName, giftPrice, giftLocation, giftComment
     // outgoing: error, success
 
@@ -533,7 +559,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/getGift", async (req, res, next) => {
+  app.post("/api/getGift", authenticateToken, async (req, res) => {
     // incoming: giftId
     // outgoing: giftName, giftPrice, giftLocation, giftComment, giftGot, error, success
 
@@ -565,7 +591,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/UpdateGift", async (req, res, next) => {
+  app.post("/api/UpdateGift", authenticateToken, async (req, res) => {
     // incoming: giftId, giftName, giftPrice, giftLocation, giftComment
     // outgoing: error, success
 
@@ -594,7 +620,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/deleteGift", async (req, res, next) => {
+  app.post("/api/deleteGift", authenticateToken, async (req, res) => {
     // incoming: giftId
     // outgoing: error, success
 
@@ -613,7 +639,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/gotGift", async (req, res, next) => {
+  app.post("/api/gotGift", authenticateToken, async (req, res) => {
     // incoming: giftId
     // outgoing: error, success
 

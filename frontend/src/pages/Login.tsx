@@ -26,6 +26,8 @@ import {
 } from "../data/user/user.actions";
 import { connect } from "../data/connect";
 import { RouteComponentProps } from "react-router";
+import { Plugins } from "@capacitor/core";
+const { Storage } = Plugins;
 
 interface OwnProps extends RouteComponentProps {}
 
@@ -75,7 +77,14 @@ const Login: React.FC<LoginProps> = ({
           password: password,
         })
         .then(async (res) => {
-          console.log(res);
+          await Storage.set({
+            key: "ACCESS_TOKEN",
+            value: res.data.accessToken,
+          });
+          await Storage.set({
+            key: "EXPIRES_IN",
+            value: res.data.expiresIn,
+          });
           await setIsLoggedIn(true);
           await setUsernameAction(username);
           await setUserIdAction(res.data.userId);
