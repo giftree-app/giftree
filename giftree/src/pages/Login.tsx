@@ -95,7 +95,7 @@ const Login: React.FC<LoginProps> = ({
           <IonButtons slot="start">
             <IonMenuButton></IonMenuButton>
           </IonButtons>
-          <IonTitle>Login</IonTitle>
+          <IonTitle><img src="assets/img/appicon.svg" className="toolbar-logo" /></IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent>
@@ -146,16 +146,18 @@ const Login: React.FC<LoginProps> = ({
               </IonText>
             )}
           </IonList>
-          <div className= "reset">
+          <div className= "reset" style={{paddingTop: "50px"}}>
           <a href="" className= "resetText">Forgot email? <b>Click here to reset.</b> </a>
           </div>
           <div className= "reset">
           <a href="" className= "resetText">Forgot password? <b>Click here to reset.</b> </a>
           </div>
 
+
               <IonButton type="submit" expand="block" className="loginbtn" >
                 Go!
               </IonButton>
+
 
             {/* <IonCol>
               <IonButton routerLink="/signup" color="light" expand="block">

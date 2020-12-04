@@ -112,23 +112,25 @@ const Login: React.FC<LoginProps> = ({
           <IonButtons slot="start">
             <IonMenuButton></IonMenuButton>
           </IonButtons>
-          <IonTitle>Signup</IonTitle>
+          <IonTitle><img src="assets/img/appicon.svg" className="toolbar-logo" /></IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent>
         <div className="login-logo">
           <img src="assets/img/appicon.svg" alt="Ionic logo" />
         </div>
+        <IonLabel>
+          <h1 className= "header">SIGN UP</h1>
+
+        </IonLabel>
 
         <form noValidate onSubmit={login}>
           <IonList>
-            <IonItem>
-              <IonLabel position="stacked" color="primary">
-                First Name
-              </IonLabel>
+            <IonItem className="signup-fields">
               <IonInput
                 name="firstName"
                 type="text"
+                placeholder= "FIRST NAME"
                 value={firstName}
                 spellCheck={false}
                 autocapitalize="off"
@@ -138,21 +140,10 @@ const Login: React.FC<LoginProps> = ({
                 }}
                 required
               ></IonInput>
-            </IonItem>
-
-            {formSubmitted && firstNameError && (
-              <IonText color="danger">
-                <p className="ion-padding-start">First name is required</p>
-              </IonText>
-            )}
-
-            <IonItem>
-              <IonLabel position="stacked" color="primary">
-                Last Name
-              </IonLabel>
-              <IonInput
+                            <IonInput
                 name="lastName"
                 type="text"
+                placeholder= "LAST NAME"
                 value={lastName}
                 spellCheck={false}
                 autocapitalize="off"
@@ -162,7 +153,13 @@ const Login: React.FC<LoginProps> = ({
                 }}
                 required
               ></IonInput>
-            </IonItem>
+            </IonItem >
+
+            {formSubmitted && firstNameError && (
+              <IonText color="danger">
+                <p className="ion-padding-start">First name is required</p>
+              </IonText>
+            )}
 
             {formSubmitted && lastNameError && (
               <IonText color="danger">
@@ -170,13 +167,11 @@ const Login: React.FC<LoginProps> = ({
               </IonText>
             )}
 
-            <IonItem>
-              <IonLabel position="stacked" color="primary">
-                Email
-              </IonLabel>
+            <IonItem className="signup-fields">
               <IonInput
                 name="email"
                 type="text"
+                placeholder= "EMAIL"
                 value={email}
                 spellCheck={false}
                 autocapitalize="off"
@@ -194,13 +189,53 @@ const Login: React.FC<LoginProps> = ({
               </IonText>
             )}
 
-            <IonItem>
-              <IonLabel position="stacked" color="primary">
-                Address Line 1
-              </IonLabel>
+
+            <IonItem className="signup-fields">
+              <IonInput
+                name="username"
+                type="text"
+                placeholder= "USERNAME"
+                value={username}
+                spellCheck={false}
+                autocapitalize="off"
+                onIonChange={(e) => {
+                  setUsername(e.detail.value!);
+                  setUsernameError(false);
+                }}
+                required
+              ></IonInput>
+            <IonInput
+              name="password"
+              type="password"
+              placeholder= "PASSWORD"
+              value={password}
+              onIonChange={(e) => {
+                setPassword(e.detail.value!);
+                setPasswordError(false);
+              }}
+              ></IonInput>
+            </IonItem>
+
+            {formSubmitted && usernameError && (
+              <IonText color="danger">
+                <p className="ion-padding-start">Username is required</p>
+              </IonText>
+            )}
+
+
+
+            {formSubmitted && passwordError && (
+              <IonText color="danger">
+                <p className="ion-padding-start">Password is required</p>
+              </IonText>
+            )}
+
+
+            <IonItem className="signup-fields">
               <IonInput
                 name="address1"
                 type="text"
+                placeholder= "ADDRESS LINE 1"
                 value={address1}
                 spellCheck={false}
                 autocapitalize="off"
@@ -214,17 +249,15 @@ const Login: React.FC<LoginProps> = ({
 
             {formSubmitted && address1Error && (
               <IonText color="danger">
-                <p className="ion-padding-start">Adress is required</p>
+                <p className="ion-padding-start">Address is required</p>
               </IonText>
             )}
 
-            <IonItem>
-              <IonLabel position="stacked" color="primary">
-                Address Line 2
-              </IonLabel>
+            <IonItem className="signup-fields">
               <IonInput
-                name="address1"
+                name="address2"
                 type="text"
+                placeholder= "ADDRESS LINE 2"
                 value={address2}
                 spellCheck={false}
                 autocapitalize="off"
@@ -232,63 +265,24 @@ const Login: React.FC<LoginProps> = ({
                   setAddress2(e.detail.value!);
                   setAddress2Error(false);
                 }}
-              ></IonInput>
+                ></IonInput>
             </IonItem>
-
-            <IonItem>
-              <IonLabel position="stacked" color="primary">
-                Username
-              </IonLabel>
-              <IonInput
-                name="username"
-                type="text"
-                value={username}
-                spellCheck={false}
-                autocapitalize="off"
-                onIonChange={(e) => {
-                  setUsername(e.detail.value!);
-                  setUsernameError(false);
-                }}
-                required
-              ></IonInput>
-            </IonItem>
-
-            {formSubmitted && usernameError && (
-              <IonText color="danger">
-                <p className="ion-padding-start">Username is required</p>
-              </IonText>
-            )}
-
-            <IonItem>
-              <IonLabel position="stacked" color="primary">
-                Password
-              </IonLabel>
-              <IonInput
-                name="password"
-                type="password"
-                value={password}
-                onIonChange={(e) => {
-                  setPassword(e.detail.value!);
-                  setPasswordError(false);
-                }}
-              ></IonInput>
-            </IonItem>
-
-            {formSubmitted && passwordError && (
-              <IonText color="danger">
-                <p className="ion-padding-start">Password is required</p>
-              </IonText>
-            )}
+              {formSubmitted && address1Error && (
+                <IonText color="danger">
+                  <p className="ion-padding-start">Address is required</p>
+                </IonText>
+              )}
           </IonList>
 
-          <IonRow>
-            <IonCol>
-              <IonButton type="submit" expand="block">
-                Create
+
+              <IonButton type="submit" className="loginbtn" expand="block" style={{borderRadius:"40px"}}>
+                Go!
               </IonButton>
-            </IonCol>
-          </IonRow>
+
         </form>
+        <div className= "reset" style={{paddingTop:"40px"}}>
+          <a href="login" className= "resetText" >Already have a Giftree account? <b>Log in!</b> </a>
+        </div>
       </IonContent>
     </IonPage>
   );
