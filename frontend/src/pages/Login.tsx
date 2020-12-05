@@ -49,21 +49,18 @@ const Login: React.FC<LoginProps> = ({
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  //const [userId, setUserId] = useState("");
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [loginError, setLoginError] = useState(false);
 
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoginError(false);
     setFormSubmitted(true);
 
-    if (!username) {
-      setUsernameError(true);
-    }
-    if (!password) {
-      setPasswordError(true);
-    }
+    !username ? setUsernameError(true) : setUsernameError(false);
+    !password ? setPasswordError(true) : setPasswordError(false);
 
     if (username && password) {
       await setIsLoggedIn(true);
@@ -80,10 +77,12 @@ const Login: React.FC<LoginProps> = ({
           await setUsernameAction(username);
           await setUserIdAction(res.data.userId);
           await setReloadAction(true);
+          setUsername("");
+          setPassword("");
           history.push("/tabs/Home", { direction: "none" });
         })
         .catch(function (error) {
-          alert("Could not login. Please try again");
+          setLoginError(true);
           console.log(error);
         });
     }
@@ -96,68 +95,91 @@ const Login: React.FC<LoginProps> = ({
           <IonButtons slot="start">
             <IonMenuButton></IonMenuButton>
           </IonButtons>
-          <IonTitle>Login</IonTitle>
+          <IonTitle>
+            <img src="assets/img/appicon.svg" className="toolbar-logo" />
+          </IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent>
         <div className="login-logo">
           <img src="assets/img/appicon.svg" alt="Ionic logo" />
         </div>
+        <IonLabel>
+          <h1 className="header">LOG IN</h1>
+        </IonLabel>
 
         <form noValidate onSubmit={login}>
           <IonList>
             <IonItem>
-              <IonLabel position="stacked" color="primary">
-                Username
-              </IonLabel>
               <IonInput
                 name="username"
                 type="text"
+                placeholder="USERNAME"
                 value={username}
                 spellCheck={false}
                 autocapitalize="off"
-                onIonChange={(e) => setUsername(e.detail.value!)}
+                onIonChange={(e) => {
+                  setUsername(e.detail.value!);
+                  setUsernameError(false);
+                }}
                 required
               ></IonInput>
             </IonItem>
 
             {formSubmitted && usernameError && (
-              <IonText color="danger">
-                <p className="ion-padding-start">Username is required</p>
-              </IonText>
+              <IonItem lines="none">
+                <IonText color="danger">
+                  <p className="ion-padding-start">Username is required</p>
+                </IonText>
+              </IonItem>
             )}
 
-            <IonItem>
-              <IonLabel position="stacked" color="primary">
-                Password
-              </IonLabel>
+            <IonItem className="passfield">
               <IonInput
                 name="password"
                 type="password"
+                placeholder="PASSWORD"
                 value={password}
-                onIonChange={(e) => setPassword(e.detail.value!)}
+                onIonChange={(e) => {
+                  setPassword(e.detail.value!);
+                  setPasswordError(false);
+                }}
               ></IonInput>
             </IonItem>
+          </IonList>
 
-            {formSubmitted && passwordError && (
+          {formSubmitted && passwordError && (
+            <IonItem lines="none">
               <IonText color="danger">
                 <p className="ion-padding-start">Password is required</p>
               </IonText>
-            )}
-          </IonList>
+            </IonItem>
+          )}
 
-          <IonRow>
-            <IonCol>
-              <IonButton type="submit" expand="block">
-                Login
-              </IonButton>
-            </IonCol>
-            <IonCol>
-              <IonButton routerLink="/signup" color="light" expand="block">
-                Signup
-              </IonButton>
-            </IonCol>
-          </IonRow>
+          {formSubmitted && loginError && (
+            <IonItem lines="none">
+              <IonText color="danger">
+                <p className="ion-padding-start">
+                  Login error, please try again.
+                </p>
+              </IonText>
+            </IonItem>
+          )}
+
+          <div className="reset" style={{ paddingTop: "50px" }}>
+            <a href="/signup" className="resetText">
+              Don't have an account? <b>Click here to sign up.</b>{" "}
+            </a>
+          </div>
+          <div className="reset">
+            <a href="" className="resetText">
+              Forgot password? <b>Click here to reset.</b>{" "}
+            </a>
+          </div>
+
+          <IonButton type="submit" expand="block" className="loginbtn">
+            Go!
+          </IonButton>
         </form>
       </IonContent>
     </IonPage>
