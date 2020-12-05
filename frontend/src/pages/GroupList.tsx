@@ -52,9 +52,7 @@ interface ListLoadingState {
 
 interface GroupListProps
   extends StateProps,
-    DispatchProps,
-    GroupProps,
-    ListLoadingState {}
+    DispatchProps {}
 /////////////////////////////////////
 
 const GroupList: React.FC<GroupListProps> = ({
@@ -68,6 +66,7 @@ const GroupList: React.FC<GroupListProps> = ({
   const [groups, setGroups] = useState([]);
 
   useEffect(() => {
+    setIsListLoaded(false);
     if (isListLoading === false) {
       //console.log('GroupList->useEffect: reload = ' + {setReload});
       const getList = () => {
@@ -85,10 +84,9 @@ const GroupList: React.FC<GroupListProps> = ({
       };
       getList();
       setIsListLoading(true);
-      setGroupId("");
       setReloadAction(false);
     }
-  }, [userId, isListLoading, setReloadAction, reload]);
+  }, [userId, isListLoading, setIsListLoaded, setReloadAction, reload]);
 
   const onClick = (e: any) => {
     setGroupIdAction(e.groupId);
@@ -96,6 +94,13 @@ const GroupList: React.FC<GroupListProps> = ({
   ////////////////////////////////
 
   const goToAddGroup = (e: any) => {
+    setIsListLoaded(false);
+    setReloadAction(false);
+  };
+  ////////////////////////////////
+
+  const goToJoinGroup = (e: any) => {
+    setIsListLoaded(false);
     setReloadAction(false);
   };
   ////////////////////////////////
@@ -122,7 +127,7 @@ const GroupList: React.FC<GroupListProps> = ({
                 temp.map((group) => (
                   <IonCard className="group-card" key={group.groupId}>
                     <IonCardHeader key={group.groupId}>
-                      <IonCol size="12" size-md="6" key={group.groupId}>
+                      <IonCol size="10" size-md="4" key={group.groupId}>
                         <IonItem
                           button
                           lines="none"
@@ -154,6 +159,15 @@ const GroupList: React.FC<GroupListProps> = ({
                     onClick={() => goToAddGroup(true)}
                   >
                     Add Group!
+                  </IonItem>
+                  <IonItem
+                    button
+                    color="medium"
+                    href="/tabs/joingroup"
+                    routerDirection="none"
+                    onClick={() => goToJoinGroup(true)}
+                  >
+                    Join Group!
                   </IonItem>
                 </IonCol>
               </IonCardHeader>

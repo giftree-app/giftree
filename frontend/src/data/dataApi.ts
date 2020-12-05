@@ -41,7 +41,7 @@ export const getUserData = async () => {
   const userId = await response[2].value || undefined;
   const giftId = await response[3].value || undefined;
   const groupId = await response[4].value || undefined;
-  const reload = response[5].value === 'false';
+  const reload = response[5].value === 'true';
   const data = {
     isLoggedin,
     username,
