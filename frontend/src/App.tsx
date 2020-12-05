@@ -8,7 +8,6 @@ import Menu from "./components/Menu";
 // Fonts
 // import 'src/fonts';
 
-
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
 
@@ -40,6 +39,8 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Support from "./pages/Support";
 import RedirectToLogin from "./components/RedirectToLogin";
+import { Plugins } from "@capacitor/core";
+const { Storage } = Plugins;
 
 const App: React.FC = () => {
   return (
@@ -72,6 +73,15 @@ const IonicApp: React.FC<IonicAppProps> = ({
     // eslint-disable-next-line
   }, []);
 
+  const removeToken = async () => {
+    try {
+      await Storage.remove({ key: "ACCESS_TOKEN" });
+      await Storage.remove({ key: "EXPIRES_IN" });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return 0 ? (
     <div></div>
   ) : (
@@ -96,6 +106,7 @@ const IonicApp: React.FC<IonicAppProps> = ({
                   <RedirectToLogin
                     setIsLoggedIn={setIsLoggedIn}
                     setUsername={setUsername}
+                    {...removeToken()}
                   />
                 );
               }}
@@ -112,7 +123,7 @@ export default App;
 
 const IonicAppConnected = connect<{}, StateProps, DispatchProps>({
   mapStateToProps: (state) => ({
-    darkMode: state.user.darkMode
+    darkMode: state.user.darkMode,
   }),
   mapDispatchToProps: {
     loadUserData,

@@ -79,7 +79,7 @@ const Login: React.FC<LoginProps> = ({
         .then(async (res) => {
           await Storage.set({
             key: "ACCESS_TOKEN",
-            value: res.data.accessToken,
+            value: JSON.stringify(res.data.accessToken),
           });
           await Storage.set({
             key: "EXPIRES_IN",
@@ -89,7 +89,7 @@ const Login: React.FC<LoginProps> = ({
           await setUsernameAction(username);
           await setUserIdAction(res.data.userId);
           await setReloadAction(true);
-          history.push("/tabs/Home", { direction: "none" });
+          history.push("/tabs/home", { direction: "none" });
         })
         .catch(function (error) {
           alert("Could not login. Please try again");

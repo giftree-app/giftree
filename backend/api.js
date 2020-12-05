@@ -6,17 +6,18 @@ exports.setApp = function (app, client) {
     // Gather the jwt access token from the request header
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
-    if (token == null) return res.sendStatus(401); // if there isn't any token
+    if (token == null) {
+      return res.sendStatus(401); // if there isn't any token
+    }
 
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-      console.log(err);
+    jwt.verify(token, accessTokenSecret, (err, user) => {
       if (err) return res.sendStatus(403);
       req.user = user;
       next(); // pass the execution off to whatever request the client intended
     });
   }
 
-  app.post("/api/register", async (req, res) => {
+  app.post("/api/register", async (req, res, next) => {
     // incoming: firstName, lastName, username, password, email, address1, address2
     // outgoing: error, success
 
@@ -94,7 +95,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/validate", async (req, res) => {
+  app.post("/api/validate", async (req, res, next) => {
     // incoming: username, password, validateCode
     // outgoing: userId, firstName, lastName, error, success
 
@@ -132,7 +133,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/login", async (req, res) => {
+  app.post("/api/login", async (req, res, next) => {
     // incoming: username, password
     // outgoing: userId, firstName, lastName, error, success
 
@@ -177,7 +178,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/addGroup", authenticateToken, async (req, res) => {
+  app.post("/api/addGroup", authenticateToken, async (req, res, next) => {
     // incoming: userId, groupName
     // outgoing: error, success
 
@@ -222,7 +223,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/getGroups", authenticateToken, async (req, res) => {
+  app.post("/api/getGroups", authenticateToken, async (req, res, next) => {
     // incoming: userId
     // outgoing: groups[groupId, groupName, groupCode], error, success
 
@@ -253,7 +254,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/getGroupInfo", authenticateToken, async (req, res) => {
+  app.post("/api/getGroupInfo", authenticateToken, async (req, res, next) => {
     // incoming: groupId
     // outgoing: event, eventName, eventPriceMin, eventPriceMax, eventDate, secretShopper_buyers, secretShopper_receivers, members[firstName, lastName, userId], error, success
 
@@ -306,7 +307,7 @@ exports.setApp = function (app, client) {
     });
     */
 
-  app.post("/api/userAddGroup", authenticateToken, async (req, res) => {
+  app.post("/api/userAddGroup", authenticateToken, async (req, res, next) => {
     // incoming: groupCode, userId
     // outgoing: error, success
 
@@ -339,51 +340,59 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/deleteGroupMember", authenticateToken, async (req, res) => {
-    // incoming: groupId, userId
-    // outgoing: error, success
+  app.post(
+    "/api/deleteGroupMember",
+    authenticateToken,
+    async (req, res, next) => {
+      // incoming: groupId, userId
+      // outgoing: error, success
 
-    const { groupId, userId } = req.body;
-    var gid = require("mongodb").ObjectID(groupId);
+      const { groupId, userId } = req.body;
+      var gid = require("mongodb").ObjectID(groupId);
 
-    const db = client.db();
+      const db = client.db();
 
-    try {
-      const results = db
-        .collection("Groups")
-        .update({ _id: gid }, { $pull: { members: userId } });
-      var ret = { error: "", success: true };
+      try {
+        const results = db
+          .collection("Groups")
+          .update({ _id: gid }, { $pull: { members: userId } });
+        var ret = { error: "", success: true };
 
-      res.status(200).json(ret);
-    } catch (e) {
-      var error = e.toString();
-      res.status(500).json({ success: false, error: error });
+        res.status(200).json(ret);
+      } catch (e) {
+        var error = e.toString();
+        res.status(500).json({ success: false, error: error });
+      }
     }
-  });
+  );
 
-  app.post("/api/updateGroupName", authenticateToken, async (req, res) => {
-    // incoming: groupId, groupName
-    // outgoing: error, success
+  app.post(
+    "/api/updateGroupName",
+    authenticateToken,
+    async (req, res, next) => {
+      // incoming: groupId, groupName
+      // outgoing: error, success
 
-    const { groupId, groupName } = req.body;
-    var gid = require("mongodb").ObjectID(groupId);
+      const { groupId, groupName } = req.body;
+      var gid = require("mongodb").ObjectID(groupId);
 
-    const db = client.db();
+      const db = client.db();
 
-    try {
-      const results = db
-        .collection("Groups")
-        .update({ _id: gid }, { $set: { groupName: groupName } });
-      var ret = { error: "", success: true };
+      try {
+        const results = db
+          .collection("Groups")
+          .update({ _id: gid }, { $set: { groupName: groupName } });
+        var ret = { error: "", success: true };
 
-      res.status(200).json(ret);
-    } catch (e) {
-      var error = e.toString();
-      res.status(500).json({ success: false, error: error });
+        res.status(200).json(ret);
+      } catch (e) {
+        var error = e.toString();
+        res.status(500).json({ success: false, error: error });
+      }
     }
-  });
+  );
 
-  app.post("/api/deleteGroup", authenticateToken, async (req, res) => {
+  app.post("/api/deleteGroup", authenticateToken, async (req, res, next) => {
     // incoming: groupId
     // outgoing: error, success
 
@@ -403,7 +412,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/addEvent", authenticateToken, async (req, res) => {
+  app.post("/api/addEvent", authenticateToken, async (req, res, next) => {
     // incoming: groupId, eventName, eventPriceMin, eventPriceMax, eventDate
     // outgoing: error, success
 
@@ -467,7 +476,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/deleteEvent", authenticateToken, async (req, res) => {
+  app.post("/api/deleteEvent", authenticateToken, async (req, res, next) => {
     // incoming: groupId
     // outgoing: error, success
 
@@ -499,7 +508,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/getWishlist", authenticateToken, async (req, res) => {
+  app.post("/api/getWishlist", authenticateToken, async (req, res, next) => {
     // incoming: userId
     // outgoing: gifts[giftId, giftName, giftPrice, giftGot], error, success
 
@@ -531,7 +540,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/addGift", authenticateToken, async (req, res) => {
+  app.post("/api/addGift", authenticateToken, async (req, res, next) => {
     // incoming: userId, giftName, giftPrice, giftLocation, giftComment
     // outgoing: error, success
 
@@ -559,7 +568,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/getGift", authenticateToken, async (req, res) => {
+  app.post("/api/getGift", authenticateToken, async (req, res, next) => {
     // incoming: giftId
     // outgoing: giftName, giftPrice, giftLocation, giftComment, giftGot, error, success
 
@@ -591,7 +600,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/UpdateGift", authenticateToken, async (req, res) => {
+  app.post("/api/UpdateGift", authenticateToken, async (req, res, next) => {
     // incoming: giftId, giftName, giftPrice, giftLocation, giftComment
     // outgoing: error, success
 
@@ -620,7 +629,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/deleteGift", authenticateToken, async (req, res) => {
+  app.post("/api/deleteGift", authenticateToken, async (req, res, next) => {
     // incoming: giftId
     // outgoing: error, success
 
@@ -639,7 +648,7 @@ exports.setApp = function (app, client) {
     }
   });
 
-  app.post("/api/gotGift", authenticateToken, async (req, res) => {
+  app.post("/api/gotGift", authenticateToken, async (req, res, next) => {
     // incoming: giftId
     // outgoing: error, success
 
