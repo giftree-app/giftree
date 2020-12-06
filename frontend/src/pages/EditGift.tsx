@@ -19,6 +19,8 @@ import {
 import { setGiftId, setReload } from "../data/user/user.actions";
 import { connect } from "../data/connect";
 import { RouteComponentProps, withRouter } from "react-router";
+import { Plugins } from "@capacitor/core";
+const { Storage } = Plugins;
 
 // const BASE_URL = 'https://COP4331-1.herokuapp.com/';
 // const ENDPOINT_GET = BASE_URL + 'api/getGift';
@@ -52,10 +54,29 @@ const EditGift: React.FC<UpdateGiftProps> = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
 
-  const deleteGift = () => {
+  const getToken = async () => {
+    try {
+      const result = await Storage.get({ key: "ACCESS_TOKEN" });
+      if (result != null) {
+        return JSON.parse(result.value);
+      } else {
+        return null;
+      }
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  };
+
+  const deleteGift = async () => {
     //console.log('EditGift: in deleteGift');
+    const token = await getToken();
+    const config = {
+      headers: { authorization: `Bearer ${token}` },
+    };
+
     axios
-      .post("/api/deleteGift", { giftId: giftId })
+      .post("/api/deleteGift", { giftId: giftId }, config)
       .then((res) => {
         console.log(res);
       })
@@ -77,8 +98,13 @@ const EditGift: React.FC<UpdateGiftProps> = ({
 
     //console.log(giftObject);
 
+    const token = await getToken();
+    const config = {
+      headers: { authorization: `Bearer ${token}` },
+    };
+
     axios
-      .post("/api/updateGift", giftObject)
+      .post("/api/updateGift", giftObject, config)
       .then((res) => {
         console.log(res.data);
         redirectToWishList(e);
@@ -97,10 +123,16 @@ const EditGift: React.FC<UpdateGiftProps> = ({
     //console.log('EditGift: in useEffect');
     if (isLoading === false) {
       //console.log('EditGift: in useEffect: setting isListLoading to true');
-      const getGift = () => {
+      const getGift = async () => {
         //console.log('EditGift: in getGift');
+
+        const token = await getToken();
+        const config = {
+          headers: { authorization: `Bearer ${token}` },
+        };
+
         axios
-          .post("/api/getGift", { giftId: giftId })
+          .post("/api/getGift", { giftId: giftId }, config)
           .then((res) => {
             //console.log(res);
             setGiftName(res.data.giftName);
