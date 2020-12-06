@@ -116,8 +116,11 @@ const Wishlist: React.FC<WishlistProps> = ({
               <IonTitle>Wishlist</IonTitle>
             </IonToolbar>
           </IonHeader>
+          <IonItem id = "wishlist-title" lines="none">
+            <p> Your <strong>Gifts</strong> </p>
+          </IonItem>
           <IonContent fullscreen>
-            <IonList lines="full">
+            <IonList lines="full" id="wishlist-list">
               {temp &&
                 temp.map((gift) => (
                   <IonItem
