@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, RouteProps } from "react-router-dom";
+import { RouteProps } from "react-router-dom";
 import {
   IonContent,
   IonHeader,
@@ -41,20 +41,12 @@ const HomePage: React.FC<HomePageProps> = ({
           username:
           {username && (
             <div className="ion-padding-top ion-text-center">
-              <img
-                src="https://www.gravatar.com/avatar?d=mm&s=140"
-                alt="avatar"
-              />
               <h2>{username}</h2>
             </div>
           )}
           userId:
           {userId && (
             <div className="ion-padding-top ion-text-center">
-              <img
-                src="https://www.gravatar.com/avatar?d=mm&s=140"
-                alt="avatar"
-              />
               <h2>{userId}</h2>
             </div>
           )}

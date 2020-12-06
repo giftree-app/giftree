@@ -44,14 +44,14 @@ const JoinGroup: React.FC<JoinGroupProps> = ({
   userId,
   setReload: setReloadAction,
 }) => {
-  const [groupName, setGroupName] = useState("");
+  //const [groupName, setGroupName] = useState("");
   const [groupCode, setGroupCode] = useState("");
   const [joinedGroupCode, setJoinedGroupCode] = useState("");
   const [groupJoined, setGroupJoined] = useState(false);
 
   // verification
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [groupNameError, setGroupNameError] = useState(false);
+  //const [groupNameError, setGroupNameError] = useState(false);
   const [groupCodeError, setGroupCodeError] = useState(false);
 
   console.log("JoinGroup entry");

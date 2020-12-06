@@ -14,6 +14,7 @@ import GroupList from "./GroupList";
 import AddGroup from "./AddGroup";
 import EditGroup from "./EditGroup";
 import Wishlist from "./WishlistPage";
+import MemberWishlist from "./MemberWishlistPage";
 import About from "./About";
 import AddGift from "./AddGift";
 import EditGift from "./EditGift";
@@ -48,6 +49,7 @@ const MainTabs: React.FC<MainTabsProps> = () => {
           exact={true}
         />
         <Route path="/tabs/wishlist" render={() => <Wishlist />} exact={true} />
+        <Route path="/tabs/memberwishlist" render={() => <MemberWishlist />} exact={true} />
         <Route path="/tabs/about" render={() => <About />} exact={true} />
         <Route path="/tabs/addgift" render={() => <AddGift />} exact={true} />
         <Route path="/tabs/editgift" render={() => <EditGift />} exact={true} />

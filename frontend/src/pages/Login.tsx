@@ -8,8 +8,6 @@ import {
   IonPage,
   IonButtons,
   IonMenuButton,
-  IonRow,
-  IonCol,
   IonButton,
   IonList,
   IonItem,
@@ -47,8 +45,6 @@ const Login: React.FC<LoginProps> = ({
   setUserId: setUserIdAction,
   setReload: setReloadAction,
 }) => {
-  const app_name = "giftree";
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [formSubmitted, setFormSubmitted] = useState(false);
