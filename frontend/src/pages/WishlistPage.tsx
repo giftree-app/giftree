@@ -121,15 +121,14 @@ const Wishlist: React.FC<WishlistProps> = ({
               {temp &&
                 temp.map((gift) => (
                   <IonItem
+                    id = "wishlist-gifts"
                     detail={false}
                     href="/tabs/editgift"
                     routerDirection="none"
                     key={gift.giftId}
                     onClick={() => onClick({ giftId: gift.giftId })}
                   >
-                    <IonLabel>
-                      <h3>{gift.giftName}</h3>
-                    </IonLabel>
+                  {gift.giftName}
                   </IonItem>
                 ))}
             </IonList>
