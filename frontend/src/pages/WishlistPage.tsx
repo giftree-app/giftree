@@ -3,6 +3,7 @@ import {
   IonContent,
   IonHeader,
   IonButtons,
+  IonButton,
   IonMenuButton,
   IonPage,
   IonTitle,
@@ -21,6 +22,7 @@ import {
   setReload,
 } from "../data/user/user.actions";
 import { connect } from "../data/connect";
+import "./WishlistPage.scss";
 
 // const BASE_URL = "https://COP4331-1.herokuapp.com/";
 // const ENDPOINT_URL = BASE_URL + "api/getWishlist";
@@ -115,7 +117,7 @@ const Wishlist: React.FC<WishlistProps> = ({
             </IonToolbar>
           </IonHeader>
           <IonContent fullscreen>
-            <IonList lines="none">
+            <IonList lines="full">
               {temp &&
                 temp.map((gift) => (
                   <IonItem
@@ -132,21 +134,15 @@ const Wishlist: React.FC<WishlistProps> = ({
                 ))}
             </IonList>
             <br />
-            <IonCard className="wishlist-button-card">
-              <IonCardHeader>
-                <IonCol size="12" size-md="6">
-                  <IonItem
-                    button
-                    color="medium"
-                    href="/tabs/addgift"
-                    routerDirection="none"
-                    onClick={() => goToAddGift(true)}
-                  >
-                    Add Gift!
-                  </IonItem>
-                </IonCol>
-              </IonCardHeader>
-            </IonCard>
+              <IonButton
+                id="wishlist-add-button"
+                expand="block"
+                href="/tabs/addgift"
+                routerDirection="none"
+                onClick={() => goToAddGift(true)}
+              >
+                Add Gift
+              </IonButton>
             <br />
           </IonContent>
         </IonPage>
