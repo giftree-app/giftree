@@ -14,16 +14,16 @@ const routes = {
     { title: 'Home', path: '/tabs/home', icon: calendarOutline },
     { title: 'Groups', path: '/tabs/grouplist', icon: peopleOutline },
     { title: 'Wishlist', path: '/tabs/wishlist', icon: listOutline },
-    { title: 'About', path: '/tabs/about', icon: informationCircleOutline }
+    // { title: 'About', path: '/tabs/about', icon: informationCircleOutline }
   ],
   loggedInPages: [
     { title: 'Account', path: '/account', icon: person },
-    { title: 'Support', path: '/support', icon: help },
+    // { title: 'Support', path: '/support', icon: help },
     { title: 'Logout', path: '/logout', icon: logOut }
   ],
   loggedOutPages: [
     { title: 'Login', path: '/login', icon: logIn },
-    { title: 'Support', path: '/support', icon: help },
+    // { title: 'Support', path: '/support', icon: help },
     { title: 'Signup', path: '/signup', icon: personAdd }
   ]
 };
@@ -71,11 +71,7 @@ const Menu: React.FC<MenuProps> = ({ darkMode, history, isAuthenticated, setDark
         <IonList lines="none">
           <IonListHeader>Account</IonListHeader>
           {isAuthenticated ? renderlistItems(routes.loggedInPages) : renderlistItems(routes.loggedOutPages)}
-          <IonItem>
-            <IonIcon slot="start" icon={moonOutline}></IonIcon>
-            <IonLabel>Dark Mode</IonLabel>
-            <IonToggle checked={darkMode} onClick={() => setDarkMode(!darkMode)} />
-          </IonItem>
+
         </IonList>
       </IonContent>
     </IonMenu>
