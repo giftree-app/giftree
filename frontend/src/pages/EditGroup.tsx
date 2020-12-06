@@ -267,7 +267,12 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
                               {member.firstName} {member.lastName}
                             </h3>
                           </IonLabel>
-                          <IonButton key={member.userId} onClick={() => goToMemberWishList( { memberId: member.userId} )}>Wishlist</IonButton>
+                          <IonButton 
+                            key={member.userId} 
+                            routerLink="/tabs/memberwishlist"
+                            onClick={() => goToMemberWishList( { memberId: currentMemberId} )}
+                          >
+                            Wishlist</IonButton>
                         </IonItem>
                       </IonCol>
                     </IonCardHeader>
@@ -279,6 +284,9 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
               <IonButton type="submit">Update Group</IonButton>
             </IonRow>
             <IonRow>
+              <IonButton routerLink="/tabs/memberwishlist" onClick={() => goToMemberWishList( { memberId: currentMemberId} )}>view {currentMemberFirstName} {currentMemberLastName} wishlist</IonButton>
+            </IonRow>
+            <IonRow>
               <IonButton onClick={() => setShowMemberAlert(true)}>
                 delete member
               </IonButton>
@@ -287,9 +295,6 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
               <IonButton onClick={() => setShowAlert(true)}>
                 delete group
               </IonButton>
-            </IonRow>
-            <IonRow>
-              <IonButton routerLink="/tabs/memberwishlist" onClick={() => goToMemberWishList( { memberId: currentMemberId} )}>view {currentMemberFirstName} {currentMemberLastName} wishlist</IonButton>
             </IonRow>
             <IonRow>
               <IonButton routerLink="/tabs/Grouplist">Groups</IonButton>

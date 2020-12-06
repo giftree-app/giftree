@@ -67,7 +67,7 @@ const MemberWishlist: React.FC<WishlistProps> = ({
 }) => {
   const [isListLoading, setIsListLoading] = useState(false);
   const [isListLoaded, setIsListLoaded] = useState(false);
-  const [checked, setChecked] = useState(false);
+  const [fullName, setFullName] = useState('');
   const [gifts, setGifts] = useState([]);
 
   useEffect(() => {
@@ -93,6 +93,19 @@ const MemberWishlist: React.FC<WishlistProps> = ({
         const config = {
           headers: { authorization: `Bearer ${token}` },
         };
+        // get user name from db
+        axios
+          .post("/api/getUser", { userId: memberWishlistId }, config)
+          .then(async (res) => {
+            await console.log(res);
+            await setFullName(res.data.firstName + ' ' + res.data.lastName);
+            setIsListLoaded(true);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+        
+        // get user wishlist
         axios
           .post("/api/getWishlist", { userId: memberWishlistId }, config)
           .then(async (res) => {
@@ -181,7 +194,7 @@ const MemberWishlist: React.FC<WishlistProps> = ({
               <IonButtons slot="start">
                 <IonMenuButton />
               </IonButtons>
-              <IonTitle>Wishlist</IonTitle>
+              <IonTitle>{fullName}'s Wishlist</IonTitle>
             </IonToolbar>
           </IonHeader>
           <IonContent fullscreen>
