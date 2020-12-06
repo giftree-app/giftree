@@ -19,6 +19,7 @@ import {
 } from "@ionic/react";
 import { connect } from "../data/connect";
 import { RouteComponentProps, withRouter } from "react-router";
+import "./AddGift.scss";
 
 // const BASE_URL = 'https://COP4331-1.herokuapp.com/';
 // const ENDPOINT_URL = BASE_URL + 'api/addGift';
@@ -112,8 +113,8 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
         <form noValidate onSubmit={addGift}>
           <IonList>
             <IonItem>
-              <IonLabel position="stacked" color="primary">
-                Gift:
+              <IonLabel color="black" id ="add-gift-label">
+                <strong>Gift:</strong>
               </IonLabel>
               <IonInput
                 name="giftName"
@@ -133,8 +134,8 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
             )}
 
             <IonItem>
-              <IonLabel position="stacked" color="primary">
-                Price:
+              <IonLabel color="black" id = "add-gift-label">
+                <strong>Price:</strong>
               </IonLabel>
               <IonInput
                 name="giftPrice"
@@ -154,8 +155,8 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
             )}
 
             <IonItem>
-              <IonLabel position="stacked" color="primary">
-                Location:
+              <IonLabel color="black" id = "add-gift-label">
+                <strong>Location:</strong>
               </IonLabel>
               <IonInput
                 name="giftLocation"
@@ -175,8 +176,8 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
             )}
 
             <IonItem>
-              <IonLabel position="stacked" color="primary">
-                Comment:
+              <IonLabel color="black" id = "add-gift-label">
+                <strong>Comment:</strong>
               </IonLabel>
               <IonInput
                 name="giftComment"
