@@ -41,7 +41,7 @@ ion-menu.md ion-item {
   --padding-start: 18px;
 
   margin-right: 10px;
-
+  margin-left: 0px;
   border-radius: 0 50px 50px 0;
 
   font-weight: 500;
