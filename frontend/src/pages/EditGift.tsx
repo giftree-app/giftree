@@ -14,7 +14,6 @@ import {
   IonItem,
   IonInput,
   IonRow,
-  IonCol,
   IonAlert,
 } from "@ionic/react";
 import { setGiftId, setReload } from "../data/user/user.actions";
@@ -230,17 +229,15 @@ const EditGift: React.FC<UpdateGiftProps> = ({
             </IonList>
 
             <IonRow>
-              <IonCol>
-                <IonButton type="submit">Update Gift</IonButton>
-              </IonCol>
-              <IonCol>
-                <IonButton onClick={() => setShowAlert(true)}>
-                  delete Gift
-                </IonButton>
-              </IonCol>
-              <IonCol>
-                <IonButton routerLink="/tabs/Wishlist">Wishlist</IonButton>
-              </IonCol>
+              <IonButton type="submit">Update Gift</IonButton>
+            </IonRow>
+            <IonRow>
+              <IonButton onClick={() => setShowAlert(true)}>
+                delete Gift
+              </IonButton>
+            </IonRow>
+            <IonRow>
+              <IonButton routerLink="/tabs/Wishlist">Wishlist</IonButton>
             </IonRow>
           </form>
         </IonContent>

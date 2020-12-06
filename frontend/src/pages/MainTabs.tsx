@@ -17,6 +17,7 @@ import Wishlist from "./WishlistPage";
 import About from "./About";
 import AddGift from "./AddGift";
 import EditGift from "./EditGift";
+import JoinGroup from "./JoinGroup";
 
 interface MainTabsProps {}
 
@@ -39,6 +40,11 @@ const MainTabs: React.FC<MainTabsProps> = () => {
         <Route
           path="/tabs/editgroup"
           render={() => <EditGroup />}
+          exact={true}
+        />
+        <Route
+          path="/tabs/joingroup"
+          render={() => <JoinGroup />}
           exact={true}
         />
         <Route path="/tabs/wishlist" render={() => <Wishlist />} exact={true} />
