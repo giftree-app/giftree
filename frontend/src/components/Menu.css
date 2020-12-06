@@ -2,13 +2,14 @@ ion-menu ion-content {
   --padding-top: 20px;
   --padding-bottom: 20px;
 
+
   --background: var(--ion-item-background, var(--ion-background-color, #fff));
 }
 
 ion-menu {
   --ion-background-color: var(--ion-menu-background);
   /* --ion-text-color: var(--ion-color-primary-contrast); */
-
+  width: auto;
 }
 
 /* Remove background transitions for switching themes */
