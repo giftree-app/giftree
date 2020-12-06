@@ -88,8 +88,7 @@ const MemberWishlist: React.FC<WishlistProps> = ({
       };
       //console.log('in useEffect: setting isListLoading to true');
       const getList = async () => {
-        console.log('memberWishlist->memberId: '+ memberWishlistId);
-
+        //console.log('memberWishlist->memberId: '+ memberWishlistId);
         const token = await getToken();
         const config = {
           headers: { authorization: `Bearer ${token}` },
