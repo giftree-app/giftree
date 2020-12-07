@@ -20,8 +20,6 @@ import {
 import { connect } from "../data/connect";
 import { RouteComponentProps, withRouter } from "react-router";
 import { setReload } from "../data/user/user.actions";
-import { Plugins } from "@capacitor/core";
-const { Storage } = Plugins;
 
 // const BASE_URL = 'https://COP4331-1.herokuapp.com/';
 // const ENDPOINT_URL = BASE_URL + 'api/addGroup';
@@ -38,53 +36,52 @@ interface DispatchProps {
   setReload: typeof setReload;
 }
 
-interface AddGroupProps extends OwnProps, StateProps, DispatchProps {}
+interface JoinGroupProps extends OwnProps, StateProps, DispatchProps {}
 
-const AddGroup: React.FC<AddGroupProps> = ({
+const JoinGroup: React.FC<JoinGroupProps> = ({
   history,
   username,
   userId,
   setReload: setReloadAction,
 }) => {
   const [groupName, setGroupName] = useState("");
-  const [addedGroupName, setAddedGroupName] = useState("");
-  const [groupAdded, setGroupAdded] = useState(false);
+  const [groupCode, setGroupCode] = useState("");
+  const [joinedGroupCode, setJoinedGroupCode] = useState("");
+  const [groupJoined, setGroupJoined] = useState(false);
 
   // verification
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [groupNameError, setGroupNameError] = useState(false);
+  const [groupCodeError, setGroupCodeError] = useState(false);
 
-  //console.log("AddGroup entry");
+  console.log("JoinGroup entry");
 
-  const addGroup = async (e: React.FormEvent) => {
+  const joinGroup = async (e: React.FormEvent) => {
     e.preventDefault();
 
     setFormSubmitted(true);
 
-    if (!groupName) {
-      setGroupNameError(true);
+    if (!groupCode) {
+      setGroupCodeError(true);
     }
 
-    if (groupName) {
+    if (groupCode) {
       const groupObject = {
-        userId: userId,
-        groupName: groupName,
+        groupCode: groupCode,
+        userId: userId
       };
-      const token = await getToken();
-      const config = {
-        headers: { authorization: `Bearer ${token}` },
-      };
+
       axios
-        .post("/api/addGroup", groupObject, config)
+        .post("/api/userAddGroup", groupObject)
         .then((res) => {
           console.log(res.data);
         })
         .catch((error) => {
           console.log(error);
         });
-      setAddedGroupName(groupName);
-      setGroupAdded(true);
-      setGroupName("");
+      setJoinedGroupCode(groupCode);
+      setGroupJoined(true);
+      setGroupCode("");
       redirectToGroupList(e);
     }
   };
@@ -94,63 +91,49 @@ const AddGroup: React.FC<AddGroupProps> = ({
     history.push("/tabs/GroupList", { direction: "none" });
   };
 
-  const getToken = async () => {
-    try {
-      const result = await Storage.get({ key: "ACCESS_TOKEN" });
-      if (result != null) {
-        return JSON.parse(result.value);
-      } else {
-        return null;
-      }
-    } catch (err) {
-      console.log(err);
-      return null;
-    }
-  };
-
   return (
-    <IonPage id="addgroup-page">
+    <IonPage id="joingroup-page">
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
             <IonMenuButton></IonMenuButton>
           </IonButtons>
-          <IonTitle>Add a new group, {username}</IonTitle>
+          <IonTitle>Join a new group, {username}</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent>
-        <form noValidate onSubmit={addGroup}>
+        <form noValidate onSubmit={joinGroup}>
           <IonList>
             <IonItem>
               <IonLabel position="stacked" color="primary">
-                Group name:
+                Group code:
               </IonLabel>
               <IonInput
-                name="groupName"
+                name="groupCode"
                 type="text"
-                value={groupName}
+                value={groupCode}
                 spellCheck={false}
                 autocapitalize="off"
-                onIonChange={(e) => setGroupName(e.detail.value!)}
+                onIonChange={(e) => setGroupCode(e.detail.value!)}
                 required
               ></IonInput>
             </IonItem>
 
-            {formSubmitted && groupNameError && (
+            {formSubmitted && groupCodeError && (
               <IonText color="danger">
-                <p className="ion-padding-start">Group name is required</p>
+                <p className="ion-padding-start">Group code is required</p>
               </IonText>
             )}
           </IonList>
           <IonRow>
             <IonText>
-              {groupAdded ? "Added [" + addedGroupName + "] to groups!" : ""}
+              {groupJoined ? "Joined [" + joinedGroupCode + "]!" : ""}
             </IonText>
           </IonRow>
           <IonRow>
             <IonCol>
               <IonButton type="submit" expand="block">
-                Add Group
+                Join Group
               </IonButton>
             </IonCol>
             <IonCol>
@@ -169,10 +152,10 @@ export default connect<{}, StateProps, DispatchProps>({
   mapStateToProps: (state) => ({
     username: state.user.username,
     userId: state.user.userId,
-    reload: state.user.reload,
+    reload: state.user.reload
   }),
   mapDispatchToProps: {
-    setReload,
+    setReload
   },
-  component: withRouter(AddGroup),
+  component: withRouter(JoinGroup),
 });

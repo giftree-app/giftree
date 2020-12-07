@@ -21,6 +21,8 @@ import {
   setReload,
 } from "../data/user/user.actions";
 import { connect } from "../data/connect";
+import { Plugins } from "@capacitor/core";
+const { Storage } = Plugins;
 
 // const BASE_URL = "https://COP4331-1.herokuapp.com/";
 // const ENDPOINT_URL = BASE_URL + "api/getWishlist";
@@ -51,9 +53,7 @@ interface ListLoadingState {
 
 interface WishlistProps
   extends StateProps,
-    DispatchProps,
-    GiftProps,
-    ListLoadingState {}
+    DispatchProps {}
 /////////////////////////////////////
 
 const Wishlist: React.FC<WishlistProps> = ({
@@ -69,11 +69,29 @@ const Wishlist: React.FC<WishlistProps> = ({
   useEffect(() => {
     //console.log('in useEffect');
     if (isListLoading === false) {
+      const getToken = async () => {
+        try {
+          const result = await Storage.get({ key: "ACCESS_TOKEN" });
+          if (result != null) {
+            return JSON.parse(result.value);
+          } else {
+            return null;
+          }
+        } catch (err) {
+          console.log(err);
+          return null;
+        }
+      };
+
       //console.log('in useEffect: setting isListLoading to true');
-      const getList = () => {
+      const getList = async () => {
         //console.log('in getList()');
+        const token = await getToken();
+        const config = {
+          headers: { authorization: `Bearer ${token}` },
+        };
         axios
-          .post("/api/getWishlist", { userId: userId })
+          .post("/api/getWishlist", { userId: userId }, config)
           .then(async (res) => {
             await console.log(res);
             await setGifts(res.data.gifts);
@@ -96,6 +114,7 @@ const Wishlist: React.FC<WishlistProps> = ({
   ////////////////////////////////
 
   const goToAddGift = (e: any) => {
+    setIsListLoaded(false);
     setReloadAction(false);
   };
   ////////////////////////////////
@@ -104,8 +123,6 @@ const Wishlist: React.FC<WishlistProps> = ({
     return <div> loading ...</div>;
   } else {
     let temp = gifts;
-    //console.log(temp);
-
     return (
       <div className="wishlist">
         <IonPage id="wishlist">
