@@ -78,9 +78,9 @@ exports.setApp = function (app, client) {
           "or enter the code below into the validation page in the app: <br/><br/> Validation code: " +
           validateCode;
         emailMsg +=
-          '<br/><br/> <a href = "https://https://giftree.herokuapp.com/token?v=' +
+          '<br/><br/> <a href = "https://giftree.herokuapp.com/token?v=' +
           validateCode +
-          '"> https://https://giftree.herokuapp.com/token?v=' +
+          '"> https://giftree.herokuapp.com/token?v=' +
           validateCode +
           "</a>";
         emailMsg += "<br/><br/>Thank you,<br/>Giftree App Team";
@@ -607,24 +607,38 @@ exports.setApp = function (app, client) {
 
     const db = client.db();
     try {
-      const check = await db
-        .collection("Groups")
-        .find({ groupCode: groupCode, members: userId })
+      const groupCheck = await db
+        .colllection("Groups")
+        .find({ groupCode:groupCode })
         .toArray();
-
-      if (check.length > 0) {
+      
+        if (groupCheck.length < 1) {
         var ret = {
-          error: "User is already a member of this group",
-          success: false,
-        };
-        res.status(400).json(ret);
-      } else {
-        const results = db
-          .collection("Groups")
-          .update({ groupCode: groupCode }, { $addToSet: { members: userId } });
-        var ret = { error: "", success: true };
+            error: "Group not found",
+            success: false,
+          };
+          res.status(400).json(ret);          
+      }
+      else {
+        const check = await db
+            .collection("Groups")
+            .find({ groupCode: groupCode, members: userId })
+            .toArray();
 
-        res.status(200).json(ret);
+        if (check.length > 0) {
+            var ret = {
+            error: "User is already a member of this group",
+            success: false,
+            };
+            res.status(400).json(ret);
+        } else {
+            const results = db
+            .collection("Groups")
+            .update({ groupCode: groupCode }, { $addToSet: { members: userId } });
+            var ret = { error: "", success: true };
+
+            res.status(200).json(ret);
+        }
       }
     } catch (e) {
       var error = e.toString();
