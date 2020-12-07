@@ -218,6 +218,7 @@ const EditGift: React.FC<UpdateGiftProps> = ({
           </form>
         </IonContent>
         <IonAlert
+          cssClass="delete-alert"
           isOpen={showAlert}
           header="Delete Gift?"
           buttons={[
