@@ -3,36 +3,19 @@
     max-width: 140px;
     border-radius: 50%;
     text-align: center;
-  }
-}
-// unsure if this is modifying something major - was here b4 me 
-// ion-col {
-//   border: 1px solid grey;
-//   text-align: center;
-// }
-//
-// ion-row {
-//   border: 1px solid grey;
-//   text-align: center;
-// }
-
-#wishlist-gifts {
-  font-size: 2vmax;
-  font-weight: 200;
+  }  
 }
 
-#wishlist-title {
-  font-size: 3vmax;
+ion-col {
+  border: 1px solid grey;
+  text-align: center;
 }
 
-#wishlist-list {
-  margin: 0 0 10px;
+ion-row {
+  border: 1px solid grey;
+  text-align: center;
 }
 
-#wishlist-add-button {
-  width: 50%;
-  margin: auto;
-}
 
 .container {
   text-align: center;

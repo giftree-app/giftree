@@ -15,14 +15,12 @@ import {
   IonInput,
   IonRow,
   IonAlert,
-  IonCol,
 } from "@ionic/react";
 import { setGiftId, setReload } from "../data/user/user.actions";
 import { connect } from "../data/connect";
 import { RouteComponentProps, withRouter } from "react-router";
 import { Plugins } from "@capacitor/core";
 const { Storage } = Plugins;
-import "./EditGift.scss"
 
 // const BASE_URL = 'https://COP4331-1.herokuapp.com/';
 // const ENDPOINT_GET = BASE_URL + 'api/getGift';
@@ -170,11 +168,10 @@ const EditGift: React.FC<UpdateGiftProps> = ({
           <form noValidate onSubmit={updateGift}>
             <IonList>
               <IonItem>
-                <IonLabel position="floating" color="black" className="editgift-label">
+                <IonLabel position="stacked" color="primary">
                   Gift:
                 </IonLabel>
                 <IonInput
-                  className="editgift-input"
                   name="giftName"
                   type="text"
                   value={giftName}
@@ -186,11 +183,10 @@ const EditGift: React.FC<UpdateGiftProps> = ({
               </IonItem>
 
               <IonItem>
-                <IonLabel position="floating" color="black" className="editgift-label">
+                <IonLabel position="stacked" color="primary">
                   Price:
                 </IonLabel>
                 <IonInput
-                  className="editgift-input"
                   name="giftPrice"
                   type="text"
                   value={giftPrice}
@@ -202,11 +198,10 @@ const EditGift: React.FC<UpdateGiftProps> = ({
               </IonItem>
 
               <IonItem>
-                <IonLabel position="floating" color="black" className="editgift-label">
+                <IonLabel position="stacked" color="primary">
                   Location:
                 </IonLabel>
                 <IonInput
-                  className="editgift-input"
                   name="giftLocation"
                   type="text"
                   value={giftLocation}
@@ -218,11 +213,10 @@ const EditGift: React.FC<UpdateGiftProps> = ({
               </IonItem>
 
               <IonItem>
-                <IonLabel position="floating" color="black" className="editgift-label">
+                <IonLabel position="stacked" color="primary">
                   Comment:
                 </IonLabel>
                 <IonInput
-                  className="editgift-input"
                   name="giftComment"
                   type="text"
                   value={giftComment}
@@ -234,23 +228,20 @@ const EditGift: React.FC<UpdateGiftProps> = ({
               </IonItem>
             </IonList>
 
-            <IonRow className="editgift-buttons">
-              <IonCol>
-                <IonButton type="submit" expand="block">Update Gift</IonButton>
-              </IonCol>
-              <IonCol>
-              <IonButton expand="block" onClick={() => setShowAlert(true)}>
+            <IonRow>
+              <IonButton type="submit">Update Gift</IonButton>
+            </IonRow>
+            <IonRow>
+              <IonButton onClick={() => setShowAlert(true)}>
                 delete Gift
               </IonButton>
-              </IonCol>
-              <IonCol>
-                <IonButton expand="block" routerLink="/tabs/Wishlist">Wishlist</IonButton>
-              </IonCol>
+            </IonRow>
+            <IonRow>
+              <IonButton routerLink="/tabs/Wishlist">Wishlist</IonButton>
             </IonRow>
           </form>
         </IonContent>
         <IonAlert
-          cssClass="delete-alert"
           isOpen={showAlert}
           header="Delete Gift?"
           buttons={[
