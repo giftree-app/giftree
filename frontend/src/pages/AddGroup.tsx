@@ -20,8 +20,6 @@ import {
 import { connect } from "../data/connect";
 import { RouteComponentProps, withRouter } from "react-router";
 import { setReload } from "../data/user/user.actions";
-import { Plugins } from "@capacitor/core";
-const { Storage } = Plugins;
 
 // const BASE_URL = 'https://COP4331-1.herokuapp.com/';
 // const ENDPOINT_URL = BASE_URL + 'api/addGroup';
@@ -70,12 +68,9 @@ const AddGroup: React.FC<AddGroupProps> = ({
         userId: userId,
         groupName: groupName,
       };
-      const token = await getToken();
-      const config = {
-        headers: { authorization: `Bearer ${token}` },
-      };
+
       axios
-        .post("/api/addGroup", groupObject, config)
+        .post("/api/addGroup", groupObject)
         .then((res) => {
           console.log(res.data);
         })
@@ -92,20 +87,6 @@ const AddGroup: React.FC<AddGroupProps> = ({
   const redirectToGroupList = async (e: React.FormEvent) => {
     setReloadAction(true);
     history.push("/tabs/GroupList", { direction: "none" });
-  };
-
-  const getToken = async () => {
-    try {
-      const result = await Storage.get({ key: "ACCESS_TOKEN" });
-      if (result != null) {
-        return JSON.parse(result.value);
-      } else {
-        return null;
-      }
-    } catch (err) {
-      console.log(err);
-      return null;
-    }
   };
 
   return (
@@ -169,10 +150,10 @@ export default connect<{}, StateProps, DispatchProps>({
   mapStateToProps: (state) => ({
     username: state.user.username,
     userId: state.user.userId,
-    reload: state.user.reload,
+    reload: state.user.reload
   }),
   mapDispatchToProps: {
-    setReload,
+    setReload
   },
   component: withRouter(AddGroup),
 });

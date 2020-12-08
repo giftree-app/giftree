@@ -22,8 +22,6 @@ import {
   setGroupId,
   setReload,
 } from "../data/user/user.actions";
-import { Plugins } from "@capacitor/core";
-const { Storage } = Plugins;
 
 // const BASE_URL = 'https://COP4331-1.herokuapp.com/';
 // const ENDPOINT_URL = BASE_URL + 'api/getGroups';
@@ -71,29 +69,10 @@ const GroupList: React.FC<GroupListProps> = ({
     setIsListLoaded(false);
     if (isListLoading === false) {
       //console.log('GroupList->useEffect: reload = ' + {setReload});
-
-      const getToken = async () => {
-        try {
-          const result = await Storage.get({ key: "ACCESS_TOKEN" });
-          if (result != null) {
-            return JSON.parse(result.value);
-          } else {
-            return null;
-          }
-        } catch (err) {
-          console.log(err);
-          return null;
-        }
-      };
-
-      const getList = async () => {
+      const getList = () => {
         //console.log('in getList()');
-        const token = await getToken();
-        const config = {
-          headers: { authorization: `Bearer ${token}` },
-        };
         axios
-          .post("/api/getGroups", { userId: userId }, config)
+          .post("/api/getGroups", { userId: userId })
           .then(async (res) => {
             console.log(res);
             await setGroups(res.data.groups);
