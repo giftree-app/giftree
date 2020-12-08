@@ -121,6 +121,10 @@ const MemberWishlist: React.FC<WishlistProps> = ({
       setIsListLoading(true);
       setReloadAction(false);
     }
+    return () => {
+      //setIsListLoading(false);
+      //setReloadAction(true);
+    }
   }, [memberWishlistId, isListLoading, setReloadAction, reload]);
 
   const getToken = async () => {
@@ -178,7 +182,7 @@ const MemberWishlist: React.FC<WishlistProps> = ({
   const goBackToGroup = (e: any) => {
     console.log("groupId: " + groupId);
     setReloadAction(true);
-    history.push("/tabs/EditGroup", { direction: "none" });
+    //history.push("/tabs/EditGroup", { direction: "none" });
   };
   ////////////////////////////////
 
@@ -216,10 +220,12 @@ const MemberWishlist: React.FC<WishlistProps> = ({
             <br />
             <IonCard className="wishlist-button-card">
               <IonCardHeader>
-                <IonCol size="12" size-md="6">
+                <IonCol size="6" size-md="4">
                   <IonItem
                     button
                     color="medium"
+                    href="/tabs/editgroup"
+                    routerDirection="none"
                     onClick={() => goBackToGroup(true)}
                   >
                     Back to group!

@@ -107,7 +107,7 @@ const JoinGroup: React.FC<JoinGroupProps> = ({
 
   const redirectToGroupList = async (e: React.FormEvent) => {
     setReloadAction(true);
-    history.push("/tabs/GroupList", { direction: "none" });
+    //history.push("/tabs/GroupList", { direction: "none" });
   };
 
   return (

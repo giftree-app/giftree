@@ -171,6 +171,7 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
       getGroup();
       setIsLoading(true);
     }
+    return () => {}
   }, [groupId, userId, isLoading]);
 
   const selectMember = (e: any) => {
@@ -183,7 +184,7 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
 
   const redirectToGroupList = async (e: React.FormEvent) => {
     setReloadAction(true);
-    history.push("/tabs/GroupList", { direction: "none" });
+    //history.push("/tabs/GroupList", { direction: "none" });
   };
 
   const getToken = async () => {
@@ -203,7 +204,7 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
   const redirectToGroupMemberList = async (e: React.FormEvent) => {
     setReloadAction(true);
     setGroupIdAction(undefined);
-    history.push("/tabs/EditGroup", { direction: "none" });
+    //history.push("/tabs/EditGroup", { direction: "none" });
   };
 
   //goToWishList(memberId: member.userId)
@@ -219,7 +220,8 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
   if (isLoaded === false) {
     return <div> loading ...</div>;
   } else {
-    let temp = members;
+    let temp = members;//.filter((member) => (member.userId != userId? true : false));
+
     return (
       <IonPage id="editgroup-page">
         <IonHeader>
@@ -250,10 +252,10 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
             </IonItem>
             <IonList lines="none">
               {temp &&
-                temp.map((member) => (
+                temp.filter((member) => (member.userId != userId? true : false)).map((member) => (
                   <IonCard className="groupmember-card" key={member.userId}>
                     <IonCardHeader key={member.userId}>
-                      <IonCol size="12" size-md="6" key={member.userId}>
+                      <IonCol size="6" size-md="4" key={member.userId}>
                         <IonItem
                           button
                           lines="none"
@@ -267,12 +269,6 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
                               {member.firstName} {member.lastName}
                             </h3>
                           </IonLabel>
-                          <IonButton 
-                            key={member.userId} 
-                            routerLink="/tabs/memberwishlist"
-                            onClick={() => goToMemberWishList( { memberId: currentMemberId} )}
-                          >
-                            Wishlist</IonButton>
                         </IonItem>
                       </IonCol>
                     </IonCardHeader>
