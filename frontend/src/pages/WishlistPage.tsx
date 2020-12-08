@@ -3,6 +3,7 @@ import {
   IonContent,
   IonHeader,
   IonButtons,
+  IonButton,
   IonMenuButton,
   IonPage,
   IonTitle,
@@ -23,6 +24,7 @@ import {
 import { connect } from "../data/connect";
 import { Plugins } from "@capacitor/core";
 const { Storage } = Plugins;
+import "./WishlistPage.scss";
 
 // const BASE_URL = "https://COP4331-1.herokuapp.com/";
 // const ENDPOINT_URL = BASE_URL + "api/getWishlist";
@@ -134,39 +136,35 @@ const Wishlist: React.FC<WishlistProps> = ({
               <IonTitle>Wishlist</IonTitle>
             </IonToolbar>
           </IonHeader>
+          <IonItem id = "wishlist-title" lines="none">
+            <p> Your <strong>Gifts</strong> </p>
+          </IonItem>
           <IonContent fullscreen>
-            <IonList lines="none">
+            <IonList lines="full" id="wishlist-list">
               {temp &&
                 temp.map((gift) => (
                   <IonItem
+                    id = "wishlist-gifts"
                     detail={false}
                     href="/tabs/editgift"
                     routerDirection="none"
                     key={gift.giftId}
                     onClick={() => onClick({ giftId: gift.giftId })}
                   >
-                    <IonLabel>
-                      <h3>{gift.giftName}</h3>
-                    </IonLabel>
+                  {gift.giftName}
                   </IonItem>
                 ))}
             </IonList>
             <br />
-            <IonCard className="wishlist-button-card">
-              <IonCardHeader>
-                <IonCol size="12" size-md="6">
-                  <IonItem
-                    button
-                    color="medium"
-                    href="/tabs/addgift"
-                    routerDirection="none"
-                    onClick={() => goToAddGift(true)}
-                  >
-                    Add Gift!
-                  </IonItem>
-                </IonCol>
-              </IonCardHeader>
-            </IonCard>
+              <IonButton
+                id="wishlist-add-button"
+                expand="block"
+                href="/tabs/addgift"
+                routerDirection="none"
+                onClick={() => goToAddGift(true)}
+              >
+                Add Gift
+              </IonButton>
             <br />
           </IonContent>
         </IonPage>
