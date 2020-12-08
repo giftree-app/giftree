@@ -181,7 +181,7 @@ const Login: React.FC<LoginProps> = ({
             </a>
           </div>
           <div className="reset">
-            <a href="" className="resetText">
+            <a href="/tabs/reset-password" className="resetText">
               Forgot password? <b>Click here to reset.</b>{" "}
             </a>
           </div>
