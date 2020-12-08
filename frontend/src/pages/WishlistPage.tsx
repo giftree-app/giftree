@@ -3,6 +3,7 @@ import {
   IonContent,
   IonHeader,
   IonButtons,
+  IonButton,
   IonMenuButton,
   IonPage,
   IonTitle,
@@ -21,8 +22,7 @@ import {
   setReload,
 } from "../data/user/user.actions";
 import { connect } from "../data/connect";
-import { Plugins } from "@capacitor/core";
-const { Storage } = Plugins;
+import "./WishlistPage.scss";
 
 // const BASE_URL = "https://COP4331-1.herokuapp.com/";
 // const ENDPOINT_URL = BASE_URL + "api/getWishlist";
@@ -69,29 +69,11 @@ const Wishlist: React.FC<WishlistProps> = ({
   useEffect(() => {
     //console.log('in useEffect');
     if (isListLoading === false) {
-      const getToken = async () => {
-        try {
-          const result = await Storage.get({ key: "ACCESS_TOKEN" });
-          if (result != null) {
-            return JSON.parse(result.value);
-          } else {
-            return null;
-          }
-        } catch (err) {
-          console.log(err);
-          return null;
-        }
-      };
-
       //console.log('in useEffect: setting isListLoading to true');
-      const getList = async () => {
+      const getList = () => {
         //console.log('in getList()');
-        const token = await getToken();
-        const config = {
-          headers: { authorization: `Bearer ${token}` },
-        };
         axios
-          .post("/api/getWishlist", { userId: userId }, config)
+          .post("/api/getWishlist", { userId: userId })
           .then(async (res) => {
             await console.log(res);
             await setGifts(res.data.gifts);
@@ -134,39 +116,35 @@ const Wishlist: React.FC<WishlistProps> = ({
               <IonTitle>Wishlist</IonTitle>
             </IonToolbar>
           </IonHeader>
+          <IonItem id = "wishlist-title" lines="none">
+            <p> Your <strong>Gifts</strong> </p>
+          </IonItem>
           <IonContent fullscreen>
-            <IonList lines="none">
+            <IonList lines="full" id="wishlist-list">
               {temp &&
                 temp.map((gift) => (
                   <IonItem
+                    id = "wishlist-gifts"
                     detail={false}
                     href="/tabs/editgift"
                     routerDirection="none"
                     key={gift.giftId}
                     onClick={() => onClick({ giftId: gift.giftId })}
                   >
-                    <IonLabel>
-                      <h3>{gift.giftName}</h3>
-                    </IonLabel>
+                  {gift.giftName}
                   </IonItem>
                 ))}
             </IonList>
             <br />
-            <IonCard className="wishlist-button-card">
-              <IonCardHeader>
-                <IonCol size="12" size-md="6">
-                  <IonItem
-                    button
-                    color="medium"
-                    href="/tabs/addgift"
-                    routerDirection="none"
-                    onClick={() => goToAddGift(true)}
-                  >
-                    Add Gift!
-                  </IonItem>
-                </IonCol>
-              </IonCardHeader>
-            </IonCard>
+              <IonButton
+                id="wishlist-add-button"
+                expand="block"
+                href="/tabs/addgift"
+                routerDirection="none"
+                onClick={() => goToAddGift(true)}
+              >
+                Add Gift
+              </IonButton>
             <br />
           </IonContent>
         </IonPage>
