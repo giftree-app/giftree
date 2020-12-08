@@ -47,7 +47,6 @@ const Account: React.FC<AccountProps> = ({ setUsername, username, setUserId, use
               <IonItem onClick={() => setShowAlert(true)}>Change Username</IonItem>
               <IonItem onClick={() => clicked('Change Password')}>Change Password</IonItem>
               <IonItem routerLink="/support" routerDirection="none">Support</IonItem>
-              <IonItem routerLink="/logout" routerDirection="none">Logout</IonItem>
             </IonList>
           </div>)
         }

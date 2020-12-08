@@ -109,8 +109,8 @@ const MemberWishlist: React.FC<WishlistProps> = ({
         axios
           .post("/api/getWishlist", { userId: memberWishlistId }, config)
           .then(async (res) => {
-            await console.log(res);
-            await setGifts(res.data.gifts);
+            console.log(res);
+            setGifts(res.data.gifts);
             setIsListLoaded(true);
           })
           .catch(function (error) {
@@ -122,6 +122,8 @@ const MemberWishlist: React.FC<WishlistProps> = ({
       setReloadAction(false);
     }
     return () => {
+      console.log('MemberWishlistPage return from useEffect:' + fullName);
+      //setFullName('');
       //setIsListLoading(false);
       //setReloadAction(true);
     }

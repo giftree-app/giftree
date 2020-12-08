@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { RouteProps } from "react-router-dom";
 import {
   IonContent,
@@ -10,6 +10,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { connect } from "../data/connect";
+import { setReload } from "../data/user/user.actions";
 
 interface StateProps {
   username?: string;
@@ -25,6 +26,10 @@ const HomePage: React.FC<HomePageProps> = ({
   isAuthenticated,
 }) => {
   //console.log('homepage entry: reload = ' + reload);
+
+  useEffect(() => {
+    setReload(true);
+  },[setReload]);
 
   return (
     <IonPage id="homepage">
