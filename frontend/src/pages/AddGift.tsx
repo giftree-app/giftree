@@ -19,7 +19,8 @@ import {
 } from "@ionic/react";
 import { connect } from "../data/connect";
 import { RouteComponentProps, withRouter } from "react-router";
-import "./AddGift.scss";
+import { Plugins } from "@capacitor/core";
+const { Storage } = Plugins;
 
 // const BASE_URL = 'https://COP4331-1.herokuapp.com/';
 // const ENDPOINT_URL = BASE_URL + 'api/addGift';
@@ -77,8 +78,12 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
 
       //console.log(giftObject);
       //console.log(history);
+      const token = await getToken();
+      const config = {
+        headers: { authorization: `Bearer ${token}` },
+      };
       axios
-        .post("/api/addGift", giftObject)
+        .post("/api/addGift", giftObject, config)
         .then((res) => {
           console.log(res.data);
         })
@@ -99,6 +104,20 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
     history.push("Wishlist", { direction: "none" });
   };
 
+  const getToken = async () => {
+    try {
+      const result = await Storage.get({ key: "ACCESS_TOKEN" });
+      if (result != null) {
+        return JSON.parse(result.value);
+      } else {
+        return null;
+      }
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  };
+
   return (
     <IonPage id="addgift-page">
       <IonHeader>
@@ -113,11 +132,10 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
         <form noValidate onSubmit={addGift}>
           <IonList>
             <IonItem>
-              <IonLabel position="floating" color="black" className="addgift-label">
+              <IonLabel position="stacked" color="primary">
                 Gift:
               </IonLabel>
               <IonInput
-                className="addgift-input"
                 name="giftName"
                 type="text"
                 value={giftName}
@@ -135,11 +153,10 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
             )}
 
             <IonItem>
-              <IonLabel position="floating" color="black" className="addgift-label">
+              <IonLabel position="stacked" color="primary">
                 Price:
               </IonLabel>
               <IonInput
-                className="addgift-input"
                 name="giftPrice"
                 type="text"
                 value={giftPrice}
@@ -157,12 +174,10 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
             )}
 
             <IonItem>
-              <IonLabel position="floating" color="black" className="addgift-label">
+              <IonLabel position="stacked" color="primary">
                 Location:
               </IonLabel>
               <IonInput
-                className="addgift-input"
-                color="black"
                 name="giftLocation"
                 type="text"
                 value={giftLocation}
@@ -180,11 +195,10 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
             )}
 
             <IonItem>
-              <IonLabel position="floating" color="black" className="addgift-label">
+              <IonLabel position="stacked" color="primary">
                 Comment:
               </IonLabel>
               <IonInput
-                className="addgift-input"
                 name="giftComment"
                 type="text"
                 value={giftComment}
@@ -220,7 +234,7 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
 export default connect<{}, StateProps, {}>({
   mapStateToProps: (state) => ({
     username: state.user.username,
-    userId: state.user.userId
+    userId: state.user.userId,
   }),
   component: withRouter(AddGift),
 });
