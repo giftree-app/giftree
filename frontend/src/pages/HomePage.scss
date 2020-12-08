@@ -1,0 +1,27 @@
+#homepage {
+  .homepage-logo {
+    padding: 20px 0;
+    min-height: 200px;
+    text-align: center;
+  }
+
+  .homepage-logo img {
+    max-width: 500px;
+    -webkit-filter: drop-shadow(2px 2px 2px rgb(197, 197, 197));
+    filter: drop-shadow(3px 3px 3px rgb(157, 157, 157));
+  }
+
+  .homepage-content {
+    font-weight: 200;
+    font-size: 4vmax;
+    margin: 0 30px 0;
+    text-align: center;
+    align-items: center;
+  }
+
+  .homepage-sub {
+    font-size: 3vmax;
+    text-align: center;
+    align-items: center;
+  }
+}
