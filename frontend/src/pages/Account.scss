@@ -2,5 +2,16 @@
   img {
     max-width: 140px;
     border-radius: 50%;
-  }  
+  }
+
+  .login-logo img {
+    max-width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+    -webkit-filter: drop-shadow(2px 2px 2px rgb(197, 197, 197));
+    filter: drop-shadow(3px 3px 3px rgb(157, 157, 157));
+  }
+  .toolbar-logo {
+    max-width: 150px;
+  }
 }

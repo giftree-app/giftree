@@ -1,15 +1,33 @@
-import React from 'react';
-import { IonContent, IonHeader, IonButtons, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCol, IonRow, IonButton } from '@ionic/react';
-import { connect } from '../data/connect';
-
+import React from "react";
+import { Route, RouteProps } from "react-router-dom";
+import {
+  IonContent,
+  IonHeader,
+  IonButtons,
+  IonMenuButton,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonRow,
+  IonCol,
+  IonButton,
+} from "@ionic/react";
+import { connect } from "../data/connect";
+import "./HomePage.scss";
 
 interface StateProps {
   username?: string;
   userId?: string;
+  isAuthenticated?: boolean;
 }
 
-const HomePage: React.FC<StateProps> = ({ username, userId }) =>
-{
+interface HomePageProps extends StateProps, RouteProps {}
+
+const HomePage: React.FC<HomePageProps> = ({
+  username,
+  userId,
+  isAuthenticated,
+}) => {
   //console.log('homepage entry: reload = ' + reload);
 
   return (
@@ -22,26 +40,39 @@ const HomePage: React.FC<StateProps> = ({ username, userId }) =>
           <IonTitle>Home</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent>
-        username:
-        {username &&
-          (<div className="ion-padding-top ion-text-center">            
-            <h2>{ username }</h2>
-          </div>)
-        }
-        userId:
-        {userId &&
-          (<div className="ion-padding-top ion-text-center">            
-            <h2>{ userId }</h2>
-          </div>)
-        }
-        <IonCol>
-          <IonRow>
-            <IonButton routerLink="/tabs/Grouplist">Groups</IonButton>
-            <IonButton routerLink="/tabs/wishlist">Wishlist</IonButton>
+      {isAuthenticated ? (
+        <IonContent>
+        <div className="homepage-logo">
+          <img src="assets/img/appicon.svg" alt="Giftree logo" />
+        </div>
+          <IonRow className="homepage-content ion-text-center">
+            <p>Your holiday app for family, friends, and coworkers to share wishlists & gift ideas.
+            </p>
           </IonRow>
-        </IonCol>
-      </IonContent>
+        </IonContent>
+      ) : (
+        <IonContent>
+        <div className="homepage-logo">
+          <img src="assets/img/appicon.svg" alt="Giftree logo" />
+        </div>
+          <IonRow className="homepage-content ion-text-center">
+            <p>Oh no! You aren't authorized to view this page. Log in to see your tree.
+            </p>
+          </IonRow>
+          <IonRow>
+            <IonCol>
+            <IonButton href="/login" expand="block">
+              Log In
+            </IonButton>
+            </IonCol>
+            <IonCol>
+            <IonButton href="/signup" expand="block">
+              Sign Up
+            </IonButton>
+            </IonCol>
+          </IonRow>
+        </IonContent>
+      )}
     </IonPage>
   );
 };
@@ -50,7 +81,7 @@ export default connect<StateProps>({
   mapStateToProps: (state) => ({
     username: state.user.username,
     userId: state.user.userId,
-    reload: state.user.reload
+    isAuthenticated: state.user.isLoggedin,
   }),
-  component: HomePage
-})
+  component: HomePage,
+});
