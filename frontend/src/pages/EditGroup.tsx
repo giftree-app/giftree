@@ -180,11 +180,12 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
     setCurrentMemberId(e.member.userId);
     setCurrentMemberFirstName(e.member.firstName);
     setCurrentMemberLastName(e.member.lastName);
+    putInStorage("MEMBER_ID", e.member.userId);
   };
 
   const redirectToGroupList = async (e: React.FormEvent) => {
     setReloadAction(true);
-    //history.push("/tabs/GroupList", { direction: "none" });
+    history.push("/tabs/GroupList", { direction: "none" });
   };
 
   const getToken = async () => {
@@ -207,18 +208,38 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
     //history.push("/tabs/EditGroup", { direction: "none" });
   };
 
+  /*
+  const getFromStorage = async () {
+      const res = await Storage.get({ key: "userId" });
+      if (res.value != null) setIsAuthorized(true);
+    }
+    checkAuthentication();
+  }, []);
+*/
+  
+const putInStorage = async (key: string, value: any) => {
+    await Storage.set({
+      key: key,
+      value: JSON.stringify({
+        value,
+      }),
+    });
+  };
+
   //goToWishList(memberId: member.userId)
   const goToMemberWishList = async (e: any) => {
     let memberId = e.memberId;
     console.log('memberId: ' + currentMemberId);
     setReloadAction(true);
+    setMemberWishlistId(memberId);
     setMemberWishlistIdAction(memberId);
     setGroupIdAction(groupId);
+    putInStorage("LOAD_ON_ENTRY", 'true');
     //history.push("/tabs/memberwishlist", { direction: "none" });
   };
 
   if (isLoaded === false) {
-    return <div> loading ...</div>;
+    return <div> </div>;
   } else {
     let temp = members;//.filter((member) => (member.userId != userId? true : false));
 
@@ -252,7 +273,7 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
             </IonItem>
             <IonList lines="none">
               {temp &&
-                temp.filter((member) => (member.userId != userId? true : false)).map((member) => (
+                temp.filter((member) => (member.userId !== userId? true : false)).map((member) => (
                   <IonCard className="groupmember-card" key={member.userId}>
                     <IonCardHeader key={member.userId}>
                       <IonCol size="6" size-md="4" key={member.userId}>

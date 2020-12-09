@@ -46,12 +46,6 @@ interface DispatchProps {
 
 interface OwnProps extends RouteComponentProps {}
 
-interface ListLoadingState {
-  isListLoading: boolean;
-  isListLoaded: boolean;
-}
-/////////////////////////////////////
-
 interface WishlistProps
   extends OwnProps,
     StateProps,
@@ -59,20 +53,21 @@ interface WishlistProps
 /////////////////////////////////////
 
 const MemberWishlist: React.FC<WishlistProps> = ({
-  history,
-  groupId,
   reload,
   memberWishlistId,
+  setMemberWishlistId: setMemberWishlistIdAction,
   setReload: setReloadAction
 }) => {
   const [isListLoading, setIsListLoading] = useState(false);
   const [isListLoaded, setIsListLoaded] = useState(false);
   const [fullName, setFullName] = useState('');
   const [gifts, setGifts] = useState([]);
+  const [selected, setSelected] = useState([]);
 
   useEffect(() => {
     //console.log('in useEffect');
     if (isListLoading === false) {
+      console.log('memberWishlist->memberId: '+ memberWishlistId);
       const getToken = async () => {
         try {
           const result = await Storage.get({ key: "ACCESS_TOKEN" });
@@ -88,7 +83,9 @@ const MemberWishlist: React.FC<WishlistProps> = ({
       };
       //console.log('in useEffect: setting isListLoading to true');
       const getList = async () => {
-        //console.log('memberWishlist->memberId: '+ memberWishlistId);
+        const id = await Storage.get({ key: "MEMBER_ID" });
+        
+        console.log('memberWishlist->memberId: '+ id.value);
         const token = await getToken();
         const config = {
           headers: { authorization: `Bearer ${token}` },
@@ -123,11 +120,8 @@ const MemberWishlist: React.FC<WishlistProps> = ({
     }
     return () => {
       console.log('MemberWishlistPage return from useEffect:' + fullName);
-      //setFullName('');
-      //setIsListLoading(false);
-      //setReloadAction(true);
     }
-  }, [memberWishlistId, isListLoading, setReloadAction, reload]);
+  }, [memberWishlistId, isListLoading, setReloadAction, reload, fullName]);
 
   const getToken = async () => {
     try {
@@ -143,11 +137,9 @@ const MemberWishlist: React.FC<WishlistProps> = ({
     }
   };
 
-  const gotGift = async (e: any) => {
-    //e.preventDefault();
-
+  const gotGift = async (giftId: string) => {
     const giftObject = {
-      giftId: e.giftId
+      giftId: giftId
     };
 
     //console.log(giftObject);
@@ -156,9 +148,9 @@ const MemberWishlist: React.FC<WishlistProps> = ({
       headers: { authorization: `Bearer ${token}` },
     };
 
-    axios
+    await axios
       .post("/api/gotGift", giftObject, config)
-      .then((res) => {
+      .then(async (res) => {
         console.log(res.data);
       })
       .catch((error) => {
@@ -166,25 +158,16 @@ const MemberWishlist: React.FC<WishlistProps> = ({
       });
   };
 
-  const onClick = (e: any) => {
-    //console.log('clicked on: ' + e.giftId);
-    //setGiftIdAction(e.giftId);
-  };
-  ////////////////////////////////
-
-  const onGiftGot = (e: any) => {
-    // we have to toggle giftGot here, since we're passing in the value that is currently in the DB
-    let giftGot = !e.giftGot;
-    console.log('onGiftGot: ' + giftGot);
-    gotGift(e.giftId);
-    //setGiftIdAction(e.giftId);
+  const onGiftGot = (gift: any, index: number) => {
+    selected[index] = gift.giftId;
   };
   ////////////////////////////////
 
   const goBackToGroup = (e: any) => {
-    console.log("groupId: " + groupId);
+    selected.filter((select) =>(select === undefined? false : true)).map((select) => (
+      gotGift(select)
+    ));
     setReloadAction(true);
-    //history.push("/tabs/EditGroup", { direction: "none" });
   };
   ////////////////////////////////
 
@@ -206,13 +189,13 @@ const MemberWishlist: React.FC<WishlistProps> = ({
           <IonContent fullscreen>
             <IonList lines="none">
               {temp &&
-                temp.map((gift) => (
+                temp.map((gift, index) => (
                   <IonItem
                     detail={false}
                     key={gift.giftId}
-                    onClick={() => onClick({ giftId: gift.giftId })}
                   >
-                    <IonCheckbox checked={gift.giftGot} onIonChange={ e => onGiftGot(gift)} />
+                    {selected[index] = undefined}
+                    <IonCheckbox checked={gift.giftGot} onIonChange={ e => onGiftGot(gift, index)} />
                     <IonLabel>
                       <h3>{gift.giftName}</h3>
                     </IonLabel>

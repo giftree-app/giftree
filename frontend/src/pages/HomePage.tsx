@@ -29,7 +29,7 @@ const HomePage: React.FC<HomePageProps> = ({
 
   useEffect(() => {
     setReload(true);
-  },[setReload]);
+  },[]);
 
   return (
     <IonPage id="homepage">
