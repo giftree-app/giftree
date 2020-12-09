@@ -599,38 +599,23 @@ exports.setApp = function (app, client) {
 
     const db = client.db();
     try {
-      const groupCheck = await db
-        .colllection("Groups")
-        .find({ groupCode:groupCode })
+      const check = await db
+        .collection("Groups")
+        .find({ groupCode: groupCode, members: userId })
         .toArray();
 
-        if (groupCheck.length < 1) {
+      if (check.length > 0) {
         var ret = {
-            error: "Group not found",
-            success: false,
-          };
-          res.status(400).json(ret);
-      }
-      else {
-        const check = await db
-            .collection("Groups")
-            .find({ groupCode: groupCode, members: userId })
-            .toArray();
-
-        if (check.length > 0) {
-            var ret = {
-            error: "User is already a member of this group",
-            success: false,
-            };
-            res.status(400).json(ret);
-        } else {
-            const results = db
-            .collection("Groups")
-            .update({ groupCode: groupCode }, { $addToSet: { members: userId } });
-            var ret = { error: "", success: true };
-
-            res.status(200).json(ret);
-        }
+          error: "User is already a member of this group",
+          success: false,
+        };
+        res.status(400).json(ret);
+      } else {
+        const results = db
+          .collection("Groups")
+          .update({ groupCode: groupCode }, { $addToSet: { members: userId } });
+        var ret = { error: "", success: true };
+        res.status(200).json(ret);
       }
     } catch (e) {
       var error = e.toString();
