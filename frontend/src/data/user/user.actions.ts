@@ -1,4 +1,4 @@
-import { getUserData, setIsLoggedInData, setUsernameData, setUserIdData, setMemberWishlistIdData, setGiftIdData, setGroupIdData, setReloadData } from '../dataApi';
+import { getUserData, setIsLoggedInData, setUsernameData, setUserIdData, setGiftIdData, setGroupIdData, setReloadData } from '../dataApi';
 import { ActionType } from '../../util/types';
 import { UserState } from './user.state';
 
@@ -49,14 +49,6 @@ export const setUserId = (userId?: string) => async (dispatch: React.Dispatch<an
   } as const);
 };
 
-export const setMemberWishlistId = (memberWishlistId?: string) => async (dispatch: React.Dispatch<any>) => {
-  await setMemberWishlistIdData(memberWishlistId);
-  return ({
-    type: 'set-memberwishlistid',
-    memberWishlistId
-  } as const);
-};
-
 export const setGiftId = (giftId?: string) => async (dispatch: React.Dispatch<any>) => {
   await setGiftIdData(giftId);
   return ({
@@ -95,7 +87,6 @@ export type UserActions =
   | ActionType<typeof setReload>
   | ActionType<typeof setUsername>
   | ActionType<typeof setUserId>
-  | ActionType<typeof setMemberWishlistId>
   | ActionType<typeof setGiftId>
   | ActionType<typeof setGroupId>
   | ActionType<typeof setDarkMode>

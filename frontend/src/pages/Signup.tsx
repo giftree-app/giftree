@@ -8,6 +8,8 @@ import {
   IonPage,
   IonButtons,
   IonMenuButton,
+  IonRow,
+  IonCol,
   IonButton,
   IonList,
   IonItem,
@@ -50,6 +52,8 @@ const Signup: React.FC<SignupProps> = ({
   const [emailError, setEmailError] = useState(false);
   const [emailInvalid, setEmailInvalid] = useState(false);
   const [address1Error, setAddress1Error] = useState(false);
+
+  const app_name = "giftree";
 
   function checkValues() {
     !username ? setUsernameError(true) : setUsernameError(false);

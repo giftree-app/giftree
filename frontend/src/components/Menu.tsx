@@ -44,6 +44,7 @@ const routes = {
     { title: "Login", path: "/login", icon: logIn },
     { title: "Signup", path: "/signup", icon: personAdd },
     { title: "Support", path: "/support", icon: help },
+    { title: "About", path: "/tabs/about", icon: informationCircleOutline },
   ],
 };
 

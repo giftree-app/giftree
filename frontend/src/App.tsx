@@ -32,9 +32,6 @@ import { AppContextProvider } from "./data/AppContext";
 import {
   setIsLoggedIn,
   setUsername,
-  setUserId,
-  setGroupId,
-  setReload,
   loadUserData,
 } from "./data/user/user.actions";
 import Account from "./pages/Account";
@@ -61,9 +58,6 @@ interface DispatchProps {
   loadUserData: typeof loadUserData;
   setIsLoggedIn: typeof setIsLoggedIn;
   setUsername: typeof setUsername;
-  setUserId: typeof setUserId;
-  setGroupId: typeof setGroupId;
-  setReload: typeof setReload;
 }
 
 interface IonicAppProps extends StateProps, DispatchProps {}
@@ -72,10 +66,7 @@ const IonicApp: React.FC<IonicAppProps> = ({
   darkMode,
   setIsLoggedIn,
   setUsername,
-  setUserId,
-  setGroupId,
-  setReload,
-  loadUserData
+  loadUserData,
 }) => {
   useEffect(() => {
     loadUserData();
@@ -115,9 +106,6 @@ const IonicApp: React.FC<IonicAppProps> = ({
                   <RedirectToLogin
                     setIsLoggedIn={setIsLoggedIn}
                     setUsername={setUsername}
-                    setUserId={setUserId}
-                    setGroupId={setGroupId}
-                    setReload={setReload}
                     {...removeToken()}
                   />
                 );
@@ -141,9 +129,6 @@ const IonicAppConnected = connect<{}, StateProps, DispatchProps>({
     loadUserData,
     setIsLoggedIn,
     setUsername,
-    setUserId,
-    setGroupId,
-    setReload
   },
   component: IonicApp,
 });

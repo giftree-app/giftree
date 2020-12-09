@@ -19,9 +19,7 @@ import {
 } from "@ionic/react";
 import { connect } from "../data/connect";
 import { RouteComponentProps, withRouter } from "react-router";
-import { setReload } from "../data/user/user.actions";
 import { Plugins } from "@capacitor/core";
-import './AddGroup.scss'
 const { Storage } = Plugins;
 
 // const BASE_URL = 'https://COP4331-1.herokuapp.com/';
@@ -32,51 +30,56 @@ interface OwnProps extends RouteComponentProps {}
 interface StateProps {
   username?: string;
   userId?: string;
-  reload: boolean;
 }
 
-interface DispatchProps {
-  setReload: typeof setReload;
-}
+interface UserAddGroupProps extends OwnProps, StateProps {}
 
-interface AddGroupProps extends OwnProps, StateProps, DispatchProps {}
-
-const AddGroup: React.FC<AddGroupProps> = ({
+const UserAddGroup: React.FC<UserAddGroupProps> = ({
   history,
   username,
   userId,
-  setReload: setReloadAction,
 }) => {
   const [groupName, setGroupName] = useState("");
   const [addedGroupName, setAddedGroupName] = useState("");
+  const [groupCode, setGroupCode] = useState("");
   const [groupAdded, setGroupAdded] = useState(false);
 
   // verification
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [groupNameError, setGroupNameError] = useState(false);
-
-  //console.log("AddGroup entry");
+  const [groupCodeError, setGroupCodeError] = useState(false);
 
   const addGroup = async (e: React.FormEvent) => {
     e.preventDefault();
 
     setFormSubmitted(true);
 
+    //console.log('in addgift now');
+
     if (!groupName) {
       setGroupNameError(true);
     }
 
-    if (groupName) {
-      const groupObject = {
+    if (!groupCode) {
+      setGroupCodeError(true);
+    }
+
+    if (groupName && groupCode) {
+      const giftObject = {
         userId: userId,
         groupName: groupName,
+        groupCode: groupCode,
       };
+
       const token = await getToken();
       const config = {
         headers: { authorization: `Bearer ${token}` },
       };
+
+      //console.log(giftObject);
+      //console.log(history);
       axios
-        .post("/api/addGroup", groupObject, config)
+        .post("/api/addGroup", giftObject, config)
         .then((res) => {
           console.log(res.data);
         })
@@ -86,13 +89,12 @@ const AddGroup: React.FC<AddGroupProps> = ({
       setAddedGroupName(groupName);
       setGroupAdded(true);
       setGroupName("");
-      redirectToGroupList(e);
+      setGroupCode("");
     }
   };
 
-  const redirectToGroupList = async (e: React.FormEvent) => {
-    setReloadAction(true);
-    history.push("/tabs/GroupList", { direction: "none" });
+  const ShowResult = async (e: React.FormEvent) => {
+    //history.push('Wishlist', { direction: "none" });
   };
 
   const getToken = async () => {
@@ -116,19 +118,18 @@ const AddGroup: React.FC<AddGroupProps> = ({
           <IonButtons slot="start">
             <IonMenuButton></IonMenuButton>
           </IonButtons>
-          <IonTitle>Add a new group, {username}</IonTitle>
+          <IonTitle>Add Gift, {username}</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent>
         <form noValidate onSubmit={addGroup}>
           <IonList>
-            <IonItem className= "addgroup-item">
-              <IonLabel position="floating" color="black" className="addgroup-label">
-                Group name:
+            <IonItem>
+              <IonLabel position="stacked" color="primary">
+                Gift:
               </IonLabel>
               <IonInput
                 name="groupName"
-                className="addgroup-input"
                 type="text"
                 value={groupName}
                 spellCheck={false}
@@ -140,13 +141,34 @@ const AddGroup: React.FC<AddGroupProps> = ({
 
             {formSubmitted && groupNameError && (
               <IonText color="danger">
-                <p className="ion-padding-start">Group name is required</p>
+                <p className="ion-padding-start">Gift name is required</p>
+              </IonText>
+            )}
+
+            <IonItem>
+              <IonLabel position="stacked" color="primary">
+                Price:
+              </IonLabel>
+              <IonInput
+                name="groupCode"
+                type="text"
+                value={groupCode}
+                spellCheck={false}
+                autocapitalize="off"
+                onIonChange={(e) => setGroupCode(e.detail.value!)}
+                required
+              ></IonInput>
+            </IonItem>
+
+            {formSubmitted && groupCodeError && (
+              <IonText color="danger">
+                <p className="ion-padding-start">Gift price is required</p>
               </IonText>
             )}
           </IonList>
           <IonRow>
             <IonText>
-              {groupAdded ? "Added [" + addedGroupName + "] to groups!" : ""}
+              {groupAdded ? "Added [" + addedGroupName + "] to wishlist!" : ""}
             </IonText>
           </IonRow>
           <IonRow>
@@ -157,7 +179,7 @@ const AddGroup: React.FC<AddGroupProps> = ({
             </IonCol>
             <IonCol>
               <IonButton href="/tabs/grouplist" expand="block">
-                Done!
+                Groups
               </IonButton>
             </IonCol>
           </IonRow>
@@ -167,14 +189,11 @@ const AddGroup: React.FC<AddGroupProps> = ({
   );
 };
 
-export default connect<{}, StateProps, DispatchProps>({
+export default connect<StateProps, {}, OwnProps>({
   mapStateToProps: (state) => ({
     username: state.user.username,
     userId: state.user.userId,
-    reload: state.user.reload,
+    groupId: state.user.groupId,
   }),
-  mapDispatchToProps: {
-    setReload,
-  },
-  component: withRouter(AddGroup),
+  component: withRouter(UserAddGroup),
 });

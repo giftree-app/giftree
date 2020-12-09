@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { RouteProps } from "react-router-dom";
+import React from "react";
+import { Route, RouteProps } from "react-router-dom";
 import {
   IonContent,
   IonHeader,
@@ -13,7 +13,6 @@ import {
   IonButton,
 } from "@ionic/react";
 import { connect } from "../data/connect";
-import { setReload } from "../data/user/user.actions";
 import "./HomePage.scss";
 
 interface StateProps {
@@ -30,10 +29,6 @@ const HomePage: React.FC<HomePageProps> = ({
   isAuthenticated,
 }) => {
   //console.log('homepage entry: reload = ' + reload);
-
-  useEffect(() => {
-    setReload(true);
-  },[]);
 
   return (
     <IonPage id="homepage">

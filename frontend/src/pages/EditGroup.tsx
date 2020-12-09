@@ -19,7 +19,7 @@ import {
   IonCardHeader,
   IonCol,
 } from "@ionic/react";
-import { setGroupId, setMemberWishlistId, setReload } from "../data/user/user.actions";
+import { setGroupId, setReload } from "../data/user/user.actions";
 import { GroupMember } from "../models/GroupMember";
 import { connect } from "../data/connect";
 import { RouteComponentProps, withRouter } from "react-router";
@@ -46,7 +46,6 @@ interface StateProps {
 
 interface DispatchProps {
   setGroupId: typeof setGroupId;
-  setMemberWishlistId: typeof setMemberWishlistId;
   setReload: typeof setReload;
 }
 
@@ -60,9 +59,7 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
   history,
   groupId,
   userId,
-  setGroupId: setGroupIdAction,
   setReload: setReloadAction,
-  setMemberWishlistId: setMemberWishlistIdAction
 }) => {
   const [groupName, setGroupName] = useState("");
   const [groupCode, setGroupCode] = useState("");
@@ -75,7 +72,7 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
   const [currentMemberFirstName, setCurrentMemberFirstName] = useState("");
   const [currentMemberLastName, setCurrentMemberLastName] = useState("");
 
-  //console.log("EditGroup entry");
+  console.log("EditGroup entry");
 
   const deleteGroupMember = async () => {
     //console.log('EditGroup: in deleteGroup');
@@ -156,9 +153,9 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
             config
           )
           .then((res) => {
-            //console.log(res);
+            console.log(res);
             //console.log("EditGroup: in getGroup: groupName: " + groupName);
-            //console.log("EditGroup: in getGroup: data: " + res.data);
+            console.log("EditGroup: in getGroup: data: " + res.data);
             setGroupName(res.data.groupName);
             setGroupCode(res.data.groupCode);
             setMembers(res.data.members);
@@ -172,16 +169,14 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
       getGroup();
       setIsLoading(true);
     }
-    return () => {}
   }, [groupId, userId, isLoading]);
 
-  const selectMember = (e: any) => {
+  const onClick = (e: any) => {
     console.log("clicked on: " + e.member);
     //setMember(e.member);
     setCurrentMemberId(e.member.userId);
     setCurrentMemberFirstName(e.member.firstName);
     setCurrentMemberLastName(e.member.lastName);
-    putInStorage("MEMBER_ID", e.member.userId);
   };
 
   const redirectToGroupList = async (e: React.FormEvent) => {
@@ -205,45 +200,13 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
 
   const redirectToGroupMemberList = async (e: React.FormEvent) => {
     setReloadAction(true);
-    setGroupIdAction(undefined);
-    //history.push("/tabs/EditGroup", { direction: "none" });
-  };
-
-  /*
-  const getFromStorage = async () {
-      const res = await Storage.get({ key: "userId" });
-      if (res.value != null) setIsAuthorized(true);
-    }
-    checkAuthentication();
-  }, []);
-*/
-
-const putInStorage = async (key: string, value: any) => {
-    await Storage.set({
-      key: key,
-      value: JSON.stringify({
-        value,
-      }),
-    });
-  };
-
-  //goToWishList(memberId: member.userId)
-  const goToMemberWishList = async (e: any) => {
-    let memberId = e.memberId;
-    console.log('memberId: ' + currentMemberId);
-    setReloadAction(true);
-    setMemberWishlistId(memberId);
-    setMemberWishlistIdAction(memberId);
-    setGroupIdAction(groupId);
-    putInStorage("LOAD_ON_ENTRY", 'true');
-    //history.push("/tabs/memberwishlist", { direction: "none" });
+    history.push("/tabs/EditGroup", { direction: "none" });
   };
 
   if (isLoaded === false) {
-    return <div> </div>;
+    return <div> loading ...</div>;
   } else {
-    let temp = members;//.filter((member) => (member.userId != userId? true : false));
-
+    let temp = members;
     return (
       <IonPage id="editgroup-page">
         <IonHeader>
@@ -361,7 +324,6 @@ export default connect<{}, StateProps, DispatchProps>({
   }),
   mapDispatchToProps: {
     setGroupId,
-    setMemberWishlistId,
     setReload,
   },
   component: withRouter(EditGroup),
