@@ -21,6 +21,7 @@ import { connect } from "../data/connect";
 import { RouteComponentProps, withRouter } from "react-router";
 import { setReload } from "../data/user/user.actions";
 import { Plugins } from "@capacitor/core";
+import './AddGroup.scss'
 const { Storage } = Plugins;
 
 // const BASE_URL = 'https://COP4331-1.herokuapp.com/';
@@ -121,12 +122,13 @@ const AddGroup: React.FC<AddGroupProps> = ({
       <IonContent>
         <form noValidate onSubmit={addGroup}>
           <IonList>
-            <IonItem>
-              <IonLabel position="stacked" color="primary">
+            <IonItem className= "addgroup-item">
+              <IonLabel position="floating" color="black" className="addgroup-label">
                 Group name:
               </IonLabel>
               <IonInput
                 name="groupName"
+                className="addgroup-input"
                 type="text"
                 value={groupName}
                 spellCheck={false}
