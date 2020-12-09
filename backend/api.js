@@ -78,7 +78,11 @@ exports.setApp = function (app, client) {
           "or enter the code below into the validation page in the app: <br/><br/> Validation code: " +
           validateCode;
         emailMsg +=
-          '<br/><br/> <a href="https://https://giftree.herokuapp.com/validate">https://https://giftree.herokuapp.com/tabs/validate</a>';
+          '<br/><br/> <a href = "https://giftree.herokuapp.com/token?v=' +
+          validateCode +
+          '"> https://giftree.herokuapp.com/token?v=' +
+          validateCode +
+          "</a>";
         emailMsg += "<br/><br/>Thank you,<br/>Giftree App Team";
 
         const msg = {
