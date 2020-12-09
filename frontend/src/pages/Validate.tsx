@@ -8,8 +8,6 @@ import {
   IonPage,
   IonButtons,
   IonMenuButton,
-  IonRow,
-  IonCol,
   IonButton,
   IonList,
   IonItem,
@@ -18,80 +16,55 @@ import {
   IonText,
 } from "@ionic/react";
 import "./Login.scss";
-import {
-  setIsLoggedIn,
-  setUsername,
-  setUserId,
-  setReload,
-} from "../data/user/user.actions";
 import { connect } from "../data/connect";
-import { RouteComponentProps } from "react-router";
+import { RouteComponentProps, withRouter } from "react-router";
 import { Plugins } from "@capacitor/core";
 const { Storage } = Plugins;
 
-interface OwnProps extends RouteComponentProps {}
-
-interface DispatchProps {
-  setIsLoggedIn: typeof setIsLoggedIn;
-  setUsername: typeof setUsername;
-  setUserId: typeof setUserId;
-  setReload: typeof setReload;
+interface StateProps {
+  username?: string;
+  userId?: string;
+  isAuthenticated?: boolean;
 }
 
-interface LoginProps extends OwnProps, DispatchProps {}
+interface OwnProps extends RouteComponentProps {}
 
-const Login: React.FC<LoginProps> = ({
-  setIsLoggedIn,
-  history,
-  setUsername: setUsernameAction,
-  setUserId: setUserIdAction,
-  setReload: setReloadAction,
-}) => {
-  const app_name = "giftree";
+interface ValidateProps extends OwnProps {}
 
+const Validate: React.FC<ValidateProps> = ({ history }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
-  const [loginError, setLoginError] = useState(false);
+  const [codeError, setCodeError] = useState(false);
+  const [validateFormError, setValidateFormError] = useState(false);
 
-  const login = async (e: React.FormEvent) => {
+  const resetPassRequest = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoginError(false);
+    setValidateFormError(false);
     setFormSubmitted(true);
 
     !username ? setUsernameError(true) : setUsernameError(false);
     !password ? setPasswordError(true) : setPasswordError(false);
+    !code ? setCodeError(true) : setCodeError(false);
 
-    if (username && password) {
-      await setIsLoggedIn(true);
-      await setUsernameAction(username);
-
+    if (username && password && code) {
       axios
-        .post("/api/login", {
+        .post("/api/validate", {
           login: username,
           password: password,
+          validateCode: code,
         })
         .then(async (res) => {
-          await Storage.set({
-            key: "ACCESS_TOKEN",
-            value: JSON.stringify(res.data.accessToken),
-          });
-          await Storage.set({
-            key: "EXPIRES_IN",
-            value: res.data.expiresIn,
-          });
-          await setIsLoggedIn(true);
-          await setUsernameAction(username);
-          await setUserIdAction(res.data.userId);
-          await setReloadAction(true);
+          console.log(res);
           setUsername("");
           setPassword("");
-          history.push("/tabs/home", { direction: "none" });
+          history.push("/login", { direction: "none" });
         })
         .catch(function (error) {
-          setLoginError(true);
+          setValidateFormError(true);
           console.log(error);
         });
     }
@@ -114,10 +87,10 @@ const Login: React.FC<LoginProps> = ({
           <img src="assets/img/appicon.svg" alt="Giftree logo" />
         </div>
         <IonLabel>
-          <h1 className="header">LOG IN</h1>
+          <h1 className="header">Validate Your Account</h1>
         </IonLabel>
 
-        <form noValidate onSubmit={login}>
+        <form noValidate onSubmit={resetPassRequest}>
           <IonList>
             <IonItem>
               <IonInput
@@ -155,39 +128,50 @@ const Login: React.FC<LoginProps> = ({
                 }}
               ></IonInput>
             </IonItem>
+
+            {formSubmitted && passwordError && (
+              <IonItem lines="none">
+                <IonText color="danger">
+                  <p className="ion-padding-start">Password is required</p>
+                </IonText>
+              </IonItem>
+            )}
+
+            <IonItem className="passfield">
+              <IonInput
+                name="code"
+                type="text"
+                placeholder="VALIDATION CODE"
+                value={code}
+                onIonChange={(e) => {
+                  setCode(e.detail.value!);
+                  setCodeError(false);
+                }}
+              ></IonInput>
+            </IonItem>
           </IonList>
 
-          {formSubmitted && passwordError && (
+          {formSubmitted && codeError && (
             <IonItem lines="none">
               <IonText color="danger">
-                <p className="ion-padding-start">Password is required</p>
+                <p className="ion-padding-start">Validation code is required</p>
               </IonText>
             </IonItem>
           )}
 
-          {formSubmitted && loginError && (
+          {formSubmitted && validateFormError && (
             <IonItem lines="none">
               <IonText color="danger">
                 <p className="ion-padding-start">
-                  Login error, please try again.
+                  There was an error submitting your validation code, please try
+                  again.
                 </p>
               </IonText>
             </IonItem>
           )}
 
-          <div className="reset" style={{ paddingTop: "50px" }}>
-            <a href="/signup" className="resetText">
-              Don't have an account? <b>Click here to sign up.</b>{" "}
-            </a>
-          </div>
-          <div className="reset">
-            <a href="/tabs/reset-password" className="resetText">
-              Forgot password? <b>Click here to reset.</b>{" "}
-            </a>
-          </div>
-
           <IonButton type="submit" expand="block" className="loginbtn">
-            Go!
+            Validate
           </IonButton>
         </form>
       </IonContent>
@@ -195,12 +179,11 @@ const Login: React.FC<LoginProps> = ({
   );
 };
 
-export default connect<OwnProps, {}, DispatchProps>({
-  mapDispatchToProps: {
-    setIsLoggedIn,
-    setUsername,
-    setUserId,
-    setReload,
-  },
-  component: Login,
+export default connect<StateProps>({
+  mapStateToProps: (state) => ({
+    username: state.user.username,
+    userId: state.user.userId,
+    isAuthenticated: state.user.isLoggedin,
+  }),
+  component: withRouter(Validate),
 });
