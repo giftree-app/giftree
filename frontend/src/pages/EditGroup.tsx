@@ -241,7 +241,6 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
                 temp.map((member) => (
                   <IonItem
                     button
-                    lines="none"
                     id="member-item"
                     detail={false}
                     key={member.userId}
