@@ -258,7 +258,7 @@ const putInStorage = async (key: string, value: any) => {
         <IonContent>
           <form noValidate onSubmit={updateGroup}>
             <IonItem>
-              <IonLabel position="stacked" color="primary">
+              <IonLabel position="stacked" color="black">
                 Edit Group name:
               </IonLabel>
               <IonInput

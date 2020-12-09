@@ -7,12 +7,10 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  IonCard,
-  IonCardHeader,
-  IonCol,
+  IonButton,
 } from "@ionic/react";
 import axios from "axios";
-import { IonItem, IonLabel, IonList } from "@ionic/react";
+import { IonItem, IonList } from "@ionic/react";
 import { Gifts } from "../models/Gift";
 import {
   setUserId,
@@ -22,6 +20,7 @@ import {
 } from "../data/user/user.actions";
 import { connect } from "../data/connect";
 import { Plugins } from "@capacitor/core";
+import "./WishlistPage.scss";
 const { Storage } = Plugins;
 
 // const BASE_URL = "https://COP4331-1.herokuapp.com/";
@@ -51,9 +50,7 @@ interface ListLoadingState {
 }
 /////////////////////////////////////
 
-interface WishlistProps
-  extends StateProps,
-    DispatchProps {}
+interface WishlistProps extends StateProps, DispatchProps {}
 /////////////////////////////////////
 
 const Wishlist: React.FC<WishlistProps> = ({
@@ -135,39 +132,38 @@ const Wishlist: React.FC<WishlistProps> = ({
               <IonTitle>Wishlist</IonTitle>
             </IonToolbar>
           </IonHeader>
+          <IonItem id="wishlist-title" lines="none">
+            <p>
+              {" "}
+              Your <strong>Gifts</strong>{" "}
+            </p>
+          </IonItem>
           <IonContent fullscreen>
-            <IonList lines="none">
+            <IonList lines="full" id="wishlist-list">
               {temp &&
                 temp.map((gift) => (
                   <IonItem
+                    id="wishlist-gifts"
                     detail={false}
                     href="/tabs/editgift"
                     routerDirection="none"
                     key={gift.giftId}
                     onClick={() => onClick({ giftId: gift.giftId })}
                   >
-                    <IonLabel>
-                      <h3>{gift.giftName}</h3>
-                    </IonLabel>
+                    {gift.giftName}
                   </IonItem>
                 ))}
             </IonList>
             <br />
-            <IonCard className="wishlist-button-card">
-              <IonCardHeader>
-                <IonCol size="12" size-md="6">
-                  <IonItem
-                    button
-                    color="medium"
-                    href="/tabs/addgift"
-                    routerDirection="none"
-                    onClick={() => goToAddGift(true)}
-                  >
-                    Add Gift!
-                  </IonItem>
-                </IonCol>
-              </IonCardHeader>
-            </IonCard>
+            <IonButton
+              id="wishlist-add-button"
+              expand="block"
+              href="/tabs/addgift"
+              routerDirection="none"
+              onClick={() => goToAddGift(true)}
+            >
+              Add Gift
+            </IonButton>
             <br />
           </IonContent>
         </IonPage>

@@ -19,6 +19,7 @@ import {
 } from "@ionic/react";
 import { connect } from "../data/connect";
 import { RouteComponentProps, withRouter } from "react-router";
+import "./AddGift.scss";
 import { Plugins } from "@capacitor/core";
 const { Storage } = Plugins;
 
@@ -132,10 +133,15 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
         <form noValidate onSubmit={addGift}>
           <IonList>
             <IonItem>
-              <IonLabel position="stacked" color="primary">
+              <IonLabel
+                position="floating"
+                color="black"
+                className="addgift-label"
+              >
                 Gift:
               </IonLabel>
               <IonInput
+                className="addgift-input"
                 name="giftName"
                 type="text"
                 value={giftName}
@@ -153,10 +159,15 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
             )}
 
             <IonItem>
-              <IonLabel position="stacked" color="primary">
+              <IonLabel
+                position="floating"
+                color="black"
+                className="addgift-label"
+              >
                 Price:
               </IonLabel>
               <IonInput
+                className="addgift-input"
                 name="giftPrice"
                 type="text"
                 value={giftPrice}
@@ -174,10 +185,15 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
             )}
 
             <IonItem>
-              <IonLabel position="stacked" color="primary">
+              <IonLabel
+                position="floating"
+                color="black"
+                className="addgift-label"
+              >
                 Location:
               </IonLabel>
               <IonInput
+                className="addgift-input"
                 name="giftLocation"
                 type="text"
                 value={giftLocation}
@@ -195,10 +211,15 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
             )}
 
             <IonItem>
-              <IonLabel position="stacked" color="primary">
+              <IonLabel
+                position="floating"
+                color="black"
+                className="addgift-label"
+              >
                 Comment:
               </IonLabel>
               <IonInput
+                className="addgift-input"
                 name="giftComment"
                 type="text"
                 value={giftComment}

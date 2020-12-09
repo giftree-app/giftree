@@ -107,7 +107,7 @@ const Login: React.FC<LoginProps> = ({
       </IonHeader>
       <IonContent>
         <div className="login-logo">
-          <img src="assets/img/appicon.svg" alt="Ionic logo" />
+          <img src="assets/img/appicon.svg" alt="Giftree logo" />
         </div>
         <IonLabel>
           <h1 className="header">LOG IN</h1>
@@ -177,7 +177,7 @@ const Login: React.FC<LoginProps> = ({
             </a>
           </div>
           <div className="reset">
-            <a href="" className="resetText">
+            <a href="/tabs/reset-password" className="resetText">
               Forgot password? <b>Click here to reset.</b>{" "}
             </a>
           </div>

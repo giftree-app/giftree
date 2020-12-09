@@ -111,7 +111,7 @@ const Signup: React.FC<SignupProps> = ({
           await setIsLoggedIn(true);
           await setUsernameAction(username);
           await clearFields();
-          history.push("/login", { direction: "none" });
+          history.push("/tabs/validate", { direction: "none" });
         })
         .catch(function (error) {
           setSignupError(true);

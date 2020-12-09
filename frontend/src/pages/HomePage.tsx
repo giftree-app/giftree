@@ -8,9 +8,13 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
+  IonRow,
+  IonCol,
+  IonButton,
 } from "@ionic/react";
 import { connect } from "../data/connect";
 import { setReload } from "../data/user/user.actions";
+import "./HomePage.scss";
 
 interface StateProps {
   username?: string;
@@ -43,21 +47,36 @@ const HomePage: React.FC<HomePageProps> = ({
       </IonHeader>
       {isAuthenticated ? (
         <IonContent>
-          username:
-          {username && (
-            <div className="ion-padding-top ion-text-center">
-              <h2>{username}</h2>
-            </div>
-          )}
-          userId:
-          {userId && (
-            <div className="ion-padding-top ion-text-center">
-              <h2>{userId}</h2>
-            </div>
-          )}
+        <div className="homepage-logo">
+          <img src="assets/img/appicon.svg" alt="Giftree logo" />
+        </div>
+          <IonRow className="homepage-content ion-text-center">
+            <p>Your holiday app for family, friends, and coworkers to share wishlists & gift ideas.
+            </p>
+          </IonRow>
         </IonContent>
       ) : (
-        <IonContent></IonContent>
+        <IonContent>
+        <div className="homepage-logo">
+          <img src="assets/img/appicon.svg" alt="Giftree logo" />
+        </div>
+          <IonRow className="homepage-content ion-text-center">
+            <p>Oh no! You aren't authorized to view this page. Log in to see your tree.
+            </p>
+          </IonRow>
+          <IonRow>
+            <IonCol>
+            <IonButton href="/login" expand="block">
+              Log In
+            </IonButton>
+            </IonCol>
+            <IonCol>
+            <IonButton href="/signup" expand="block">
+              Sign Up
+            </IonButton>
+            </IonCol>
+          </IonRow>
+        </IonContent>
       )}
     </IonPage>
   );

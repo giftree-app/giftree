@@ -78,11 +78,7 @@ exports.setApp = function (app, client) {
           "or enter the code below into the validation page in the app: <br/><br/> Validation code: " +
           validateCode;
         emailMsg +=
-          '<br/><br/> <a href = "https://https://giftree.herokuapp.com/token?v=' +
-          validateCode +
-          '"> https://https://giftree.herokuapp.com/token?v=' +
-          validateCode +
-          "</a>";
+          '<br/><br/> <a href="https://giftree.herokuapp.com/tabs/validate">https://giftree.herokuapp.com/tabs/validate</a>';
         emailMsg += "<br/><br/>Thank you,<br/>Giftree App Team";
 
         const msg = {
@@ -360,13 +356,9 @@ exports.setApp = function (app, client) {
           "If you did not request this, please disregard this email. <br/><br/>";
         emailMsg +=
           "You can reset your password by entering the validation code in the app, or by clicking the link below<br/><br/>";
-        emailMsg = +"Validation code: " + validateCode + "<br/><br/>";
+        emailMsg += "Validation code: " + validateCode + "<br/><br/>";
         emailMsg +=
-          '<a href = "https://giftree.herokuapp.com/validate?v=' +
-          validateCode +
-          '"> https://giftree.herokuapp.com/validate?v=' +
-          validateCode +
-          "</a>";
+          "<a href='https://giftree.herokuapp.com/tabs/reset-password-validation'>https://giftree.herokuapp.com/tabs/reset-password-validation</a>";
         emailMsg += "<br/><br/>Thank you,<br/>Giftree App Team";
 
         const msg = {

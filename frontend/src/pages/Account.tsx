@@ -34,19 +34,17 @@ const Account: React.FC<AccountProps> = ({ setUsername, username, setUserId, use
           <IonButtons slot="start">
             <IonMenuButton></IonMenuButton>
           </IonButtons>
-          <IonTitle>Account</IonTitle>
+          <IonTitle><img src="assets/img/appicon.svg" className="toolbar-logo" /></IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent>
         {username &&
           (<div className="ion-padding-top ion-text-center">
-            <img src="https://www.gravatar.com/avatar?d=mm&s=140" alt="avatar" />
-            <h2>{ username }</h2>
+            <h1 style={{ paddingTop: "40px" }}>{ username }</h1>
             <IonList inset>
-              <IonItem onClick={() => clicked('Update Picture')}>Update Picture</IonItem>
               <IonItem onClick={() => setShowAlert(true)}>Change Username</IonItem>
-              <IonItem onClick={() => clicked('Change Password')}>Change Password</IonItem>
-              <IonItem routerLink="/support" routerDirection="none">Support</IonItem>
+              <IonItem onClick={() => clicked('Change Password')} style={{ paddingTop: "20px" }}>Change Password</IonItem>
+              <IonItem routerLink="/logout" routerDirection="none" style={{ paddingTop: "20px" }}>Logout</IonItem>
             </IonList>
           </div>)
         }
