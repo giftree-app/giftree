@@ -109,6 +109,11 @@ const GroupList: React.FC<GroupListProps> = ({
       setIsListLoading(true);
       setReloadAction(false);
     }
+    return () => {
+      //setIsListLoading(false);
+      //setReloadAction(true);
+      //setIsListLoaded(false);
+    }
   }, [userId, isListLoading, setIsListLoaded, setReloadAction, reload]);
 
   const onClick = (e: any) => {
@@ -129,7 +134,7 @@ const GroupList: React.FC<GroupListProps> = ({
   ////////////////////////////////
 
   if (isListLoaded === false) {
-    return <div> loading ...</div>;
+    return <div />;
   } else {
     // assigning groups to a local temp variable in order to prevent a warning... weird react behavior?
     let temp = groups;

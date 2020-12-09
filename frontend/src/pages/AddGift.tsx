@@ -102,7 +102,7 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
   };
 
   const ShowResult = async (e: React.FormEvent) => {
-    history.push("Wishlist", { direction: "none" });
+    //history.push("Wishlist", { direction: "none" });
   };
 
   const getToken = async () => {

@@ -9,6 +9,7 @@ const locationsUrl = '/assets/data/locations.json';
 const HAS_LOGGED_IN = 'hasLoggedIn';
 const USERNAME = 'username';
 const USERID = 'userId';
+const MEMBERWISHLISTID = 'memberWishlistId';
 const GIFTID = 'giftId';
 const GROUPID = 'groupId';
 const NEED_TO_RELOAD = 'reload';
@@ -33,19 +34,22 @@ export const getUserData = async () => {
     Storage.get({ key: HAS_LOGGED_IN }),
     Storage.get({ key: USERNAME }),
     Storage.get({ key: USERID }),
+    Storage.get({ key: MEMBERWISHLISTID }),
     Storage.get({ key: GIFTID }),
     Storage.get({ key: GROUPID }),
     Storage.get({ key: NEED_TO_RELOAD })]);
   const isLoggedin = await response[0].value === 'true';
   const username = await response[1].value || undefined;
   const userId = await response[2].value || undefined;
-  const giftId = await response[3].value || undefined;
-  const groupId = await response[4].value || undefined;
-  const reload = response[5].value === 'true';
+  const memberWishlistId = await response[3].value || undefined;
+  const giftId = await response[4].value || undefined;
+  const groupId = await response[5].value || undefined;
+  const reload = response[6].value === 'true';
   const data = {
     isLoggedin,
     username,
     userId,
+    memberWishlistId,
     giftId,
     groupId,
     reload
@@ -70,6 +74,14 @@ export const setUserIdData = async (userId?: string) => {
     await Storage.remove({ key: USERID });
   } else {
     await Storage.set({ key: USERID, value: userId });
+  }
+}
+
+export const setMemberWishlistIdData = async (memberWishlistId?: string) => {
+  if (!memberWishlistId) {
+    await Storage.remove({ key: MEMBERWISHLISTID });
+  } else {
+    await Storage.set({ key: MEMBERWISHLISTID, value: memberWishlistId });
   }
 }
 

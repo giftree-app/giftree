@@ -78,11 +78,7 @@ exports.setApp = function (app, client) {
           "or enter the code below into the validation page in the app: <br/><br/> Validation code: " +
           validateCode;
         emailMsg +=
-          '<br/><br/> <a href = "https://giftree.herokuapp.com/token?v=' +
-          validateCode +
-          '"> https://giftree.herokuapp.com/token?v=' +
-          validateCode +
-          "</a>";
+          '<br/><br/> <a href="https://giftree.herokuapp.com/tabs/validate">https://giftree.herokuapp.com/tabs/validate</a>';
         emailMsg += "<br/><br/>Thank you,<br/>Giftree App Team";
 
         const msg = {
@@ -619,7 +615,6 @@ exports.setApp = function (app, client) {
           .collection("Groups")
           .update({ groupCode: groupCode }, { $addToSet: { members: userId } });
         var ret = { error: "", success: true };
-
         res.status(200).json(ret);
       }
     } catch (e) {

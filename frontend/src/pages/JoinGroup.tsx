@@ -20,7 +20,9 @@ import {
 import { connect } from "../data/connect";
 import { RouteComponentProps, withRouter } from "react-router";
 import { setReload } from "../data/user/user.actions";
+import { Plugins } from "@capacitor/core";
 import './JoinGroup.scss'
+const { Storage } = Plugins;
 
 // const BASE_URL = 'https://COP4331-1.herokuapp.com/';
 // const ENDPOINT_URL = BASE_URL + 'api/addGroup';
@@ -45,17 +47,29 @@ const JoinGroup: React.FC<JoinGroupProps> = ({
   userId,
   setReload: setReloadAction,
 }) => {
-  const [groupName, setGroupName] = useState("");
+  //const [groupName, setGroupName] = useState("");
   const [groupCode, setGroupCode] = useState("");
   const [joinedGroupCode, setJoinedGroupCode] = useState("");
   const [groupJoined, setGroupJoined] = useState(false);
 
   // verification
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [groupNameError, setGroupNameError] = useState(false);
+  //const [groupNameError, setGroupNameError] = useState(false);
   const [groupCodeError, setGroupCodeError] = useState(false);
 
-  console.log("JoinGroup entry");
+  const getToken = async () => {
+    try {
+      const result = await Storage.get({ key: "ACCESS_TOKEN" });
+      if (result != null) {
+        return JSON.parse(result.value);
+      } else {
+        return null;
+      }
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  };
 
   const joinGroup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,8 +86,13 @@ const JoinGroup: React.FC<JoinGroupProps> = ({
         userId: userId
       };
 
+    const token = await getToken();
+      const config = {
+        headers: { authorization: `Bearer ${token}` },
+      };
+
       axios
-        .post("/api/userAddGroup", groupObject)
+        .post("/api/userAddGroup", groupObject, config)
         .then((res) => {
           console.log(res.data);
         })
@@ -89,7 +108,7 @@ const JoinGroup: React.FC<JoinGroupProps> = ({
 
   const redirectToGroupList = async (e: React.FormEvent) => {
     setReloadAction(true);
-    history.push("/tabs/GroupList", { direction: "none" });
+    //history.push("/tabs/GroupList", { direction: "none" });
   };
 
   return (

@@ -14,7 +14,7 @@ import GroupList from "./GroupList";
 import AddGroup from "./AddGroup";
 import EditGroup from "./EditGroup";
 import Wishlist from "./WishlistPage";
-import About from "./About";
+import MemberWishlist from "./MemberWishlistPage";
 import AddGift from "./AddGift";
 import EditGift from "./EditGift";
 import JoinGroup from "./JoinGroup";
@@ -51,7 +51,7 @@ const MainTabs: React.FC<MainTabsProps> = () => {
           exact={true}
         />
         <Route path="/tabs/wishlist" render={() => <Wishlist />} exact={true} />
-        <Route path="/tabs/about" render={() => <About />} exact={true} />
+        <Route path="/tabs/memberwishlist" render={() => <MemberWishlist />} exact={true} />
         <Route path="/tabs/addgift" render={() => <AddGift />} exact={true} />
         <Route path="/tabs/editgift" render={() => <EditGift />} exact={true} />
         <Route
@@ -78,10 +78,6 @@ const MainTabs: React.FC<MainTabsProps> = () => {
         <IonTabButton tab="wishlist" href="/tabs/wishlist">
           <IonIcon icon={location} />
           <IonLabel>Wishlist</IonLabel>
-        </IonTabButton>
-        <IonTabButton tab="about" href="/tabs/about">
-          <IonIcon icon={informationCircle} />
-          <IonLabel>About</IonLabel>
         </IonTabButton>
       </IonTabBar>
     </IonTabs>
