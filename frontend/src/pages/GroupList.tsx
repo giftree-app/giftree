@@ -11,6 +11,8 @@ import {
   IonCol,
   IonCardHeader,
   IonCard,
+  IonRow,
+  IonButton,
 } from "@ionic/react";
 import { connect } from "../data/connect";
 import "./GroupList.scss";
@@ -143,56 +145,54 @@ const GroupList: React.FC<GroupListProps> = ({
             </IonToolbar>
           </IonHeader>
           <IonContent fullscreen>
-            <IonList lines="none">
+          <IonItem id="groups-title" lines="none">
+            <p>
+              {" "}
+              Your <strong>Groups</strong>{" "}
+            </p>
+          </IonItem>
+            <IonList lines="none" id="group-list">
               {temp &&
                 temp.map((group) => (
-                  <IonCard className="group-card" key={group.groupId}>
-                    <IonCardHeader key={group.groupId}>
-                      <IonCol size="10" size-md="4" key={group.groupId}>
-                        <IonItem
-                          button
-                          lines="none"
-                          className="group-item"
-                          detail={false}
-                          href="/tabs/editgroup"
-                          routerDirection="none"
-                          key={group.groupId}
-                          onClick={() => onClick({ groupId: group.groupId })}
-                        >
-                          <IonLabel>
-                            <h1>{group.groupName}</h1>
-                          </IonLabel>
-                        </IonItem>
-                      </IonCol>
-                    </IonCardHeader>
-                  </IonCard>
+                <IonCard className="group-card ion-text-center" key={group.groupId}>
+                    <IonItem
+                    button
+                    lines="none"
+                    className="group-item"
+                    detail={false}
+                    href="/tabs/editgroup"
+                    routerDirection="none"
+                    key={group.groupId}
+                    onClick={() => onClick({ groupId: group.groupId })}
+                    >
+                      {group.groupName}
+                    </IonItem>
+                </IonCard>
                 ))}
             </IonList>
             <br />
-            <IonCard className="group-button-card">
-              <IonCardHeader>
-                <IonCol size="12" size-md="6">
-                  <IonItem
-                    button
-                    color="medium"
-                    href="/tabs/addgroup"
-                    routerDirection="none"
-                    onClick={() => goToAddGroup(true)}
+            <IonRow>
+              <IonCol>
+                <IonButton
+                  expand="block"
+                  href="/tabs/addgroup"
+                  routerDirection="none"
+                  onClick={() => goToAddGroup(true)}
                   >
-                    Add Group!
-                  </IonItem>
-                  <IonItem
-                    button
-                    color="medium"
-                    href="/tabs/joingroup"
-                    routerDirection="none"
-                    onClick={() => goToJoinGroup(true)}
+                  Add Group
+                </IonButton>
+              </IonCol>
+              <IonCol>
+                <IonButton
+                  expand="block"
+                  href="/tabs/joingroup"
+                  routerDirection="none"
+                  onClick={() => goToJoinGroup(true)}
                   >
-                    Join Group!
-                  </IonItem>
-                </IonCol>
-              </IonCardHeader>
-            </IonCard>
+                  Join Group
+                </IonButton>
+              </IonCol>
+            </IonRow>
           </IonContent>
         </IonPage>
       </div>

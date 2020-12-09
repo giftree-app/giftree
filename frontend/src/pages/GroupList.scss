@@ -1,9 +1,4 @@
-#group-list {
-  .group-card {
-    display: flex;
-    flex-direction: column;
-    border-radius: 100px;
-  }
+#grouplist {
 
   /* Due to the fact the cards are inside of columns the margins don't overlap
    * properly so we want to remove the extra margin between cards
@@ -12,33 +7,51 @@
     margin-bottom: 0;
   }
 
+  .group-card {
+    display: flex;
+    border-radius: 40px;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    margin: 30px 10px 20px;
+  }
+
+  .group-item {
+    align-self: center;
+    font-weight: 200;
+    font-size: 3vmax;
+  }
+
+  .group-card:hover {
+    --background-hover: red;
+    color: black;
+  }
+
   .group-card .group-item {
     --min-height: 10rem;
     // --min-weight: 30rem;
   }
 
-  .group-card .group-item h2 {
-    font-size: 25px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    text-align: center;
-  }
+  // .group-card .group-item h2 {
+  //   font-size: 25px;
+  //   letter-spacing: 0.02em;
+  //   text-align: center;
+  // }
 
-  .group-card .group-item p {
-    font-size: 13px;
-    letter-spacing: 0.02em;
-    text-align: center;
-  }
+  // .group-card .group-item p {
+  //   font-size: 13px;
+  //   letter-spacing: 0.02em;
+  //   text-align: center;
+  // }
 
-  .group-card ion-card-header {
-    padding: 0;
-  }
+  // .group-card ion-card-header {
+  //   padding: 0;
+  // }
 
-  .group-card ion-card-content {
-    flex: 1 1 auto;
-
-    padding: 0;
-  }
+  // .group-card ion-card-content {
+  //   flex: 1 1 auto;
+  //   padding: 0;
+  // }
 
   .ios ion-list {
     margin-bottom: 10px;
@@ -48,6 +61,10 @@
     border-top: 1px solid var(--ion-color-step-150, #d7d8da);
     padding: 0;
   }
+
+  #groups-title {
+      font-size: 3vmax;
+  }
 }
 
 #add-group {
@@ -56,4 +73,3 @@
   margin-top: 55px;
   text-transform: capitalize;
 }
-
