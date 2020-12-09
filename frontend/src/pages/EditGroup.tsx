@@ -301,7 +301,7 @@ const putInStorage = async (key: string, value: any) => {
               <IonButton type="submit">Update Group</IonButton>
             </IonRow>
             <IonRow>
-              <IonButton routerLink="/tabs/memberwishlist" onClick={() => goToMemberWishList( { memberId: currentMemberId} )}>view {currentMemberFirstName} {currentMemberLastName} wishlist</IonButton>
+              <IonButton routerLink="/tabs/memberwishlist" routerDirection="none" onClick={() => goToMemberWishList( { memberId: currentMemberId} )}>view {currentMemberFirstName} {currentMemberLastName} wishlist</IonButton>
             </IonRow>
             <IonRow>
               <IonButton onClick={() => setShowMemberAlert(true)}>
