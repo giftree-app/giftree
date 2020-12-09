@@ -20,6 +20,7 @@ import {
 import { connect } from "../data/connect";
 import { RouteComponentProps, withRouter } from "react-router";
 import { setReload } from "../data/user/user.actions";
+import './JoinGroup.scss'
 
 // const BASE_URL = 'https://COP4331-1.herokuapp.com/';
 // const ENDPOINT_URL = BASE_URL + 'api/addGroup';
@@ -104,12 +105,13 @@ const JoinGroup: React.FC<JoinGroupProps> = ({
       <IonContent>
         <form noValidate onSubmit={joinGroup}>
           <IonList>
-            <IonItem>
-              <IonLabel position="stacked" color="primary">
+            <IonItem className= "joingroup-item">
+              <IonLabel position="floating" color="black" className="joingroup-label">
                 Group code:
               </IonLabel>
               <IonInput
                 name="groupCode"
+                className="joingroup-input"
                 type="text"
                 value={groupCode}
                 spellCheck={false}
