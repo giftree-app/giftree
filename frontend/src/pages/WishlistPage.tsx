@@ -102,6 +102,7 @@ const Wishlist: React.FC<WishlistProps> = ({
       setIsListLoading(true);
       setReloadAction(false);
     }
+    return () => { }
   }, [userId, isListLoading, setReloadAction, reload]);
 
   const onClick = (e: any) => {
@@ -117,7 +118,7 @@ const Wishlist: React.FC<WishlistProps> = ({
   ////////////////////////////////
 
   if (isListLoaded === false) {
-    return <div> loading ...</div>;
+    return <div />;
   } else {
     let temp = gifts;
     return (

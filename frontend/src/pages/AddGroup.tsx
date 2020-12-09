@@ -85,15 +85,15 @@ const AddGroup: React.FC<AddGroupProps> = ({
       setAddedGroupName(groupName);
       setGroupAdded(true);
       setGroupName("");
-      redirectToGroupList(e);
+      //redirectToGroupList(e);
     }
   };
-
+/*
   const redirectToGroupList = async (e: React.FormEvent) => {
     setReloadAction(true);
-    history.push("/tabs/GroupList", { direction: "none" });
+    //history.push("/tabs/GroupList", { direction: "none" });
   };
-
+*/
   const getToken = async () => {
     try {
       const result = await Storage.get({ key: "ACCESS_TOKEN" });
