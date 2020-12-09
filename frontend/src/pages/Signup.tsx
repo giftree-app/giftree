@@ -8,8 +8,6 @@ import {
   IonPage,
   IonButtons,
   IonMenuButton,
-  IonRow,
-  IonCol,
   IonButton,
   IonList,
   IonItem,
@@ -18,24 +16,11 @@ import {
   IonText,
 } from "@ionic/react";
 import "./Login.scss";
-import { setIsLoggedIn, setUsername } from "../data/user/user.actions";
-import { connect } from "../data/connect";
-import { RouteComponentProps } from "react-router";
+import { Redirect, RouteComponentProps, withRouter } from "react-router";
 
-interface OwnProps extends RouteComponentProps {}
+interface RouterProps extends RouteComponentProps {}
 
-interface DispatchProps {
-  setIsLoggedIn: typeof setIsLoggedIn;
-  setUsername: typeof setUsername;
-}
-
-interface SignupProps extends OwnProps, DispatchProps {}
-
-const Signup: React.FC<SignupProps> = ({
-  setIsLoggedIn,
-  history,
-  setUsername: setUsernameAction,
-}) => {
+const Signup: React.FC<RouterProps> = ({}) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -52,8 +37,6 @@ const Signup: React.FC<SignupProps> = ({
   const [emailError, setEmailError] = useState(false);
   const [emailInvalid, setEmailInvalid] = useState(false);
   const [address1Error, setAddress1Error] = useState(false);
-
-  const app_name = "giftree";
 
   function checkValues() {
     !username ? setUsernameError(true) : setUsernameError(false);
@@ -112,10 +95,8 @@ const Signup: React.FC<SignupProps> = ({
       axios
         .post("/api/register", req)
         .then(async function () {
-          await setIsLoggedIn(true);
-          await setUsernameAction(username);
           await clearFields();
-          history.push("/login", { direction: "none" });
+          return <Redirect to={"/login"} />;
         })
         .catch(function (error) {
           setSignupError(true);
@@ -338,10 +319,4 @@ const Signup: React.FC<SignupProps> = ({
   );
 };
 
-export default connect<OwnProps, {}, DispatchProps>({
-  mapDispatchToProps: {
-    setIsLoggedIn,
-    setUsername,
-  },
-  component: Signup,
-});
+export default withRouter(Signup);

@@ -16,61 +16,55 @@ import {
   IonRow,
   IonAlert,
 } from "@ionic/react";
-import { setGiftId, setReload } from "../data/user/user.actions";
-import { connect } from "../data/connect";
-import { RouteComponentProps, withRouter } from "react-router";
 import { Plugins } from "@capacitor/core";
+import { Redirect, RouteComponentProps, withRouter } from "react-router-dom";
 const { Storage } = Plugins;
 
-// const BASE_URL = 'https://COP4331-1.herokuapp.com/';
-// const ENDPOINT_GET = BASE_URL + 'api/getGift';
-// const ENDPOINT_UPDATE = BASE_URL + 'api/updateGift';
-// const ENDPOINT_DELETE = BASE_URL + 'api/deleteGift';
-
-interface OwnProps extends RouteComponentProps {}
-
-interface StateProps {
-  giftId?: string;
-  reload: boolean;
+async function getFromStorage(key: string) {
+  const res = await Storage.get({ key: key });
+  if (res == null) return "";
+  return JSON.parse(res.value);
 }
 
-interface DispatchProps {
-  setGiftId: typeof setGiftId;
-  setReload: typeof setReload;
-}
+interface RouterProps extends RouteComponentProps {}
 
-interface UpdateGiftProps extends OwnProps, StateProps, DispatchProps {}
-
-const EditGift: React.FC<UpdateGiftProps> = ({
-  history,
-  giftId,
-  setReload: setReloadAction,
-}) => {
+const EditGift: React.FC<RouterProps> = () => {
+  const [giftId, setGiftId] = useState("");
   const [giftName, setGiftName] = useState("");
   const [giftPrice, setGiftPrice] = useState("");
   const [giftLocation, setGiftLocation] = useState("");
   const [giftComment, setGiftComment] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
 
-  const getToken = async () => {
-    try {
-      const result = await Storage.get({ key: "ACCESS_TOKEN" });
-      if (result != null) {
-        return JSON.parse(result.value);
-      } else {
-        return null;
-      }
-    } catch (err) {
-      console.log(err);
-      return null;
-    }
-  };
+  useEffect(() => {
+    const setValues = async () => {
+      let giftId = await getFromStorage("currentGiftId");
+      setGiftId(giftId);
+    };
+    const getGift = async () => {
+      const token = await getFromStorage("ACCESS_TOKEN");
+      const config = {
+        headers: { authorization: `Bearer ${token}` },
+      };
+
+      axios
+        .post("/api/getGift", { giftId: giftId }, config)
+        .then((res) => {
+          setGiftName(res.data.giftName);
+          setGiftPrice(res.data.giftPrice);
+          setGiftLocation(res.data.giftLocation);
+          setGiftComment(res.data.giftComment);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    };
+    setValues();
+    getGift();
+  }, [giftId]);
 
   const deleteGift = async () => {
-    //console.log('EditGift: in deleteGift');
-    const token = await getToken();
+    const token = await getFromStorage("ACCESS_TOKEN");
     const config = {
       headers: { authorization: `Bearer ${token}` },
     };
@@ -96,9 +90,7 @@ const EditGift: React.FC<UpdateGiftProps> = ({
       giftComment: giftComment,
     };
 
-    //console.log(giftObject);
-
-    const token = await getToken();
+    const token = await getFromStorage("ACCESS_TOKEN");
     const config = {
       headers: { authorization: `Bearer ${token}` },
     };
@@ -107,169 +99,128 @@ const EditGift: React.FC<UpdateGiftProps> = ({
       .post("/api/updateGift", giftObject, config)
       .then((res) => {
         console.log(res.data);
-        redirectToWishList(e);
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
-  const redirectToWishList = async (e: React.FormEvent) => {
-    setReloadAction(true);
-    history.push("/tabs/wishlist", { direction: "none" });
-  };
-
-  useEffect(() => {
-    //console.log('EditGift: in useEffect');
-    if (isLoading === false) {
-      //console.log('EditGift: in useEffect: setting isListLoading to true');
-      const getGift = async () => {
-        //console.log('EditGift: in getGift');
-
-        const token = await getToken();
-        const config = {
-          headers: { authorization: `Bearer ${token}` },
-        };
-
-        axios
-          .post("/api/getGift", { giftId: giftId }, config)
-          .then((res) => {
-            //console.log(res);
-            setGiftName(res.data.giftName);
-            setGiftPrice(res.data.giftPrice);
-            setGiftLocation(res.data.giftLocation);
-            setGiftComment(res.data.giftComment);
-            setIsLoaded(true);
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-      };
-
-      getGift();
-      setIsLoading(true);
-    }
-  }, [giftId, isLoading]);
-
-  if (isLoaded === false) {
-    return <div> loading ...</div>;
-  } else {
-    return (
-      <IonPage id="editgift-page">
-        <IonHeader>
-          <IonToolbar>
-            <IonButtons slot="start">
-              <IonMenuButton></IonMenuButton>
-            </IonButtons>
-            <IonTitle>Edit Gift</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <IonContent>
-          <form noValidate onSubmit={updateGift}>
-            <IonList>
-              <IonItem>
-                <IonLabel position="stacked" color="primary">
-                  Gift:
-                </IonLabel>
-                <IonInput
-                  name="giftName"
-                  type="text"
-                  value={giftName}
-                  spellCheck={false}
-                  autocapitalize="off"
-                  onIonChange={(e) => setGiftName(e.detail.value!)}
-                  required
-                ></IonInput>
-              </IonItem>
-
-              <IonItem>
-                <IonLabel position="stacked" color="primary">
-                  Price:
-                </IonLabel>
-                <IonInput
-                  name="giftPrice"
-                  type="text"
-                  value={giftPrice}
-                  spellCheck={false}
-                  autocapitalize="off"
-                  onIonChange={(e) => setGiftPrice(e.detail.value!)}
-                  required
-                ></IonInput>
-              </IonItem>
-
-              <IonItem>
-                <IonLabel position="stacked" color="primary">
-                  Location:
-                </IonLabel>
-                <IonInput
-                  name="giftLocation"
-                  type="text"
-                  value={giftLocation}
-                  spellCheck={false}
-                  autocapitalize="off"
-                  onIonChange={(e) => setGiftLocation(e.detail.value!)}
-                  required
-                ></IonInput>
-              </IonItem>
-
-              <IonItem>
-                <IonLabel position="stacked" color="primary">
-                  Comment:
-                </IonLabel>
-                <IonInput
-                  name="giftComment"
-                  type="text"
-                  value={giftComment}
-                  spellCheck={false}
-                  autocapitalize="off"
-                  onIonChange={(e) => setGiftComment(e.detail.value!)}
-                  required
-                ></IonInput>
-              </IonItem>
-            </IonList>
-
-            <IonRow>
-              <IonButton type="submit">Update Gift</IonButton>
-            </IonRow>
-            <IonRow>
-              <IonButton onClick={() => setShowAlert(true)}>
-                delete Gift
-              </IonButton>
-            </IonRow>
-            <IonRow>
-              <IonButton routerLink="/tabs/Wishlist">Wishlist</IonButton>
-            </IonRow>
-          </form>
-        </IonContent>
-        <IonAlert
-          isOpen={showAlert}
-          header="Delete Gift?"
-          buttons={[
-            "No",
-            {
-              text: "Yes",
-              handler: (data: any) => {
-                //setUsername(data.username);
-                deleteGift();
-                redirectToWishList(data);
-              },
-            },
-          ]}
-          onDidDismiss={() => setShowAlert(false)}
-        />
-      </IonPage>
-    );
+  async function clearValues() {
+    await Storage.remove({ key: "currentGiftId" });
   }
+
+  return (
+    <IonPage id="editgift-page">
+      <IonHeader>
+        <IonToolbar>
+          <IonButtons slot="start">
+            <IonMenuButton></IonMenuButton>
+          </IonButtons>
+          <IonTitle>Edit Gift</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent>
+        <form noValidate onSubmit={updateGift}>
+          <IonList>
+            <IonItem>
+              <IonLabel position="stacked" color="primary">
+                Gift Name:
+              </IonLabel>
+              <IonInput
+                name="giftName"
+                type="text"
+                value={giftName}
+                spellCheck={false}
+                autocapitalize="off"
+                onIonChange={(e) => setGiftName(e.detail.value!)}
+                required
+              ></IonInput>
+            </IonItem>
+
+            <IonItem>
+              <IonLabel position="stacked" color="primary">
+                Price:
+              </IonLabel>
+              <IonInput
+                name="giftPrice"
+                type="text"
+                value={giftPrice}
+                spellCheck={false}
+                autocapitalize="off"
+                onIonChange={(e) => setGiftPrice(e.detail.value!)}
+                required
+              ></IonInput>
+            </IonItem>
+
+            <IonItem>
+              <IonLabel position="stacked" color="primary">
+                Location:
+              </IonLabel>
+              <IonInput
+                name="giftLocation"
+                type="text"
+                value={giftLocation}
+                spellCheck={false}
+                autocapitalize="off"
+                onIonChange={(e) => setGiftLocation(e.detail.value!)}
+                required
+              ></IonInput>
+            </IonItem>
+
+            <IonItem>
+              <IonLabel position="stacked" color="primary">
+                Comment:
+              </IonLabel>
+              <IonInput
+                name="giftComment"
+                type="text"
+                value={giftComment}
+                spellCheck={false}
+                autocapitalize="off"
+                onIonChange={(e) => setGiftComment(e.detail.value!)}
+                required
+              ></IonInput>
+            </IonItem>
+          </IonList>
+
+          <IonRow>
+            <IonButton type="submit">Update Gift</IonButton>
+          </IonRow>
+          <IonRow>
+            <IonButton onClick={() => setShowAlert(true)}>
+              Delete Gift
+            </IonButton>
+          </IonRow>
+          <IonRow>
+            <IonButton
+              onClick={() => {
+                clearValues();
+                return <Redirect to={"/tabs/wishlist"} />;
+              }}
+            >
+              Back to Wishlist
+            </IonButton>
+          </IonRow>
+        </form>
+      </IonContent>
+      <IonAlert
+        isOpen={showAlert}
+        header="Delete Gift?"
+        buttons={[
+          "No",
+          {
+            text: "Yes",
+            handler: () => {
+              deleteGift();
+              clearValues();
+              return <Redirect to={"/tabs/wishlist"} />;
+            },
+          },
+        ]}
+        onDidDismiss={() => setShowAlert(false)}
+      />
+    </IonPage>
+  );
 };
 
-export default connect<{}, StateProps, DispatchProps>({
-  mapStateToProps: (state) => ({
-    giftId: state.user.giftId,
-    reload: state.user.reload,
-  }),
-  mapDispatchToProps: {
-    setGiftId,
-    setReload,
-  },
-  component: withRouter(EditGift),
-});
+export default withRouter(EditGift);

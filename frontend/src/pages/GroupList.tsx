@@ -12,206 +12,125 @@ import {
   IonCardHeader,
   IonCard,
 } from "@ionic/react";
-import { connect } from "../data/connect";
 import "./GroupList.scss";
 import { IonItem, IonLabel, IonList } from "@ionic/react";
 import { Group } from "../models/Group";
-import {
-  setUserId,
-  setUsername,
-  setGroupId,
-  setReload,
-} from "../data/user/user.actions";
 import { Plugins } from "@capacitor/core";
+import { Redirect } from "react-router-dom";
 const { Storage } = Plugins;
 
-// const BASE_URL = 'https://COP4331-1.herokuapp.com/';
-// const ENDPOINT_URL = BASE_URL + 'api/getGroups';
-
-interface GroupProps {
-  groups: Group[];
+async function getFromStorage(key: string) {
+  const res = await Storage.get({ key: key });
+  if (res == null) return "";
+  return JSON.parse(res.value);
 }
 
-interface StateProps {
-  username?: string;
-  userId?: string;
-  groupId?: string;
-  reload: boolean;
+async function putInStorage(key: string, value: any) {
+  await Storage.set({
+    key: key,
+    value: JSON.stringify({
+      value,
+    }),
+  });
 }
 
-interface DispatchProps {
-  setUsername: typeof setUsername;
-  setUserId: typeof setUserId;
-  setGroupId: typeof setGroupId;
-  setReload: typeof setReload;
-}
-
-interface ListLoadingState {
-  isListLoading: boolean;
-  isListLoaded: boolean;
-}
-/////////////////////////////////////
-
-interface GroupListProps
-  extends StateProps,
-    DispatchProps {}
-/////////////////////////////////////
-
-const GroupList: React.FC<GroupListProps> = ({
-  userId,
-  reload,
-  setGroupId: setGroupIdAction,
-  setReload: setReloadAction,
-}) => {
-  const [isListLoading, setIsListLoading] = useState(false);
-  const [isListLoaded, setIsListLoaded] = useState(false);
+const GroupList: React.FC = () => {
   const [groups, setGroups] = useState([]);
 
   useEffect(() => {
-    setIsListLoaded(false);
-    if (isListLoading === false) {
-      //console.log('GroupList->useEffect: reload = ' + {setReload});
+    const getList = async () => {
+      const token = await getFromStorage("ACCESS_TOKEN");
+      const userId = await getFromStorage("userId");
 
-      const getToken = async () => {
-        try {
-          const result = await Storage.get({ key: "ACCESS_TOKEN" });
-          if (result != null) {
-            return JSON.parse(result.value);
-          } else {
-            return null;
-          }
-        } catch (err) {
-          console.log(err);
-          return null;
-        }
+      const config = {
+        headers: { authorization: `Bearer ${token}` },
       };
 
-      const getList = async () => {
-        //console.log('in getList()');
-        const token = await getToken();
-        const config = {
-          headers: { authorization: `Bearer ${token}` },
-        };
-        axios
-          .post("/api/getGroups", { userId: userId }, config)
-          .then(async (res) => {
-            console.log(res);
-            await setGroups(res.data.groups);
-            await setIsListLoaded(true);
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-      };
-      getList();
-      setIsListLoading(true);
-      setReloadAction(false);
-    }
-  }, [userId, isListLoading, setIsListLoaded, setReloadAction, reload]);
+      axios
+        .post("/api/getGroups", { userId: userId }, config)
+        .then(async (res) => {
+          console.log(res);
+          await setGroups(res.data.groups);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    };
+    getList();
+  }, []);
 
-  const onClick = (e: any) => {
-    setGroupIdAction(e.groupId);
-  };
-  ////////////////////////////////
-
-  const goToAddGroup = (e: any) => {
-    setIsListLoaded(false);
-    setReloadAction(false);
-  };
-  ////////////////////////////////
-
-  const goToJoinGroup = (e: any) => {
-    setIsListLoaded(false);
-    setReloadAction(false);
-  };
-  ////////////////////////////////
-
-  if (isListLoaded === false) {
-    return <div> loading ...</div>;
-  } else {
-    // assigning groups to a local temp variable in order to prevent a warning... weird react behavior?
-    let temp = groups;
-    return (
-      <div className="grouplist">
-        <IonPage id="grouplist">
-          <IonHeader translucent={true}>
-            <IonToolbar>
-              <IonButtons slot="start">
-                <IonMenuButton />
-              </IonButtons>
-              <IonTitle>Groups</IonTitle>
-            </IonToolbar>
-          </IonHeader>
-          <IonContent fullscreen>
-            <IonList lines="none">
-              {temp &&
-                temp.map((group) => (
-                  <IonCard className="group-card" key={group.groupId}>
-                    <IonCardHeader key={group.groupId}>
-                      <IonCol size="10" size-md="4" key={group.groupId}>
-                        <IonItem
-                          button
-                          lines="none"
-                          className="group-item"
-                          detail={false}
-                          href="/tabs/editgroup"
-                          routerDirection="none"
-                          key={group.groupId}
-                          onClick={() => onClick({ groupId: group.groupId })}
-                        >
-                          <IonLabel>
-                            <h1>{group.groupName}</h1>
-                          </IonLabel>
-                        </IonItem>
-                      </IonCol>
-                    </IonCardHeader>
-                  </IonCard>
-                ))}
-            </IonList>
-            <br />
-            <IonCard className="group-button-card">
-              <IonCardHeader>
-                <IonCol size="12" size-md="6">
-                  <IonItem
-                    button
-                    color="medium"
-                    href="/tabs/addgroup"
-                    routerDirection="none"
-                    onClick={() => goToAddGroup(true)}
-                  >
-                    Add Group!
-                  </IonItem>
-                  <IonItem
-                    button
-                    color="medium"
-                    href="/tabs/joingroup"
-                    routerDirection="none"
-                    onClick={() => goToJoinGroup(true)}
-                  >
-                    Join Group!
-                  </IonItem>
-                </IonCol>
-              </IonCardHeader>
-            </IonCard>
-          </IonContent>
-        </IonPage>
-      </div>
-    );
+  async function selectGroup(group: Group) {
+    await putInStorage("currentGroupId", group.id);
+    return <Redirect to={"/tabs/editgroup"} />;
   }
+
+  return (
+    <div className="grouplist">
+      <IonPage id="grouplist">
+        <IonHeader translucent={true}>
+          <IonToolbar>
+            <IonButtons slot="start">
+              <IonMenuButton />
+            </IonButtons>
+            <IonTitle>Groups</IonTitle>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent fullscreen>
+          <IonList lines="none">
+            {groups &&
+              groups.length > 0 &&
+              groups.map((group) => (
+                <IonCard className="group-card" key={group.groupId}>
+                  <IonCardHeader key={group.groupId}>
+                    <IonCol size="10" size-md="4" key={group.groupId}>
+                      <IonItem
+                        button
+                        lines="none"
+                        className="group-item"
+                        detail={false}
+                        key={group.groupId}
+                        onClick={() => {
+                          selectGroup(group);
+                        }}
+                      >
+                        <IonLabel>
+                          <h1>{group.groupName}</h1>
+                        </IonLabel>
+                      </IonItem>
+                    </IonCol>
+                  </IonCardHeader>
+                </IonCard>
+              ))}
+          </IonList>
+          <br />
+          <IonCard className="group-button-card">
+            <IonCardHeader>
+              <IonCol size="12" size-md="6">
+                <IonItem
+                  button
+                  color="medium"
+                  onClick={() => {
+                    return <Redirect to={"/tabs/addgroup"} />;
+                  }}
+                >
+                  Add Group!
+                </IonItem>
+                <IonItem
+                  button
+                  color="medium"
+                  onClick={() => {
+                    return <Redirect to={"/tabs/joingroup"} />;
+                  }}
+                >
+                  Join Group!
+                </IonItem>
+              </IonCol>
+            </IonCardHeader>
+          </IonCard>
+        </IonContent>
+      </IonPage>
+    </div>
+  );
 };
 
-export default connect<{}, StateProps, DispatchProps>({
-  mapStateToProps: (state) => ({
-    username: state.user.username,
-    userId: state.user.userId,
-    groupId: state.user.groupId,
-    reload: state.user.reload,
-  }),
-  mapDispatchToProps: {
-    setUsername,
-    setUserId,
-    setGroupId,
-    setReload,
-  },
-  component: GroupList,
-});
+export default GroupList;

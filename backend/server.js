@@ -27,3 +27,7 @@ app.listen(PORT, function () {
     app.get("port")
   );
 });
+
+app.get("*", function (req, res) {
+  res.redirect("/");
+});

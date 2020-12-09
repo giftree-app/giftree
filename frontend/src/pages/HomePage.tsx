@@ -1,5 +1,10 @@
-import React from "react";
-import { Route, RouteProps } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import {
+  Route,
+  RouteComponentProps,
+  RouteProps,
+  withRouter,
+} from "react-router-dom";
 import {
   IonContent,
   IonHeader,
@@ -12,23 +17,30 @@ import {
   IonCol,
   IonButton,
 } from "@ionic/react";
-import { connect } from "../data/connect";
 import "./HomePage.scss";
+import { Redirect } from "react-router-dom";
+import { Plugins } from "@capacitor/core";
+const { Storage } = Plugins;
 
-interface StateProps {
-  username?: string;
-  userId?: string;
-  isAuthenticated?: boolean;
+async function getFromStorage(key: string) {
+  const res = await Storage.get({ key: key });
+  if (res == null) return "";
+  return JSON.parse(res.value);
 }
 
-interface HomePageProps extends StateProps, RouteProps {}
+interface RouterProps extends RouteComponentProps {}
 
-const HomePage: React.FC<HomePageProps> = ({
-  username,
-  userId,
-  isAuthenticated,
-}) => {
-  //console.log('homepage entry: reload = ' + reload);
+const HomePage: React.FC<RouterProps> = ({}) => {
+  // const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // useEffect(() => {
+  //   async function setUserValues() {
+  //     let token = await getFromStorage("ACCESS_TOKEN");
+  //     if (token != "") await setIsAuthenticated(true);
+  //     else setIsAuthenticated(false);
+  //   }
+  //   setUserValues();
+  // }, []);
 
   return (
     <IonPage id="homepage">
@@ -40,48 +52,55 @@ const HomePage: React.FC<HomePageProps> = ({
           <IonTitle>Home</IonTitle>
         </IonToolbar>
       </IonHeader>
-      {isAuthenticated ? (
-        <IonContent>
+      {/* {isAuthenticated ? ( */}
+      <IonContent>
         <div className="homepage-logo">
           <img src="assets/img/appicon.svg" alt="Giftree logo" />
         </div>
-          <IonRow className="homepage-content ion-text-center">
-            <p>Your holiday app for family, friends, and coworkers to share wishlists & gift ideas.
-            </p>
-          </IonRow>
-        </IonContent>
-      ) : (
+        <IonRow className="homepage-content ion-text-center">
+          <p>
+            Your holiday app for family, friends, and coworkers to share
+            wishlists & gift ideas.
+          </p>
+        </IonRow>
+      </IonContent>
+      {/* ) : (
         <IonContent>
-        <div className="homepage-logo">
-          <img src="assets/img/appicon.svg" alt="Giftree logo" />
-        </div>
+          <div className="homepage-logo">
+            <img src="assets/img/appicon.svg" alt="Giftree logo" />
+          </div>
           <IonRow className="homepage-content ion-text-center">
-            <p>Oh no! You aren't authorized to view this page. Log in to see your tree.
+            <p>
+              Your holiday app for family, friends, and coworkers to share
+              wishlists & gift ideas.
             </p>
           </IonRow>
           <IonRow>
             <IonCol>
-            <IonButton href="/login" expand="block">
-              Log In
-            </IonButton>
+              <IonButton
+                onClick={() => {
+                  return <Redirect to={"/login"} />;
+                }}
+                expand="block"
+              >
+                Log In
+              </IonButton>
             </IonCol>
             <IonCol>
-            <IonButton href="/signup" expand="block">
-              Sign Up
-            </IonButton>
+              <IonButton
+                onClick={() => {
+                  return <Redirect to={"/signup"} />;
+                }}
+                expand="block"
+              >
+                Sign Up
+              </IonButton>
             </IonCol>
           </IonRow>
         </IonContent>
-      )}
+      )} */}
     </IonPage>
   );
 };
 
-export default connect<StateProps>({
-  mapStateToProps: (state) => ({
-    username: state.user.username,
-    userId: state.user.userId,
-    isAuthenticated: state.user.isLoggedin,
-  }),
-  component: HomePage,
-});
+export default withRouter(HomePage);

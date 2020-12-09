@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   IonHeader,
@@ -6,10 +6,6 @@ import {
   IonTitle,
   IonContent,
   IonPage,
-  IonButtons,
-  IonMenuButton,
-  IonRow,
-  IonCol,
   IonButton,
   IonList,
   IonItem,
@@ -18,77 +14,52 @@ import {
   IonText,
 } from "@ionic/react";
 import "./Login.scss";
-import {
-  setIsLoggedIn,
-  setUsername,
-  setUserId,
-  setReload,
-} from "../data/user/user.actions";
-import { connect } from "../data/connect";
-import { RouteComponentProps } from "react-router";
+import { Redirect, RouteComponentProps, withRouter } from "react-router-dom";
 import { Plugins } from "@capacitor/core";
 const { Storage } = Plugins;
 
-interface OwnProps extends RouteComponentProps {}
+const putInStorage = async (key: string, value: any) => {
+  await Storage.set({
+    key: key,
+    value: value,
+  });
+};
 
-interface DispatchProps {
-  setIsLoggedIn: typeof setIsLoggedIn;
-  setUsername: typeof setUsername;
-  setUserId: typeof setUserId;
-  setReload: typeof setReload;
-}
-
-interface LoginProps extends OwnProps, DispatchProps {}
-
-const Login: React.FC<LoginProps> = ({
-  setIsLoggedIn,
-  history,
-  setUsername: setUsernameAction,
-  setUserId: setUserIdAction,
-  setReload: setReloadAction,
-}) => {
-  const app_name = "giftree";
-
+const Login: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
   const [loginError, setLoginError] = useState(false);
+
+  useEffect(() => {
+    async function checkAuthentication() {
+      const res = await Storage.get({ key: "ACCESS_TOKEN" });
+      if (res.value != null) setIsAuthorized(true);
+    }
+    checkAuthentication();
+  }, [isAuthorized]);
 
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError(false);
     setFormSubmitted(true);
 
-    !username ? setUsernameError(true) : setUsernameError(false);
-    !password ? setPasswordError(true) : setPasswordError(false);
-
     if (username && password) {
-      await setIsLoggedIn(true);
-      await setUsernameAction(username);
-
       axios
-        .post("/api/login", {
+        .post("api/login", {
           login: username,
           password: password,
         })
         .then(async (res) => {
-          await Storage.set({
-            key: "ACCESS_TOKEN",
-            value: JSON.stringify(res.data.accessToken),
-          });
-          await Storage.set({
-            key: "EXPIRES_IN",
-            value: res.data.expiresIn,
-          });
-          await setIsLoggedIn(true);
-          await setUsernameAction(username);
-          await setUserIdAction(res.data.userId);
-          await setReloadAction(true);
-          setUsername("");
-          setPassword("");
-          history.push("/tabs/home", { direction: "none" });
+          await putInStorage("ACCESS_TOKEN", res.data.accessToken);
+          await putInStorage("userId", res.data.userId);
+          await putInStorage("firstName", res.data.firstName);
+          await putInStorage("lastName", res.data.lastName);
+          await putInStorage("username", username);
+          setIsAuthorized(true);
         })
         .catch(function (error) {
           setLoginError(true);
@@ -97,15 +68,20 @@ const Login: React.FC<LoginProps> = ({
     }
   };
 
+  if (isAuthorized) {
+    return <Redirect push to={"/tabs/home"} />;
+  }
+
   return (
     <IonPage id="login-page">
       <IonHeader>
         <IonToolbar>
-          <IonButtons slot="start">
-            <IonMenuButton></IonMenuButton>
-          </IonButtons>
           <IonTitle>
-            <img src="assets/img/appicon.svg" className="toolbar-logo" />
+            <img
+              src="assets/img/appicon.svg"
+              className="toolbar-logo"
+              alt="Giftree logo"
+            />
           </IonTitle>
         </IonToolbar>
       </IonHeader>
@@ -176,12 +152,12 @@ const Login: React.FC<LoginProps> = ({
           )}
 
           <div className="reset" style={{ paddingTop: "50px" }}>
-            <a href="/signup" className="resetText">
+            <a href="/" className="resetText">
               Don't have an account? <b>Click here to sign up.</b>{" "}
             </a>
           </div>
           <div className="reset">
-            <a href="" className="resetText">
+            <a href="/" className="resetText">
               Forgot password? <b>Click here to reset.</b>{" "}
             </a>
           </div>
@@ -195,12 +171,4 @@ const Login: React.FC<LoginProps> = ({
   );
 };
 
-export default connect<OwnProps, {}, DispatchProps>({
-  mapDispatchToProps: {
-    setIsLoggedIn,
-    setUsername,
-    setUserId,
-    setReload,
-  },
-  component: Login,
-});
+export default Login;

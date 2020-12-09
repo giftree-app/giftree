@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   IonContent,
@@ -17,44 +17,38 @@ import {
   IonCol,
   IonText,
 } from "@ionic/react";
-import { connect } from "../data/connect";
-import { RouteComponentProps, withRouter } from "react-router";
-import { setReload } from "../data/user/user.actions";
+import { Plugins } from "@capacitor/core";
+import { Redirect, RouteComponentProps, withRouter } from "react-router-dom";
+const { Storage } = Plugins;
 
-// const BASE_URL = 'https://COP4331-1.herokuapp.com/';
-// const ENDPOINT_URL = BASE_URL + 'api/addGroup';
-
-interface OwnProps extends RouteComponentProps {}
-
-interface StateProps {
-  username?: string;
-  userId?: string;
-  reload: boolean;
+async function getFromStorage(key: string) {
+  const res = await Storage.get({ key: key });
+  if (res == null) return "";
+  return JSON.parse(res.value);
 }
 
-interface DispatchProps {
-  setReload: typeof setReload;
-}
+interface RouterProps extends RouteComponentProps {}
 
-interface JoinGroupProps extends OwnProps, StateProps, DispatchProps {}
-
-const JoinGroup: React.FC<JoinGroupProps> = ({
-  history,
-  username,
-  userId,
-  setReload: setReloadAction,
-}) => {
+const JoinGroup: React.FC<RouterProps> = () => {
+  const [userId, setUserId] = useState("");
+  const [username, setUsername] = useState("");
   const [groupName, setGroupName] = useState("");
   const [groupCode, setGroupCode] = useState("");
-  const [joinedGroupCode, setJoinedGroupCode] = useState("");
   const [groupJoined, setGroupJoined] = useState(false);
 
   // verification
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [groupNameError, setGroupNameError] = useState(false);
   const [groupCodeError, setGroupCodeError] = useState(false);
 
-  console.log("JoinGroup entry");
+  useEffect(() => {
+    const setValues = async () => {
+      let userId = await getFromStorage("userId");
+      let username = await getFromStorage("username");
+      setUsername(username);
+      setUserId(userId);
+    };
+    setValues();
+  }, []);
 
   const joinGroup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,7 +62,7 @@ const JoinGroup: React.FC<JoinGroupProps> = ({
     if (groupCode) {
       const groupObject = {
         groupCode: groupCode,
-        userId: userId
+        userId: userId,
       };
 
       axios
@@ -79,16 +73,9 @@ const JoinGroup: React.FC<JoinGroupProps> = ({
         .catch((error) => {
           console.log(error);
         });
-      setJoinedGroupCode(groupCode);
       setGroupJoined(true);
       setGroupCode("");
-      redirectToGroupList(e);
     }
-  };
-
-  const redirectToGroupList = async (e: React.FormEvent) => {
-    setReloadAction(true);
-    history.push("/tabs/GroupList", { direction: "none" });
   };
 
   return (
@@ -127,7 +114,7 @@ const JoinGroup: React.FC<JoinGroupProps> = ({
           </IonList>
           <IonRow>
             <IonText>
-              {groupJoined ? "Joined [" + joinedGroupCode + "]!" : ""}
+              {groupJoined ? "Joined [" + groupCode + "]!" : ""}
             </IonText>
           </IonRow>
           <IonRow>
@@ -137,7 +124,12 @@ const JoinGroup: React.FC<JoinGroupProps> = ({
               </IonButton>
             </IonCol>
             <IonCol>
-              <IonButton href="/tabs/grouplist" expand="block">
+              <IonButton
+                onClick={() => {
+                  return <Redirect to={"/tabs/grouplist"} />;
+                }}
+                expand="block"
+              >
                 Done!
               </IonButton>
             </IonCol>
@@ -148,14 +140,4 @@ const JoinGroup: React.FC<JoinGroupProps> = ({
   );
 };
 
-export default connect<{}, StateProps, DispatchProps>({
-  mapStateToProps: (state) => ({
-    username: state.user.username,
-    userId: state.user.userId,
-    reload: state.user.reload
-  }),
-  mapDispatchToProps: {
-    setReload
-  },
-  component: withRouter(JoinGroup),
-});
+export default withRouter(JoinGroup);

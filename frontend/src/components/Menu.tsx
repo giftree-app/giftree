@@ -1,5 +1,5 @@
-import React from "react";
-import { RouteComponentProps, withRouter, useLocation } from "react-router";
+import React, { useEffect, useState } from "react";
+import { RouteComponentProps, useLocation, withRouter } from "react-router";
 
 import {
   IonContent,
@@ -10,11 +10,9 @@ import {
   IonListHeader,
   IonMenu,
   IonMenuToggle,
-  IonToggle,
 } from "@ionic/react";
 import {
   calendarOutline,
-  moonOutline,
   help,
   informationCircleOutline,
   logIn,
@@ -24,11 +22,9 @@ import {
   person,
   personAdd,
 } from "ionicons/icons";
-
-import { connect } from "../data/connect";
-import { setDarkMode } from "../data/user/user.actions";
-
 import "./Menu.css";
+import { Plugins } from "@capacitor/core";
+const { Storage } = Plugins;
 
 const routes = {
   loggedInPages: [
@@ -36,14 +32,12 @@ const routes = {
     { title: "Groups", path: "/tabs/grouplist", icon: peopleOutline },
     { title: "Wishlist", path: "/tabs/wishlist", icon: listOutline },
     { title: "Account", path: "/account", icon: person },
-    { title: "Support", path: "/support", icon: help },
     { title: "Logout", path: "/logout", icon: logOut },
   ],
   loggedOutPages: [
     { title: "Home", path: "/tabs/home", icon: calendarOutline },
     { title: "Login", path: "/login", icon: logIn },
     { title: "Signup", path: "/signup", icon: personAdd },
-    { title: "Support", path: "/support", icon: help },
     { title: "About", path: "/tabs/about", icon: informationCircleOutline },
   ],
 };
@@ -54,23 +48,20 @@ interface Pages {
   icon: string;
   routerDirection?: string;
 }
-interface StateProps {
-  darkMode: boolean;
-  isAuthenticated: boolean;
-}
 
-interface DispatchProps {
-  setDarkMode: typeof setDarkMode;
-}
+interface MenuProps extends RouteComponentProps {}
 
-interface MenuProps extends RouteComponentProps, StateProps, DispatchProps {}
+const Menu: React.FC<MenuProps> = ({}) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-const Menu: React.FC<MenuProps> = ({
-  darkMode,
-  history,
-  isAuthenticated,
-  setDarkMode,
-}) => {
+  useEffect(() => {
+    async function checkAuthentication() {
+      const res = await Storage.get({ key: "userId" });
+      if (res.value != null) setIsAuthenticated(true);
+    }
+    checkAuthentication();
+  }, []);
+
   const location = useLocation();
 
   function renderlistItems(list: Pages[]) {
@@ -107,13 +98,4 @@ const Menu: React.FC<MenuProps> = ({
   );
 };
 
-export default connect<{}, StateProps, {}>({
-  mapStateToProps: (state) => ({
-    darkMode: state.user.darkMode,
-    isAuthenticated: state.user.isLoggedin,
-  }),
-  mapDispatchToProps: {
-    setDarkMode,
-  },
-  component: withRouter(Menu),
-});
+export default withRouter(Menu);

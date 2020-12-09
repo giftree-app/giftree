@@ -19,17 +19,11 @@ import AddGift from "./AddGift";
 import EditGift from "./EditGift";
 import JoinGroup from "./JoinGroup";
 
-interface MainTabsProps {}
-
-const MainTabs: React.FC<MainTabsProps> = () => {
+const MainTabs: React.FC = () => {
   return (
     <IonTabs>
       <IonRouterOutlet>
         <Redirect exact path="/" to="/tabs/home" />
-        {/*
-          Using the render method prop cuts down the number of renders your components will have due to route changes.
-          Use the component prop when your component depends on the RouterComponentProps passed in automatically.
-        */}
         <Route path="/tabs/home" render={() => <HomePage />} exact={true} />
         <Route
           path="/tabs/grouplist"

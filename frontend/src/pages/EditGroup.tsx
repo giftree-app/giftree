@@ -19,63 +19,60 @@ import {
   IonCardHeader,
   IonCol,
 } from "@ionic/react";
-import { setGroupId, setReload } from "../data/user/user.actions";
 import { GroupMember } from "../models/GroupMember";
-import { connect } from "../data/connect";
-import { RouteComponentProps, withRouter } from "react-router";
 import { Plugins } from "@capacitor/core";
+import { Redirect, RouteComponentProps, withRouter } from "react-router-dom";
 const { Storage } = Plugins;
 
-// const BASE_URL = 'https://COP4331-1.herokuapp.com/';
-// const ENDPOINT_GET = BASE_URL + 'api/getGroupInfo';
-// const ENDPOINT_UPDATE = BASE_URL + 'api/updateGroupName';
-// const ENDPOINT_DELETE = BASE_URL + 'api/deleteGroup';
-
-interface GroupMembersProps {
-  members: GroupMember[];
+async function getFromStorage(key: string) {
+  const res = await Storage.get({ key: key });
+  if (res == null) return "";
+  return JSON.parse(res.value);
 }
 
-interface OwnProps extends RouteComponentProps {}
+interface RouterProps extends RouteComponentProps {}
 
-interface StateProps {
-  groupId?: string;
-  userId?: string;
-  reload: boolean;
-}
-
-interface DispatchProps {
-  setGroupId: typeof setGroupId;
-  setReload: typeof setReload;
-}
-
-interface UpdateGroupProps
-  extends OwnProps,
-    StateProps,
-    DispatchProps,
-    GroupMembersProps {}
-
-const EditGroup: React.FC<UpdateGroupProps> = ({
-  history,
-  groupId,
-  userId,
-  setReload: setReloadAction,
-}) => {
+const EditGroup: React.FC<RouterProps> = () => {
+  const [groupId, setGroupId] = useState("");
   const [groupName, setGroupName] = useState("");
   const [groupCode, setGroupCode] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [showMemberAlert, setShowMemberAlert] = useState(false);
   const [members, setMembers] = useState([]);
-  const [currentMemberId, setCurrentMemberId] = useState("");
   const [currentMemberFirstName, setCurrentMemberFirstName] = useState("");
   const [currentMemberLastName, setCurrentMemberLastName] = useState("");
 
-  console.log("EditGroup entry");
+  useEffect(() => {
+    const setValues = async () => {
+      let groupId = await getFromStorage("currentGroupId");
+      setGroupId(groupId);
+    };
+    const getGroup = async () => {
+      const token = await getFromStorage("ACCESS_TOKEN");
+      const userId = await getFromStorage("userId");
+      const config = {
+        headers: { authorization: `Bearer ${token}` },
+      };
+
+      axios
+        .post("/api/getGroupInfo", { groupId: groupId, userId: userId }, config)
+        .then((res) => {
+          console.log(res);
+          setGroupName(res.data.groupName);
+          setGroupCode(res.data.groupCode);
+          setMembers(res.data.members);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    };
+    setValues();
+    getGroup();
+  }, [groupId]);
 
   const deleteGroupMember = async () => {
-    //console.log('EditGroup: in deleteGroup');
-    const token = await getToken();
+    const token = await getFromStorage("ACCESS_TOKEN");
+    const currentMemberId = await getFromStorage("currentMemberId");
     const config = {
       headers: { authorization: `Bearer ${token}` },
     };
@@ -95,8 +92,7 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
   };
 
   const deleteGroup = async () => {
-    //console.log('EditGroup: in deleteGroup');
-    const token = await getToken();
+    const token = await getFromStorage("ACCESS_TOKEN");
     const config = {
       headers: { authorization: `Bearer ${token}` },
     };
@@ -119,8 +115,7 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
       groupName: groupName,
     };
 
-    //console.log(giftObject);
-    const token = await getToken();
+    const token = await getFromStorage("ACCESS_TOKEN");
     const config = {
       headers: { authorization: `Bearer ${token}` },
     };
@@ -135,201 +130,133 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
       });
   };
 
-  useEffect(() => {
-    if (isLoading === false) {
-      const getGroup = async () => {
-        //console.log("EditGroup: in getGroup: groupId: " + groupId);
-        //console.log("EditGroup: in getGroup: userId: " + userId);
-        const token = await getToken();
-        const config = {
-          headers: { authorization: `Bearer ${token}` },
-        };
-
-        axios
-          .post(
-            "/api/getGroupInfo",
-            { groupId: groupId, userId: userId },
-            config
-          )
-          .then((res) => {
-            console.log(res);
-            //console.log("EditGroup: in getGroup: groupName: " + groupName);
-            console.log("EditGroup: in getGroup: data: " + res.data);
-            setGroupName(res.data.groupName);
-            setGroupCode(res.data.groupCode);
-            setMembers(res.data.members);
-            setIsLoaded(true);
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-      };
-
-      getGroup();
-      setIsLoading(true);
-    }
-  }, [groupId, userId, isLoading]);
-
-  const onClick = (e: any) => {
-    console.log("clicked on: " + e.member);
-    //setMember(e.member);
-    setCurrentMemberId(e.member.userId);
-    setCurrentMemberFirstName(e.member.firstName);
-    setCurrentMemberLastName(e.member.lastName);
+  const setCurrentMember = (member: GroupMember) => {
+    setCurrentMemberFirstName(member.firstName);
+    setCurrentMemberLastName(member.lastName);
   };
 
-  const redirectToGroupList = async (e: React.FormEvent) => {
-    setReloadAction(true);
-    history.push("/tabs/GroupList", { direction: "none" });
-  };
-
-  const getToken = async () => {
-    try {
-      const result = await Storage.get({ key: "ACCESS_TOKEN" });
-      if (result != null) {
-        return JSON.parse(result.value);
-      } else {
-        return null;
-      }
-    } catch (err) {
-      console.log(err);
-      return null;
-    }
-  };
-
-  const redirectToGroupMemberList = async (e: React.FormEvent) => {
-    setReloadAction(true);
-    history.push("/tabs/EditGroup", { direction: "none" });
-  };
-
-  if (isLoaded === false) {
-    return <div> loading ...</div>;
-  } else {
-    let temp = members;
-    return (
-      <IonPage id="editgroup-page">
-        <IonHeader>
-          <IonToolbar>
-            <IonButtons slot="start">
-              <IonMenuButton></IonMenuButton>
-            </IonButtons>
-            <IonTitle>
-              {groupName} - {groupCode}
-            </IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <IonContent>
-          <form noValidate onSubmit={updateGroup}>
-            <IonItem>
-              <IonLabel position="stacked" color="primary">
-                Edit Group name:
-              </IonLabel>
-              <IonInput
-                name="groupName"
-                type="text"
-                value={groupName}
-                spellCheck={false}
-                autocapitalize="off"
-                onIonChange={(e) => setGroupName(e.detail.value!)}
-                required
-              ></IonInput>
-            </IonItem>
-            <IonList lines="none">
-              {temp &&
-                temp.map((member) => (
-                  <IonCard className="groupmember-card" key={member.userId}>
-                    <IonCardHeader key={member.userId}>
-                      <IonCol size="12" size-md="6" key={member.userId}>
-                        <IonItem
-                          button
-                          lines="none"
-                          className="group-item"
-                          detail={false}
-                          key={member.userId}
-                          onClick={() => onClick({ member: member })}
-                        >
-                          <IonLabel>
-                            <h3>
-                              {member.firstName} {member.lastName}
-                            </h3>
-                          </IonLabel>
-                        </IonItem>
-                      </IonCol>
-                    </IonCardHeader>
-                  </IonCard>
-                ))}
-            </IonList>
-
-            <IonRow>
-              <IonButton type="submit">Update Group</IonButton>
-            </IonRow>
-            <IonRow>
-              <IonButton onClick={() => setShowMemberAlert(true)}>
-                delete member
-              </IonButton>
-            </IonRow>
-            <IonRow>
-              <IonButton onClick={() => setShowAlert(true)}>
-                delete group
-              </IonButton>
-            </IonRow>
-            <IonRow>
-              <IonButton routerLink="/tabs/Grouplist">Groups</IonButton>
-            </IonRow>
-          </form>
-        </IonContent>
-        <IonAlert
-          isOpen={showMemberAlert}
-          header="Delete member?"
-          inputs={[
-            {
-              type: "text",
-              name: "member",
-              value: currentMemberFirstName + " " + currentMemberLastName,
-              placeholder: "",
-            },
-          ]}
-          buttons={[
-            "No",
-            {
-              text: "Yes",
-              handler: (data: any) => {
-                deleteGroupMember();
-                redirectToGroupMemberList(data);
-              },
-            },
-          ]}
-          onDidDismiss={() => setShowMemberAlert(false)}
-        />
-        <IonAlert
-          isOpen={showAlert}
-          header="Delete Group?"
-          buttons={[
-            "No",
-            {
-              text: "Yes",
-              handler: (data: any) => {
-                deleteGroup();
-                redirectToGroupList(data);
-              },
-            },
-          ]}
-          onDidDismiss={() => setShowAlert(false)}
-        />
-      </IonPage>
-    );
+  async function clearValues() {
+    await Storage.remove({ key: "currentGroupId" });
   }
+
+  return (
+    <IonPage id="editgroup-page">
+      <IonHeader>
+        <IonToolbar>
+          <IonButtons slot="start">
+            <IonMenuButton></IonMenuButton>
+          </IonButtons>
+          <IonTitle>
+            {groupName} - {groupCode}
+          </IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent>
+        <form noValidate onSubmit={updateGroup}>
+          <IonItem>
+            <IonLabel position="stacked" color="primary">
+              Edit Group name:
+            </IonLabel>
+            <IonInput
+              name="groupName"
+              type="text"
+              value={groupName}
+              spellCheck={false}
+              autocapitalize="off"
+              onIonChange={(e) => setGroupName(e.detail.value!)}
+              required
+            ></IonInput>
+          </IonItem>
+          <IonList lines="none">
+            {members &&
+              members.length > 0 &&
+              members.map((member) => (
+                <IonCard className="groupmember-card" key={member.userId}>
+                  <IonCardHeader key={member.userId}>
+                    <IonCol size="12" size-md="6" key={member.userId}>
+                      <IonItem
+                        button
+                        lines="none"
+                        className="group-item"
+                        detail={false}
+                        key={member.userId}
+                        onClick={() => setCurrentMember(member)}
+                      >
+                        <IonLabel>
+                          <h3>
+                            {member.firstName} {member.lastName}
+                          </h3>
+                        </IonLabel>
+                      </IonItem>
+                    </IonCol>
+                  </IonCardHeader>
+                </IonCard>
+              ))}
+          </IonList>
+          <IonRow>
+            <IonButton type="submit">Update Group</IonButton>
+          </IonRow>
+          <IonRow>
+            <IonButton onClick={() => setShowMemberAlert(true)}>
+              Delete Member
+            </IonButton>
+          </IonRow>
+          <IonRow>
+            <IonButton onClick={() => setShowAlert(true)}>
+              Delete Group
+            </IonButton>
+          </IonRow>
+          <IonRow>
+            <IonButton
+              onClick={() => {
+                clearValues();
+                return <Redirect to={"/tabs/grouplist"} />;
+              }}
+            >
+              Back to Groups
+            </IonButton>
+          </IonRow>
+        </form>
+      </IonContent>
+      <IonAlert
+        isOpen={showMemberAlert}
+        header="Delete member?"
+        inputs={[
+          {
+            type: "text",
+            name: "member",
+            value: currentMemberFirstName + " " + currentMemberLastName,
+            placeholder: "",
+          },
+        ]}
+        buttons={[
+          "No",
+          {
+            text: "Yes",
+            handler: () => {
+              deleteGroupMember();
+            },
+          },
+        ]}
+        onDidDismiss={() => setShowMemberAlert(false)}
+      />
+      <IonAlert
+        isOpen={showAlert}
+        header="Delete Group?"
+        buttons={[
+          "No",
+          {
+            text: "Yes",
+            handler: () => {
+              deleteGroup();
+              return <Redirect to={"/tabs/grouplist"} />;
+            },
+          },
+        ]}
+        onDidDismiss={() => setShowAlert(false)}
+      />
+    </IonPage>
+  );
 };
 
-export default connect<{}, StateProps, DispatchProps>({
-  mapStateToProps: (state) => ({
-    groupId: state.user.groupId,
-    userId: state.user.userId,
-    reload: state.user.reload,
-  }),
-  mapDispatchToProps: {
-    setGroupId,
-    setReload,
-  },
-  component: withRouter(EditGroup),
-});
+export default withRouter(EditGroup);

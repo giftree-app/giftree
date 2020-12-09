@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   IonContent,
@@ -17,26 +17,22 @@ import {
   IonCol,
   IonText,
 } from "@ionic/react";
-import { connect } from "../data/connect";
-import { RouteComponentProps, withRouter } from "react-router";
 import { Plugins } from "@capacitor/core";
+import { Redirect, RouteComponentProps, withRouter } from "react-router-dom";
 const { Storage } = Plugins;
 
-// const BASE_URL = 'https://COP4331-1.herokuapp.com/';
-// const ENDPOINT_URL = BASE_URL + 'api/addGift';
-
-interface OwnProps extends RouteComponentProps {}
-
-interface StateProps {
-  username?: string;
-  userId?: string;
+async function getFromStorage(key: string) {
+  const res = await Storage.get({ key: key });
+  if (res == null) return "";
+  return JSON.parse(res.value);
 }
 
-interface AddGiftProps extends OwnProps, StateProps {}
+interface RouterProps extends RouteComponentProps {}
 
-const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
+const AddGift: React.FC<RouterProps> = () => {
+  const [userId, setUserId] = useState("");
+  const [username, setUsername] = useState("");
   const [giftName, setGiftName] = useState("");
-  const [addedGiftName, setAddedGiftName] = useState("");
   const [giftPrice, setGiftPrice] = useState("");
   const [giftLocation, setGiftLocation] = useState("");
   const [giftComment, setGiftComment] = useState("");
@@ -48,12 +44,21 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
   const [giftPriceError, setGiftPriceError] = useState(false);
   const [giftLocationError, setGiftLocationError] = useState(false);
 
+  useEffect(() => {
+    const setValues = async () => {
+      let userId = await getFromStorage("userId");
+      let username = await getFromStorage("username");
+
+      setUserId(userId);
+      setUsername(username);
+    };
+    setValues();
+  }, []);
+
   const addGift = async (e: React.FormEvent) => {
     e.preventDefault();
 
     setFormSubmitted(true);
-
-    //console.log('in addgift now');
 
     if (!giftName) {
       setGiftNameError(true);
@@ -76,9 +81,7 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
         giftComment: giftComment,
       };
 
-      //console.log(giftObject);
-      //console.log(history);
-      const token = await getToken();
+      const token = await getFromStorage("ACCESS_TOKEN");
       const config = {
         headers: { authorization: `Bearer ${token}` },
       };
@@ -90,31 +93,11 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
         .catch((error) => {
           console.log(error);
         });
-      setAddedGiftName(giftName);
       setGiftAdded(true);
       setGiftName("");
       setGiftPrice("");
       setGiftLocation("");
       setGiftComment("");
-      ShowResult(e);
-    }
-  };
-
-  const ShowResult = async (e: React.FormEvent) => {
-    history.push("Wishlist", { direction: "none" });
-  };
-
-  const getToken = async () => {
-    try {
-      const result = await Storage.get({ key: "ACCESS_TOKEN" });
-      if (result != null) {
-        return JSON.parse(result.value);
-      } else {
-        return null;
-      }
-    } catch (err) {
-      console.log(err);
-      return null;
     }
   };
 
@@ -133,7 +116,7 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
           <IonList>
             <IonItem>
               <IonLabel position="stacked" color="primary">
-                Gift:
+                Gift Name:
               </IonLabel>
               <IonInput
                 name="giftName"
@@ -210,7 +193,9 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
           </IonList>
           <IonRow>
             <IonText>
-              {giftAdded ? "Added [" + addedGiftName + "] to wishlist!" : ""}
+              {giftAdded && giftName
+                ? "Added [" + giftName + "] to wishlist!"
+                : ""}
             </IonText>
           </IonRow>
           <IonRow>
@@ -220,8 +205,13 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
               </IonButton>
             </IonCol>
             <IonCol>
-              <IonButton href="/tabs/wishlist" expand="block">
-                Wishlist
+              <IonButton
+                expand="block"
+                onClick={() => {
+                  return <Redirect to={"/tabs/wishlist"} />;
+                }}
+              >
+                Back to Wishlist
               </IonButton>
             </IonCol>
           </IonRow>
@@ -231,10 +221,4 @@ const AddGift: React.FC<AddGiftProps> = ({ history, username, userId }) => {
   );
 };
 
-export default connect<{}, StateProps, {}>({
-  mapStateToProps: (state) => ({
-    username: state.user.username,
-    userId: state.user.userId,
-  }),
-  component: withRouter(AddGift),
-});
+export default withRouter(AddGift);

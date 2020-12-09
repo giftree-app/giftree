@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   IonContent,
@@ -17,48 +17,40 @@ import {
   IonCol,
   IonText,
 } from "@ionic/react";
-import { connect } from "../data/connect";
-import { RouteComponentProps, withRouter } from "react-router";
-import { setReload } from "../data/user/user.actions";
+import { Redirect, RouteComponentProps, withRouter } from "react-router";
 import { Plugins } from "@capacitor/core";
 const { Storage } = Plugins;
 
-// const BASE_URL = 'https://COP4331-1.herokuapp.com/';
-// const ENDPOINT_URL = BASE_URL + 'api/addGroup';
-
-interface OwnProps extends RouteComponentProps {}
-
-interface StateProps {
-  username?: string;
-  userId?: string;
-  reload: boolean;
+async function getFromStorage(key: string) {
+  const res = await Storage.get({ key: key });
+  if (res == null) return "";
+  return JSON.parse(res.value);
 }
+interface RouterProps extends RouteComponentProps {}
 
-interface DispatchProps {
-  setReload: typeof setReload;
-}
-
-interface AddGroupProps extends OwnProps, StateProps, DispatchProps {}
-
-const AddGroup: React.FC<AddGroupProps> = ({
-  history,
-  username,
-  userId,
-  setReload: setReloadAction,
-}) => {
+const AddGroup: React.FC<RouterProps> = () => {
+  const [userId, setUserId] = useState("");
+  const [username, setUsername] = useState("");
   const [groupName, setGroupName] = useState("");
-  const [addedGroupName, setAddedGroupName] = useState("");
   const [groupAdded, setGroupAdded] = useState(false);
 
   // verification
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [groupNameError, setGroupNameError] = useState(false);
 
-  //console.log("AddGroup entry");
+  useEffect(() => {
+    const setValues = async () => {
+      let userId = await getFromStorage("userId");
+      let username = await getFromStorage("username");
+
+      setUserId(userId);
+      setUsername(username);
+    };
+    setValues();
+  }, []);
 
   const addGroup = async (e: React.FormEvent) => {
     e.preventDefault();
-
     setFormSubmitted(true);
 
     if (!groupName) {
@@ -70,7 +62,7 @@ const AddGroup: React.FC<AddGroupProps> = ({
         userId: userId,
         groupName: groupName,
       };
-      const token = await getToken();
+      const token = await getFromStorage("ACCESS_TOKEN");
       const config = {
         headers: { authorization: `Bearer ${token}` },
       };
@@ -78,33 +70,12 @@ const AddGroup: React.FC<AddGroupProps> = ({
         .post("/api/addGroup", groupObject, config)
         .then((res) => {
           console.log(res.data);
+          setGroupAdded(true);
         })
         .catch((error) => {
           console.log(error);
         });
-      setAddedGroupName(groupName);
-      setGroupAdded(true);
-      setGroupName("");
-      redirectToGroupList(e);
-    }
-  };
-
-  const redirectToGroupList = async (e: React.FormEvent) => {
-    setReloadAction(true);
-    history.push("/tabs/GroupList", { direction: "none" });
-  };
-
-  const getToken = async () => {
-    try {
-      const result = await Storage.get({ key: "ACCESS_TOKEN" });
-      if (result != null) {
-        return JSON.parse(result.value);
-      } else {
-        return null;
-      }
-    } catch (err) {
-      console.log(err);
-      return null;
+      return <Redirect to={"/tabs/grouplist"} />;
     }
   };
 
@@ -144,18 +115,13 @@ const AddGroup: React.FC<AddGroupProps> = ({
           </IonList>
           <IonRow>
             <IonText>
-              {groupAdded ? "Added [" + addedGroupName + "] to groups!" : ""}
+              {groupAdded ? "Added [" + groupName + "] to groups!" : ""}
             </IonText>
           </IonRow>
           <IonRow>
             <IonCol>
               <IonButton type="submit" expand="block">
                 Add Group
-              </IonButton>
-            </IonCol>
-            <IonCol>
-              <IonButton href="/tabs/grouplist" expand="block">
-                Done!
               </IonButton>
             </IonCol>
           </IonRow>
@@ -165,14 +131,4 @@ const AddGroup: React.FC<AddGroupProps> = ({
   );
 };
 
-export default connect<{}, StateProps, DispatchProps>({
-  mapStateToProps: (state) => ({
-    username: state.user.username,
-    userId: state.user.userId,
-    reload: state.user.reload,
-  }),
-  mapDispatchToProps: {
-    setReload,
-  },
-  component: withRouter(AddGroup),
-});
+export default withRouter(AddGroup);
