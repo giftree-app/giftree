@@ -1,4 +1,6 @@
-#login-page, #signup-page, #support-page {
+#login-page,
+#signup-page,
+#support-page {
   .login-logo {
     padding: 20px 0;
     min-height: 200px;
@@ -24,32 +26,26 @@
     margin-right: auto;
     text-align: center;
     padding-bottom: 30px;
-
   }
 
   .loginText {
     margin-left: auto;
     margin-right: auto;
-
   }
-
-
 
   .passfield {
     --color: rgb(0, 0, 0);
     padding-top: 80px;
   }
-  .signup-fields
-  {
+  .signup-fields {
     padding-top: 15px;
   }
 
-  .loginbtn{
-    margin-left: auto ;
+  .loginbtn {
+    margin-left: auto;
     margin-right: auto;
     width: 20%;
     color: black;
-
   }
 
   .reset {
@@ -57,42 +53,32 @@
     margin-right: auto;
     padding-bottom: 30px;
     text-align: center;
-
-
   }
 
   .resetText {
     color: black;
     text-decoration: none;
   }
-
-
 }
 ion-item {
-
-
   width: 80%;
   margin-left: auto;
   margin-right: auto;
 }
-button-native{
-    border-radius: 40px !important;
-}
-
-button{
+button-native {
   border-radius: 40px !important;
 }
---ion-item-border-color
-{ color: white;}
 
-
+button {
+  border-radius: 40px !important;
+}
+--ion-item-border-color {
+  color: white;
+}
 
 ion-button {
-
   border-radius: 40px !important;
   margin-top: 30px;
-
-
 }
 item-highlight {
   --color: rgb(255, 255, 255);
@@ -100,5 +86,3 @@ item-highlight {
 ion-item.selected {
   --color: var(--ion-color-primary);
 }
-
-

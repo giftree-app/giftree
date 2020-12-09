@@ -19,6 +19,8 @@ import AddGift from "./AddGift";
 import EditGift from "./EditGift";
 import JoinGroup from "./JoinGroup";
 import ResetPass from "./ResetPass";
+import ResetPassValidation from "./ResetPassValidation";
+import Validate from "./Validate";
 
 interface MainTabsProps {}
 
@@ -52,7 +54,17 @@ const MainTabs: React.FC<MainTabsProps> = () => {
         <Route path="/tabs/about" render={() => <About />} exact={true} />
         <Route path="/tabs/addgift" render={() => <AddGift />} exact={true} />
         <Route path="/tabs/editgift" render={() => <EditGift />} exact={true} />
-        <Route path="/tabs/reset-password" render={() => <ResetPass />} exact={true} />
+        <Route
+          path="/tabs/reset-password"
+          render={() => <ResetPass />}
+          exact={true}
+        />
+        <Route
+          path="/tabs/reset-password-validation"
+          render={() => <ResetPassValidation />}
+          exact={true}
+        />
+        <Route path="/tabs/validate" render={() => <Validate />} exact={true} />
       </IonRouterOutlet>
       <IonTabBar slot="bottom">
         <IonTabButton tab="home" href="/tabs/home">
