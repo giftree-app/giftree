@@ -21,7 +21,8 @@
     "react-router": "5.2.0",
     "react-router-dom": "5.2.0",
     "reselect": "4.0.0",
-    "typescript": "^3.6.3"
+    "react-scripts": "3.4.1",
+    "typescript": "3.6.3"
   },
   "scripts": {
     "build-ts": "tsc",
