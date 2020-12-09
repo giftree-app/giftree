@@ -24,6 +24,7 @@ import { GroupMember } from "../models/GroupMember";
 import { connect } from "../data/connect";
 import { RouteComponentProps, withRouter } from "react-router";
 import { Plugins } from "@capacitor/core";
+import './EditGroup.scss'
 const { Storage } = Plugins;
 
 // const BASE_URL = 'https://COP4331-1.herokuapp.com/';
@@ -221,10 +222,11 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
         <IonContent>
           <form noValidate onSubmit={updateGroup}>
             <IonItem>
-              <IonLabel position="stacked" color="black">
+              <IonLabel position="floating" color="black" className="editgroup-label">
                 Edit Group name:
               </IonLabel>
               <IonInput
+                className="editgroup-input"
                 name="groupName"
                 type="text"
                 value={groupName}
@@ -234,47 +236,41 @@ const EditGroup: React.FC<UpdateGroupProps> = ({
                 required
               ></IonInput>
             </IonItem>
-            <IonList lines="none">
+            <IonList lines="full" id="groupmember-card">
               {temp &&
                 temp.map((member) => (
-                  <IonCard className="groupmember-card" key={member.userId}>
-                    <IonCardHeader key={member.userId}>
-                      <IonCol size="12" size-md="6" key={member.userId}>
-                        <IonItem
-                          button
-                          lines="none"
-                          className="group-item"
-                          detail={false}
-                          key={member.userId}
-                          onClick={() => onClick({ member: member })}
-                        >
-                          <IonLabel>
-                            <h3>
-                              {member.firstName} {member.lastName}
-                            </h3>
-                          </IonLabel>
-                        </IonItem>
-                      </IonCol>
-                    </IonCardHeader>
-                  </IonCard>
+                  <IonItem
+                    button
+                    lines="none"
+                    id="member-item"
+                    detail={false}
+                    key={member.userId}
+                    onClick={() => onClick({ member: member })}
+                  >
+                  {member.firstName} {member.lastName}
+                  </IonItem>
                 ))}
             </IonList>
 
             <IonRow>
-              <IonButton type="submit">Update Group</IonButton>
+              <IonCol>
+                <IonButton type="submit" expand="block">Update Group</IonButton>
+              </IonCol>
+              <IonCol>
+                <IonButton expand="block" onClick={() => setShowMemberAlert(true)}>
+                  delete member
+                </IonButton>
+              </IonCol>
             </IonRow>
             <IonRow>
-              <IonButton onClick={() => setShowMemberAlert(true)}>
-                delete member
-              </IonButton>
-            </IonRow>
-            <IonRow>
-              <IonButton onClick={() => setShowAlert(true)}>
+            <IonCol>
+              <IonButton expand="block" onClick={() => setShowAlert(true)}>
                 delete group
               </IonButton>
-            </IonRow>
-            <IonRow>
-              <IonButton routerLink="/tabs/Grouplist">Groups</IonButton>
+            </IonCol>
+            <IonCol>
+              <IonButton expand="block" routerLink="/tabs/Grouplist">Back to Groups</IonButton>
+            </IonCol>
             </IonRow>
           </form>
         </IonContent>

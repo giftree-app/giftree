@@ -1,3 +1,19 @@
 #editgroup-page {
+  .editgroup-label {
+      font-size: 2vmax !important;
+      font-weight: 400;
+    }
+    .editgroup-input {
+      font-size: 1.8vmax !important;
+      font-weight: 300;
+    }
 
+    #member-item {
+      font-weight: 200;
+      font-size: 3vmax;
+    }
+
+    #groupmember-card {
+      margin: 0 0 10px;
+    }
 }
